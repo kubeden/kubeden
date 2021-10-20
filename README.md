@@ -19,7 +19,7 @@
 
 [![image](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/denislav-gavrilov-63a946155/)
 [![image](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/asciiden)
-[![image](https://img.shields.io/badge/matrix-000000?style=for-the-badge&logo=Matrix&logoColor=white)(https://matrix.to/#/!XEsIiukpSCkzZubmzN:matrix.org?via=matrix.org)
+[![image](https://img.shields.io/badge/matrix-000000?style=for-the-badge&logo=Matrix&logoColor=white)](https://matrix.to/#/!XEsIiukpSCkzZubmzN:matrix.org?via=matrix.org)
 [![image](https://img.shields.io/badge/Microsoft_Outlook-0078D4?style=for-the-badge&logo=microsoft-outlook&logoColor=white)](mailto:dennis@asciiden.com)
 [![image](https://img.shields.io/badge/dev.to-0A0A0A?style=for-the-badge&logo=devdotto&logoColor=white)](https://dev.to/asciiden)
   
