@@ -1,4 +1,4 @@
-<h1 align="center"><img src="https://emoji.gg/assets/emoji/9441-pixel-emoji-eyes-dance.gif" width="40" height="40"/> Hi, I'm Dennis <img src="https://emoji.gg/assets/emoji/9441-pixel-emoji-eyes-dance.gif" width="40" height="40"/></h1>
+<h1 align="center">Hi 👋, I'm Dennis!</h1>
 <h3 align="center">Perceived as DevOps by companies, a hobbyist by me</h3>
 
 - 🔭 Currently working - **technical writing**; **online presence**; **content creation**; **advancing skillset**
