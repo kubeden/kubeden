@@ -56,8 +56,9 @@
 </p>
 
 ------
-<p align="center">
-[ASCIIDEN](https://twitter.com/asciiden)
 
-Last Edited on: 10/21/2021
+<p align="center">
+  <a href="https://twitter.com/asciiden">ASCIIDEN</a>
+  <br>
+  <span>Last Edited on: 10/21/2021</span>
 </p>
