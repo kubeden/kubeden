@@ -1,5 +1,5 @@
 <h1 align="center">Hi 👋, I'm Dennis!</h1>
-<h3 align="center">Perceived as DevOps by companies, a hobbyist by me</h3>
+<h3 align="center">Perceived as DevOps by companies, as hobbyist by me</h3>
 
 - 🔭 Currently working - **technical writing**; **online presence**; **content creation**; **advancing skillset**
 
