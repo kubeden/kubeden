@@ -7,7 +7,7 @@
 
 - 👯 I’m looking to collaborate on **anything that grabs my attention**
 
-- 📫 How to reach me: <a href="mailto: dennis@asciiden.com">**Email**</a> ; <a href="https://twitter.com/asciiden">Twitter</a> ; <a href="https://www.linkedin.com/in/denislav-gavrilov-63a946155/">LinkedIn</a> ; <a href="https://dev.to/asciiden">Dev</a>
+- 📫 How to reach me: <a href="mailto: dennis@asciiden.com">**Email**</a> ; <a href="https://twitter.com/denctl">Twitter</a> ; <a href="https://www.linkedin.com/in/denislav-gavrilov-63a946155/">LinkedIn</a> ; <a href="https://dev.to/denctl">Dev</a>
 
 - ⚡ What I like to do: **I like to tinker around /w stuff I find interesting. Tech is 7/10. The rest is movies, arts and sports. ***I DO stuff.*****
 
@@ -16,13 +16,13 @@
 <h3 align="center">Contact me:</h3>
 <div align="center">
   
-[![image](https://img.shields.io/badge/dev.to-0A0A0A?style=for-the-badge&logo=devdotto&logoColor=white)](https://dev.to/asciiden)
+[![image](https://img.shields.io/badge/dev.to-0A0A0A?style=for-the-badge&logo=devdotto&logoColor=white)](https://dev.to/denctl)
 [![image](https://img.shields.io/badge/matrix-000000?style=for-the-badge&logo=Matrix&logoColor=white)](https://matrix.to/#/!XEsIiukpSCkzZubmzN:matrix.org?via=matrix.org)
   
 </div>
 <div align="center">
   
-[![image](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/asciiden)
+[![image](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/denctl)
 [![image](https://img.shields.io/badge/Microsoft_Outlook-0078D4?style=for-the-badge&logo=microsoft-outlook&logoColor=white)](mailto:dennis@asciiden.com)
 [![image](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/denislav-gavrilov-63a946155/)
 
