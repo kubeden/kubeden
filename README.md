@@ -56,14 +56,14 @@
 </p>
 
 <p align= "center">
-  <img height= "150" src="https://github-readme-stats.vercel.app/api?username=asciiden&theme=gruvbox_light&show_icons=true&include_all_commits=true" />
-  <img height= "150" src="https://github-readme-stats.vercel.app/api/top-langs/?username=asciiden&theme=gruvbox_light&layout=compact" />
+  <img height= "150" src="https://github-readme-stats.vercel.app/api?username=denctl&theme=gruvbox_light&show_icons=true&include_all_commits=true" />
+  <img height= "150" src="https://github-readme-stats.vercel.app/api/top-langs/?username=denctl&theme=gruvbox_light&layout=compact" />
 </p>
 
 ------
 
 <p align="center">
-  <a href="https://twitter.com/asciiden">ASCIIDEN</a>
+  <a href="https://twitter.com/denctl">ASCIIDEN</a>
   <br>
   <span>Last Edited on: 10/21/2021</span>
 </p>
