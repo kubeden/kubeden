@@ -1,4 +1,4 @@
-## BIO (EDITING NOW)
+## BIO
 
 Dennis - a platforms engineer. Based in Sofia, Bulgaria. 25yo.
 
