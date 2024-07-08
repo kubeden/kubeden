@@ -18,3 +18,13 @@ I have been mainly in operations through the years and I do not feel confident i
 
 - **Databases:** SQL, [Supabase](https://supabase.com/), [Firebase](https://firebase.google.com/), [MongoDB](https://www.mongodb.com/), [DynamoDB](https://aws.amazon.com/dynamodb/), [CosmosDB](https://azure.microsoft.com/en-us/products/cosmos-db)
 - **Programming Languages:** JavaScript ([Node](https://nodejs.org/en), [React-Native](https://reactnative.dev/), [Next](https://nextjs.org/), various other libraries), TypeScript (mainly JS with an :any and that's that), [Python](https://www.python.org/) (mainly scripting)
+
+### My Projects:
+
+- [geeklore.io](https://geeklore.io): A community platform, gamified with rpg elements. Features include badges, level & experience system, and a resume builder.
+- [globchess.com](https://globchess.com): A global chess board where anyone can make the next move in the form of a token. One token costs $1. I wrote a very very bad code though so I need to update it and deploy again.
+
+### My Links:
+- X/Twitter: [x.com/kubeden](x.com/kubeden)
+- Youtube: [yt.com/@kubeden](https://youtube.com/@kubeden)
+- Geeklore Profile: [@kubeden](https://www.geeklore.io/profiles/7)
