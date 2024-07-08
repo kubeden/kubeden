@@ -1,6 +1,6 @@
 ## BIO (EDITING NOW)
 
-Hey, I am Dennis - a platforms engineer. I have been mainly in operations through the years and I do not feel confident in my programming skills but I somehow manage to write code and ship it to production on a weekly basis.
+Hey, I am Dennis - a platforms engineer. I have been mainly in operations through the years and I do not feel confident in my programming skills but I somehow manage to write code that is often shipped to production.
 
 ### Technologies I consider myself proficient at
 - **Kubernetes:** [ArgoCD](https://argo-cd.readthedocs.io/en/stable/), [nginx-ingress-controller](https://github.com/kubernetes/ingress-nginx), [cert-manager](https://github.com/cert-manager/cert-manager), [external-secrets](https://github.com/external-secrets/kubernetes-external-secrets), [external-dns](https://github.com/kubernetes-sigs/external-dns), [grafana](https://grafana.com/), [prometheus](https://prometheus.io/), [velero](https://velero.io/), [sealed-secrets](https://github.com/bitnami-labs/sealed-secrets)
