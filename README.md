@@ -1,4 +1,4 @@
-## $kubeden --help (bio)
+## kubeden --help (bio)
 
 Dennis - a platforms engineer. Based in Sofia, Bulgaria. 25yo.
 
