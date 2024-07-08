@@ -1,6 +1,6 @@
 ## kubeden --help (bio)
 
-Dennis - a platforms engineer. Based in Sofia, Bulgaria. 25yo.
+Dennis - a platforms engineer. Based in Bulgaria. 25yo.
 
 I have been mainly in operations through the years and I do not feel confident in my programming skills but I somehow manage to write code that is often shipped to production.
 
