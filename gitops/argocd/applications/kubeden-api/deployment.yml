@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: kubeden-api
-        image: registry.digitalocean.com/kubeden/kubeden-api:66e53c5
+        image: registry.digitalocean.com/kubeden/kubeden-api:3ca7718
         ports:
         - containerPort: 8080
         env:
