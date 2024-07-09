@@ -23,6 +23,7 @@ I have been mainly in operations through the years and I do not feel confident i
 
 - [geeklore.io](https://geeklore.io): A community platform, gamified with rpg elements. Features include badges, level & experience system, and a resume builder.
 - [globchess.com](https://globchess.com): A global chess board where anyone can make the next move in the form of a token. One token costs $1. I wrote a very very bad code though so I need to update it and deploy again.
+- [kubeden.io](https://kubeden.io): My baby project and personal blog. Built entirely for my own satisfaction with Golang, hosted on an ArgoCD Kubernetes cluster with CI/CD enabled.
 
 ### My Links:
 - X/Twitter: [x.com/kubeden](x.com/kubeden)
