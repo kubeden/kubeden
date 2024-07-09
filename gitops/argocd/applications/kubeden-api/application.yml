@@ -13,8 +13,5 @@ spec:
     server: https://kubernetes.default.svc
     namespace: kubeden-api
   syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
     syncOptions:
     - CreateNamespace=true
