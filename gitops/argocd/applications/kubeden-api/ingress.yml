@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kubeden-api-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    external-dns.alpha.kubernetes.io/hostname: api.kubeden.com
+spec:
+  tls:
+  - hosts:
+    - api.kubeden.com
+    secretName: kubeden-api-tls
+  rules:
+  - host: api.kubeden.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kubeden-api-service
+            port: 
+              number: 80
