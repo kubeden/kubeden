@@ -1,17 +1,17 @@
-name: Update Deployment
+name: Update Client Deployment
 
 on:
   workflow_run:
-    workflows: ["Build and Push to DigitalOcean"]
+    workflows: ["Build and Push Client to DigitalOcean"]
     types:
       - completed
   push:
     branches: [ main ]
     paths-ignore:
-      - 'go/api/**'
+      - 'go/client/**'
 
 env:
-  DEPLOYMENT_FILE: gitops/argocd/applications/kubeden-api/deployment.yml
+  DEPLOYMENT_FILE: gitops/argocd/applications/kubeden-client/deployment.yml
 
 jobs:
   update-deployment:
@@ -25,7 +25,7 @@ jobs:
       if: ${{ github.event_name == 'workflow_run' }}
       uses: dawidd6/action-download-artifact@v2
       with:
-        workflow: build-push.yml
+        workflow: build-push-client.yml
         workflow_conclusion: success
         name: image_tag
 
@@ -43,7 +43,7 @@ jobs:
           const runs = await github.rest.actions.listWorkflowRuns({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            workflow_id: 'build-push.yml',
+            workflow_id: 'build-push-client.yml',
             status: 'success',
             per_page: 1
           });
@@ -56,7 +56,7 @@ jobs:
       if: ${{ github.event_name == 'push' && steps.get-latest-run.outputs.result != 'null' }}
       uses: dawidd6/action-download-artifact@v2
       with:
-        workflow: build-push.yml
+        workflow: build-push-client.yml
         run_id: ${{ fromJson(steps.get-latest-run.outputs.result) }}
         name: image_tag
 
@@ -73,7 +73,7 @@ jobs:
           NEW_TAG="${{ steps.get_tag_from_run.outputs.IMAGE_TAG }}"
         fi
         if [[ -n "$NEW_TAG" ]]; then
-          sed -i 's|image: registry.digitalocean.com/kubeden/kubeden-api:.*|image: registry.digitalocean.com/kubeden/kubeden-api:'$NEW_TAG'|' ${{ env.DEPLOYMENT_FILE }}
+          sed -i 's|image: registry.digitalocean.com/kubeden/kubeden-client:.*|image: registry.digitalocean.com/kubeden/kubeden-client:'$NEW_TAG'|' ${{ env.DEPLOYMENT_FILE }}
         else
           echo "No new image tag found. Skipping update."
           exit 0

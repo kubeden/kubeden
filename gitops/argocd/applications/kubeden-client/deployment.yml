@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubeden-client
+  labels:
+    app: kubeden-client
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kubeden-client
+  template:
+    metadata:
+      labels:
+        app: kubeden-client
+    spec:
+      containers:
+      - name: kubeden-client
+        image: registry.digitalocean.com/kubeden/kubeden-client:66e53c5
+        ports:
+        - containerPort: 8080
+        env:
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: github-secret
+              key: token
+        - name: GITHUB_OWNER
+          value: "kubeden"
+        - name: GITHUB_REPO
+          value: "kubeden"

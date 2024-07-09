@@ -1,0 +1,6 @@
+{{ define "content" }}
+<h1 class="text-4xl mb-4">About Me</h1>
+<div id="info" hx-get="/api/info" hx-trigger="load">
+    Loading info...
+</div>
+{{ end }}

@@ -1,0 +1,10 @@
+{{ define "content" }}
+<div id="article">
+    <h1 class="text-4xl mb-4 p-8">{{ .Title }}</h1>
+    <div class="prose prose-invert">
+        <div class="markdown-body p-8 rounded-xl">
+            {{ .Content }}
+        </div>
+    </div>
+</div>
+{{ end }}

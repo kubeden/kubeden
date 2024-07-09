@@ -1,0 +1,88 @@
+name: Update API Deployment
+
+on:
+  workflow_run:
+    workflows: ["Build and Push API to DigitalOcean"]
+    types:
+      - completed
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - 'go/api/**'
+
+env:
+  DEPLOYMENT_FILE: gitops/argocd/applications/kubeden-api/deployment.yml
+
+jobs:
+  update-deployment:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'push' }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Get latest image tag
+      if: ${{ github.event_name == 'workflow_run' }}
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        workflow: build-push-api.yml
+        workflow_conclusion: success
+        name: image_tag
+
+    - name: Read image tag
+      if: ${{ github.event_name == 'workflow_run' }}
+      id: get_tag
+      run: echo "::set-output name=IMAGE_TAG::$(cat image_tag.txt)"
+
+    - name: Get latest successful run
+      if: ${{ github.event_name == 'push' }}
+      uses: actions/github-script@v6
+      id: get-latest-run
+      with:
+        script: |
+          const runs = await github.rest.actions.listWorkflowRuns({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            workflow_id: 'build-push-api.yml',
+            status: 'success',
+            per_page: 1
+          });
+          if (runs.data.workflow_runs.length > 0) {
+            return runs.data.workflow_runs[0].id;
+          }
+          return null;
+    
+    - name: Get latest image tag from successful run
+      if: ${{ github.event_name == 'push' && steps.get-latest-run.outputs.result != 'null' }}
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        workflow: build-push-api.yml
+        run_id: ${{ fromJson(steps.get-latest-run.outputs.result) }}
+        name: image_tag
+
+    - name: Read image tag from successful run
+      if: ${{ github.event_name == 'push' && steps.get-latest-run.outputs.result != 'null' }}
+      id: get_tag_from_run
+      run: echo "::set-output name=IMAGE_TAG::$(cat image_tag.txt)"
+
+    - name: Update deployment file
+      run: |
+        if [[ "${{ github.event_name }}" == "workflow_run" ]]; then
+          NEW_TAG="${{ steps.get_tag.outputs.IMAGE_TAG }}"
+        elif [[ "${{ github.event_name }}" == "push" ]]; then
+          NEW_TAG="${{ steps.get_tag_from_run.outputs.IMAGE_TAG }}"
+        fi
+        if [[ -n "$NEW_TAG" ]]; then
+          sed -i 's|image: registry.digitalocean.com/kubeden/kubeden-api:.*|image: registry.digitalocean.com/kubeden/kubeden-api:'$NEW_TAG'|' ${{ env.DEPLOYMENT_FILE }}
+        else
+          echo "No new image tag found. Skipping update."
+          exit 0
+        fi
+
+    - name: Commit and push changes
+      run: |
+        git config --global user.name 'GitHub Actions'
+        git config --global user.email 'actions@github.com'
+        git add ${{ env.DEPLOYMENT_FILE }}
+        git commit -m "Update image tag to $NEW_TAG" || echo "No changes to commit"
+        git push

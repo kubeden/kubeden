@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ .Title }}</title>
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+    </style>
+    <style>
+        .htmx-indicator {
+            display: none;
+        }
+        .htmx-request .htmx-indicator {
+            display: block;
+        }
+        .htmx-request.htmx-indicator {
+            display: block;
+        }
+    </style>
+    <link rel="stylesheet" href="/static/github-markdown-dark.css">
+</head>
+<body class="bg-black text-white">
+    <nav class="p-4">
+        <ul class="flex space-x-4">
+            <li><a href="/" class="hover:text-gray-300">Home</a></li>
+            <li><a href="/blog" class="hover:text-gray-300">Blog</a></li>
+            <li><a href="/info" class="hover:text-gray-300">Info</a></li>
+        </ul>
+    </nav>
+    <main class="container mx-auto p-4">
+        {{ template "content" . }}
+    </main>
+</body>
+</html>

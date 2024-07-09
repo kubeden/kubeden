@@ -1,0 +1,44 @@
+name: Build and Push API to DigitalOcean
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'go/api/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'go/api/**'
+
+env:
+  REGISTRY: registry.digitalocean.com
+  IMAGE_NAME: kubeden/kubeden-api
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Build container image
+      run: docker build -t $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7) -f go/api/Dockerfile go/api
+
+    - name: Install doctl
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+    - name: Log in to DigitalOcean Container Registry
+      run: doctl registry login --expiry-seconds 600
+
+    - name: Push image to DigitalOcean Container Registry
+      run: |
+        docker push $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
+        echo $GITHUB_SHA | head -c7 > image_tag.txt
+
+    - name: Upload image tag
+      uses: actions/upload-artifact@v2
+      with:
+        name: image_tag
+        path: image_tag.txt
