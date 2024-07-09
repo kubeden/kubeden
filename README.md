@@ -20,11 +20,13 @@ I have been mainly in operations through the years and I do not feel confident i
 - **Cloud:** [Azure](https://azure.microsoft.com/en-us), [AWS](https://aws.amazon.com/), [DigitalOcean](https://www.digitalocean.com/)
 - **CI/CD:** [Azure DevOps](https://azure.microsoft.com/en-us/products/devops), [Github Actions](https://docs.github.com/en/actions)
 - **Scripting:** [BASH](https://en.wikipedia.org/wiki/Bash_(Unix_shell)), [Python](https://www.python.org/)
+- probably more... will update in time
 
 ### Technologies I worked with but do not consider myself proficient at:
 
 - **Databases:** SQL, [Supabase](https://supabase.com/), [Firebase](https://firebase.google.com/), [MongoDB](https://www.mongodb.com/), [DynamoDB](https://aws.amazon.com/dynamodb/), [CosmosDB](https://azure.microsoft.com/en-us/products/cosmos-db)
 - **Programming Languages:** JavaScript ([Node](https://nodejs.org/en), [React-Native](https://reactnative.dev/), [Next](https://nextjs.org/), various other libraries), TypeScript (mainly JS with an :any and that's that), [Python](https://www.python.org/) (mainly scripting)
+- probably more... will update in time
 
 ### My Projects:
 
