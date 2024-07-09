@@ -23,12 +23,22 @@ type Article struct {
 	Content string `json:"content"`
 }
 
+type PersonalInfo struct {
+	Name        string `json:"name"`
+	Age         int    `json:"age"`
+	Location    string `json:"location"`
+	CurrentRole string `json:"current_role"`
+	Company     string `json:"company"`
+	Bio         string `json:"bio"`
+}
+
 var (
 	githubClient *github.Client
 	owner        string
 	repo         string
 	articleMap   map[int]string
 	titleMap     map[string]int
+	personalInfo PersonalInfo
 )
 
 func init() {
@@ -60,6 +70,15 @@ func init() {
 
 	if err := buildArticleMap(); err != nil {
 		log.Fatalf("Failed to build article map: %v", err)
+	}
+
+	personalInfo = PersonalInfo{
+		Name:        "Denislav Gavrilov (Dennis)",
+		Age:         25,
+		Location:    "Bulgaria",
+		CurrentRole: "Sr. Platform Engineer",
+		Company:     "SKF",
+		Bio:         "I have been mainly in operations through the years and I do not feel confident in my programming skills but I somehow manage to write code that is often shipped to production.",
 	}
 }
 
@@ -93,6 +112,7 @@ func main() {
 	r.HandleFunc("/articles", getArticles).Methods("GET")
 	r.HandleFunc("/article/{id:[0-9]+}", getArticleByID).Methods("GET")
 	r.HandleFunc("/article/{title}", getArticleByTitle).Methods("GET")
+	r.HandleFunc("/info", getInfo).Methods("GET") // New endpoint
 
 	log.Println("Server starting on port 8080...")
 	log.Fatal(http.ListenAndServe(":8080", r))
@@ -182,4 +202,9 @@ func fetchArticle(title string) (Article, error) {
 		Title:   articleTitle,
 		Content: strings.TrimSpace(articleContent),
 	}, nil
+}
+
+func getInfo(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(personalInfo)
 }
