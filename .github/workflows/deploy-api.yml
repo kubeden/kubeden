@@ -11,7 +11,7 @@ on:
       - 'go/api/**'
 
 env:
-  DEPLOYMENT_FILE: gitops/argocd/applications/kubeden-api/deployment.yml
+  DEPLOYMENT_FILE: kubernetes/argocd/applications/kubeden-api/deployment.yml
 
 jobs:
   update-deployment:

@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/kubeden/kubeden.git
     targetRevision: HEAD
-    path: gitops/argocd/applications/kubeden-client
+    path: kubernetes/argocd/applications/kubeden-client
   destination:
     server: https://kubernetes.default.svc
     namespace: kubeden-client
