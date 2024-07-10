@@ -9,12 +9,11 @@ spec:
     repoURL: https://github.com/kubeden/kubeden.git
     targetRevision: HEAD
     path: kubernetes/argocd/platform
-    directory:
-      recurse: true
-      jsonnet: {}
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
-  syncPolicy:
-    syncOptions:
-      - CreateNamespace=true
+  ignoreDifferences:
+    - group: argoproj.io
+      kind: Application
+      jsonPointers:
+        - /spec/source/targetRevision
