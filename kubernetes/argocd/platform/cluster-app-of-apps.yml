@@ -11,7 +11,9 @@ spec:
     path: kubernetes/argocd/platform
     directory:
       recurse: true
-      exclude: '**/cloudflare-sealed-secret.yaml'
+      exclude:
+        - '**/cloudflare-sealed-secret.yaml'
+        - '**/kustomization.yaml'
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
