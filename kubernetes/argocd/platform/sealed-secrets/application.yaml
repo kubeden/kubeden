@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://bitnami-labs.github.io
+    repoURL: https://bitnami-labs.github.io/sealed-secrets
     targetRevision: v2.16.0
     chart: sealed-secrets
     helm:
