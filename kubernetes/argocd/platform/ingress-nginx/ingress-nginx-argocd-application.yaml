@@ -13,6 +13,7 @@ spec:
       releaseName: ingress-nginx 
       values: |
         # Your custom values here
+        controller.publishService.enabled=true
   destination:
     server: https://kubernetes.default.svc
     namespace: nginx
