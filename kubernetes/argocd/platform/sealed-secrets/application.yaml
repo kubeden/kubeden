@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sealed-secrets
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://bitnami-labs.github.io
+    targetRevision: v2.16.0
+    chart: sealed-secrets
+    helm:
+      releaseName: sealed-secrets
+      valueFiles:
+        - https://raw.githubusercontent.com/kubeden/kubeden/main/kubernetes/argocd/platform/sealed-secrets/values-override.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: sealed-secrets
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true

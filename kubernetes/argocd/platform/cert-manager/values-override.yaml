@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://charts.jetstack.io
+    targetRevision: v1.13.3
+    chart: cert-manager
+    helm:
+      releaseName: cert-manager
+      valueFiles:
+        - https://raw.githubusercontent.com/kubeden/kubeden/main/kubernetes/argocd/platform/cert-manager/values-override.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cert-manager
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
