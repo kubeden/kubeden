@@ -10,11 +10,7 @@ spec:
     targetRevision: 4.9.0 # Replace with your desired version
     chart: ingress-nginx
     helm:
-      releaseName: ingress-nginx 
-      values: |
-        controller:
-          publishService:
-            enabled: true
+      releaseName: ingress-nginx
   destination:
     server: https://kubernetes.default.svc
     namespace: nginx

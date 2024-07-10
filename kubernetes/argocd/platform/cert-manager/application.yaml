@@ -11,32 +11,8 @@ spec:
     chart: cert-manager
     helm:
       releaseName: cert-manager
-      values: |
-        installCRDs: true
-        clusterIssuers:
-          - name: letsencrypt-staging
-            spec:
-              acme:
-                server: https://acme-staging-v02.api.letsencrypt.org/directory
-                email: dennis@kubeden.io  # Replace with your email
-                privateKeySecretRef:
-                  name: letsencrypt-staging
-                solvers:
-                - http01:
-                    ingress:
-                      class: nginx
-          - name: letsencrypt-prod
-            spec:
-              acme:
-                server: https://acme-v02.api.letsencrypt.org/directory
-                email: dennis@kubeden.io  # Replace with your email
-                privateKeySecretRef:
-                  name: letsencrypt-prod
-                solvers:
-                - http01:
-                    ingress:
-                      class: nginx
-
+      valueFiles:
+        - https://raw.githubusercontent.com/kubeden/kubeden/main/kubernetes/argocd/platform/cert-manager/values-override.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: cert-manager

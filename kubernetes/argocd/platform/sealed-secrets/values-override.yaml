@@ -17,7 +17,6 @@ rbac:
 
 secretName: "sealed-secrets-key"
 
-
 controller:
   replicas: 1
   logLevel: info
