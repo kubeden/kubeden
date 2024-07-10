@@ -9,6 +9,8 @@ spec:
     repoURL: https://github.com/kubeden/kubeden.git
     targetRevision: HEAD
     path: kubernetes/argocd/platform
+    directory:
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
