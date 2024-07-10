@@ -6,37 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://charts.jetstack.io
-    targetRevision: v1.13.3  # Replace with your desired version
-    chart: cert-manager
-    helm:
-      releaseName: cert-manager
-      values: |
-        installCRDs: true
-        clusterIssuers:
-          - name: letsencrypt-staging
-            spec:
-              acme:
-                server: https://acme-staging-v02.api.letsencrypt.org/directory
-                email: dennis@kubeden.io  # Replace with your email
-                privateKeySecretRef:
-                  name: letsencrypt-staging
-                solvers:
-                - http01:
-                    ingress:
-                      class: nginx
-          - name: letsencrypt-prod
-            spec:
-              acme:
-                server: https://acme-v02.api.letsencrypt.org/directory
-                email: dennis@kubeden.io  # Replace with your email
-                privateKeySecretRef:
-                  name: letsencrypt-prod
-                solvers:
-                - http01:
-                    ingress:
-                      class: nginx
-
+    repoURL: https://github.com/kubeden/kubeden.git
+    targetRevision: HEAD
+    path: kubernetes/argocd/platform/cert-manager/charts/cert-manager
   destination:
     server: https://kubernetes.default.svc
     namespace: cert-manager
