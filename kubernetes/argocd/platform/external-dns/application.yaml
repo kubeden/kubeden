@@ -11,8 +11,27 @@ spec:
     chart: external-dns
     helm:
       releaseName: external-dns
-      valueFiles:
-        - https://raw.githubusercontent.com/kubeden/kubeden/main/kubernetes/argocd/platform/external-dns/values-override.yaml
+      values: |
+        provider: cloudflare
+        cloudflare:
+          apiToken: $cloudflare-api-token:api-token
+          proxied: true  # Set to true if you want Cloudflare to proxy your traffic
+        txtOwnerId: "kubeden-k8s"  # A unique identifier for this ExternalDNS instance
+        policy: sync  # Use 'upsert-only' if you want to avoid ExternalDNS deleting records
+        sources:
+          - ingress
+        domainFilters:
+          - kubeden.io  # Replace with your domain
+        envFrom:
+          - secretRef:
+            name: cloudflare-api-token
+        annotationFilter: kubernetes.io/ingress.class=nginx
+        rbac:
+          create: true
+          clusterRole: true
+        serviceAccount:
+          create: true
+          name: external-dns
   destination:
     server: https://kubernetes.default.svc
     namespace: external-dns  # Or your preferred namespace
