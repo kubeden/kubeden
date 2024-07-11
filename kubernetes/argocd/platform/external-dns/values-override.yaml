@@ -7,7 +7,7 @@ policy: sync  # Use 'upsert-only' if you want to avoid ExternalDNS deleting reco
 sources:
   - ingress
 domainFilters:
-  - kubeden.io  # Replace with your domain
+  - kubedens.io  # Replace with your domain
 envFrom:
   - secretRef:
     name: cloudflare-api-token
