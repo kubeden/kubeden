@@ -14,9 +14,7 @@ spec:
       values: |
         provider: cloudflare
         cloudflare:
-          apiToken:
-            secretName: cloudflare-api-token
-            secretKey: api-token
+          secretName: cloudflare-api-token
           proxied: true  # Set to true if you want Cloudflare to proxy your traffic
         txtOwnerId: "kubeden-k8s"  # A unique identifier for this ExternalDNS instance
         policy: sync  # Use 'upsert-only' if you want to avoid ExternalDNS deleting records
