@@ -1,6 +1,6 @@
 provider: cloudflare
 cloudflare:
-  apiToken: ${CLOUDFLARE_API_TOKEN}
+  apiToken: $cloudflare-api-token:api-token
   proxied: true  # Set to true if you want Cloudflare to proxy your traffic
 txtOwnerId: "kubeden-k8s"  # A unique identifier for this ExternalDNS instance
 policy: sync  # Use 'upsert-only' if you want to avoid ExternalDNS deleting records
@@ -9,11 +9,8 @@ sources:
 domainFilters:
   - kubeden.io  # Replace with your domain
 envFrom:
-  - name: CLOUDFLARE_API_TOKEN
-    valueFrom:
-      secretKeyRef:
-        name: cloudflare-api-token
-        key: cloudflare-api-token
+  - secretRef:
+    name: cloudflare-api-token
 annotationFilter: kubernetes.io/ingress.class=nginx
 rbac:
   create: true
