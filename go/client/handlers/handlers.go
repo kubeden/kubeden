@@ -6,18 +6,34 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/kubeden/kubeden/go/client/utils"
-
 	"github.com/kubeden/kubeden/go/client/services"
+	"github.com/kubeden/kubeden/go/client/utils"
 
 	"github.com/gorilla/mux"
 )
 
 func HandleIndex(w http.ResponseWriter, r *http.Request) {
+	content, err := services.FetchGithubReadme("kubeden", "kubeden")
+	if err != nil {
+		http.Error(w, "Failed to fetch README.md from GitHub", http.StatusInternalServerError)
+		// console log the error
+		fmt.Println(err)
+		return
+	}
+
+	htmlContent := utils.MarkdownToHTML(content)
+
 	renderTemplate(w, "index", map[string]interface{}{
-		"Title": "Welcome",
+		"Title":   "Welcome",
+		"Content": template.HTML(htmlContent),
 	})
 }
+
+// func HandleIndex(w http.ResponseWriter, r *http.Request) {
+// 	renderTemplate(w, "index", map[string]interface{}{
+// 		"Title": "Welcome",
+// 	})
+// }
 
 func HandleBlog(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "blog", map[string]interface{}{

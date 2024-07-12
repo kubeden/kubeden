@@ -9,6 +9,27 @@ import (
 	"github.com/kubeden/kubeden/go/client/models"
 )
 
+func FetchGithubReadme(owner, repo string) (string, error) {
+	url := fmt.Sprintf("https://raw.githubusercontent.com/%s/%s/main/README.md", owner, repo)
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("failed to fetch README: %s", resp.Status)
+	}
+
+	content, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	return string(content), nil
+}
+
 func FetchInfo() (*models.Info, error) {
 	resp, err := http.Get("https://api.kubeden.io/info")
 	if err != nil {

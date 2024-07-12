@@ -6,6 +6,8 @@
     <title>{{ .Title }}</title>
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.6.1/github-markdown-light.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -22,18 +24,33 @@
             display: block;
         }
     </style>
-    <link rel="stylesheet" href="/static/github-markdown-dark.css">
 </head>
-<body class="bg-black text-white">
-    <nav class="p-4">
-        <ul class="flex space-x-4">
-            <li><a href="/" class="hover:text-gray-300">Home</a></li>
-            <li><a href="/blog" class="hover:text-gray-300">Blog</a></li>
-            <li><a href="/info" class="hover:text-gray-300">Info</a></li>
+<body class="text-white bg-stone-100">
+    <nav class="p-4 w-full bg-black sticky top-2 max-w-7xl m-auto rounded-md">
+        <ul class="flex max-w-7xl m-auto justify-between px-10">
+            <li>
+                <a class="text-base flex flex-row items-center justify-center gap-x-1" href="https://x.com/kubeden">
+                    <span class="fa-brands fa-x-twitter"></span>
+                    <span> / Kuberdenis</span>
+                    <img class="w-4 h-4" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Twitter_Verified_Badge.svg/1200px-Twitter_Verified_Badge.svg.png" alt="">
+                </a>
+            </li>
+            
+            <div class="flex flex-row gap-x-4">
+                <li><a href="/" class="hover:text-gray-300">Home</a></li>
+                <li><a href="/blog" class="hover:text-gray-300">Blog</a></li>
+                <li><a href="/info" class="hover:text-gray-300">Info</a></li>
+            </div>
         </ul>
     </nav>
-    <main class="container mx-auto p-4">
+    <main class="container mx-auto mt-4 max-w-7xl text-black">
         {{ template "content" . }}
     </main>
+    
+    <nav class="p-4 w-full bg-black my-2 max-w-7xl m-auto rounded-md">
+        <div class="flex max-w-7xl m-auto justify-center items-center px-10">
+            <a href="https://x.com/kubeden" class="fa-brands fa-x-twitter text-2xl"></a>
+        </div>
+    </nav>
 </body>
 </html>
