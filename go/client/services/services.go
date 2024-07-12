@@ -49,18 +49,9 @@ func FetchArticles() ([]models.Article, error) {
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
 	var articles []models.Article
-	err = json.Unmarshal(body, &articles)
-	if err != nil {
-		return nil, err
-	}
-
-	return articles, nil
+	err = json.NewDecoder(resp.Body).Decode(&articles)
+	return articles, err
 }
 
 func FetchArticle(id string) (*models.Article, error) {

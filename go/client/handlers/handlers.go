@@ -5,6 +5,8 @@ import (
 	"html/template"
 	"net/http"
 	"path/filepath"
+	"regexp"
+	"strings"
 
 	"github.com/kubeden/kubeden/go/client/services"
 	"github.com/kubeden/kubeden/go/client/utils"
@@ -16,7 +18,6 @@ func HandleIndex(w http.ResponseWriter, r *http.Request) {
 	content, err := services.FetchGithubReadme("kubeden", "kubeden")
 	if err != nil {
 		http.Error(w, "Failed to fetch README.md from GitHub", http.StatusInternalServerError)
-		// console log the error
 		fmt.Println(err)
 		return
 	}
@@ -29,16 +30,60 @@ func HandleIndex(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// func HandleIndex(w http.ResponseWriter, r *http.Request) {
-// 	renderTemplate(w, "index", map[string]interface{}{
-// 		"Title": "Welcome",
-// 	})
-// }
-
 func HandleBlog(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "blog", map[string]interface{}{
-		"Title": "Blog",
+		"Title": "GET api.kubeden.io/articles",
 	})
+}
+
+func HandleAPIArticles(w http.ResponseWriter, r *http.Request) {
+	articles, err := services.FetchArticles()
+	if err != nil {
+		http.Error(w, "Failed to fetch articles: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html")
+	var content strings.Builder
+	for _, article := range articles {
+		content.WriteString(fmt.Sprintf(`
+			<div class="bg-gray-800 rounded-md p-6 pb-10 mb-4 shadow-md relative">
+			<p class="absolute top-0 left-0 bg-black text-white px-2 py-1 text-xs rounded-md rounded-bl-none">ID: %d</p>
+			<a href="/article/%d" class="absolute bottom-0 right-0 bg-black px-4 py-1 rounded-md text-white rounded-tr-none">Read More</a>
+				<pre class="yaml-content"><code>
+title: |
+	<a href="/article/%d" class="hover:text-red-500 text-lime-500 font-bold text-xl">%s</a>
+
+content: |
+	%s</code></pre>
+			</div>
+		`,
+			article.ID,
+			article.ID,
+			article.ID,
+			article.Title,
+			truncateContent(article.Content, 200)))
+	}
+
+	fmt.Fprint(w, content.String())
+}
+
+func truncateContent(content string, length int) string {
+	space := regexp.MustCompile(`\s+`)
+	content = space.ReplaceAllString(content, " ")
+	content = strings.ReplaceAll(content, "#", "")
+
+	if len(content) <= length {
+		return content
+	}
+	truncated := content[:length]
+
+	lastSpace := strings.LastIndex(truncated, " ")
+	if lastSpace > 0 {
+		truncated = truncated[:lastSpace]
+	}
+
+	return truncated + "..."
 }
 
 func HandleSingleArticle(w http.ResponseWriter, r *http.Request) {
@@ -61,21 +106,8 @@ func HandleSingleArticle(w http.ResponseWriter, r *http.Request) {
 
 func HandleInfo(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "info", map[string]interface{}{
-		"Title": "Info",
+		"Title": "GET api.kubeden.io/info",
 	})
-}
-
-func HandleArticles(w http.ResponseWriter, r *http.Request) {
-	articles, err := services.FetchArticles()
-	if err != nil {
-		http.Error(w, "Failed to fetch articles", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "text/html")
-	for _, article := range articles {
-		fmt.Fprintf(w, "<div><h2><a href='/article/%d'>%s</a></h2></div>", article.ID, article.Title)
-	}
 }
 
 func HandleAPIInfo(w http.ResponseWriter, r *http.Request) {
@@ -87,15 +119,15 @@ func HandleAPIInfo(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/html")
 	infoHTML := fmt.Sprintf(`
-		<div class="space-y-4">
-			<h2 class="text-2xl font-bold">%s</h2>
-			<p><strong>Age:</strong> %d</p>
-			<p><strong>Location:</strong> %s</p>
-			<p><strong>Current Role:</strong> %s</p>
-			<p><strong>Company:</strong> %s</p>
-			<h3 class="text-xl font-semibold mt-4">Bio</h3>
-			<p>%s</p>
-		</div>
+		<pre class="yaml-content"><code>
+name: %s
+age: %d
+location: %s
+current_role: %s
+company: %s
+bio: |
+  %s
+		</code></pre>
 	`, info.Name, info.Age, info.Location, info.CurrentRole, info.Company, info.Bio)
 
 	fmt.Fprint(w, infoHTML)

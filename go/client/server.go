@@ -20,7 +20,7 @@ func main() {
 	r.HandleFunc("/article/{id}", handlers.HandleSingleArticle)
 	r.HandleFunc("/info", handlers.HandleInfo)
 
-	r.HandleFunc("/articles", handlers.HandleArticles)
+	r.HandleFunc("/api/articles", handlers.HandleAPIArticles) // Add this line
 	r.HandleFunc("/api/info", handlers.HandleAPIInfo)
 
 	fmt.Println("Server is running on http://localhost:8080")

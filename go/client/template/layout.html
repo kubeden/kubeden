@@ -8,6 +8,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.6.1/github-markdown-light.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -26,8 +30,8 @@
     </style>
 </head>
 <body class="text-white bg-stone-100">
-    <nav class="p-4 w-full bg-black sticky top-2 max-w-7xl m-auto rounded-md">
-        <ul class="flex max-w-7xl m-auto justify-between px-10">
+    <nav class="top-0 sticky md:top-2 p-4 w-full bg-black max-w-7xl m-auto rounded-none md:rounded-md z-10">
+        <ul class="flex max-w-7xl m-auto justify-between px-2 md:px-10">
             <li>
                 <a class="text-base flex flex-row items-center justify-center gap-x-1" href="https://x.com/kubeden">
                     <span class="fa-brands fa-x-twitter"></span>
@@ -43,11 +47,11 @@
             </div>
         </ul>
     </nav>
-    <main class="container mx-auto mt-4 max-w-7xl text-black">
+    <main class="container mx-auto mt-0 md:mt-0 max-w-7xl text-black">
         {{ template "content" . }}
     </main>
     
-    <nav class="p-4 w-full bg-black my-2 max-w-7xl m-auto rounded-md">
+    <nav class="p-2 md:p-4 w-full bg-black my-0 md:my-2 max-w-7xl m-auto rounded-none md:rounded-md">
         <div class="flex max-w-7xl m-auto justify-center items-center px-10">
             <a href="https://x.com/kubeden" class="fa-brands fa-x-twitter text-2xl"></a>
         </div>

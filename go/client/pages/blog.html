@@ -1,8 +1,64 @@
 {{ define "content" }}
-<h1 class="text-4xl mb-4">Blog Posts</h1>
-<div id="articles" hx-get="/articles" hx-trigger="load" hx-indicator="#loading">
-    <div id="loading" class="htmx-indicator">
-        Loading articles...
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+    <div class="flex gap-x-4 items-center mb-2">
+        <h1 class="text-3xl font-mono text-center text-gray-800">GET</h1>
+        <h2 class="text-2xl font-mono text-center text-blue-600 hover:text-blue-800 transition-colors duration-300">
+            <a href="https://api.kubeden.io/articles" target="_blank" rel="noopener noreferrer">
+                api.kubeden.io/articles
+            </a>
+        </h2>
+        
+        <div class="text-center">
+            <span class="bg-green-500 text-white text-sm font-semibold px-3 py-1 rounded-md">Public API</span>
+        </div>
+    </div>
+    <div class="mb-8 text-start text-gray-600">
+        <p>This API is public and can be freely accessed. No authentication required.</p>
+    </div>
+    
+    <div id="articles" 
+         hx-get="/api/articles" 
+         hx-trigger="load"
+         hx-indicator="#loading"
+         class="space-y-6">
+        <div id="loading" class="htmx-indicator flex justify-center items-center h-16">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-500"></div>
+        </div>
     </div>
 </div>
+
+<style>
+    .yaml-content {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #c7c7c7;
+        background-color: transparent;
+        border: none;
+        margin: 0;
+        padding: 0;
+    }
+    .yaml-content code {
+        display: block;
+        white-space: pre-wrap;
+    }
+</style>
+
+<script>
+    document.body.addEventListener('htmx:afterSwap', function(event) {
+        if (event.detail.target.id === 'articles') {
+            const articlesElement = event.detail.target;
+            const articleCards = articlesElement.children;
+            
+            Array.from(articleCards).forEach((card, index) => {
+                card.style.opacity = '0';
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        }
+    });
+</script>
 {{ end }}

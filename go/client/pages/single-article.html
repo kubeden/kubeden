@@ -1,8 +1,8 @@
 {{ define "content" }}
 <div id="article">
-    <h1 class="text-4xl mb-4 p-8">{{ .Title }}</h1>
+    <h1 class="text-4xl tracking-wide mb-2 p-8 font-bold bg-black rounded-md text-white">{{ .Title }}</h1>
     <div class="prose prose-invert">
-        <div class="markdown-body p-8 rounded-xl">
+        <div class="markdown-body p-8 rounded-md">
             {{ .Content }}
         </div>
     </div>
