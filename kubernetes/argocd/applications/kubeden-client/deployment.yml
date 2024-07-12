@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: kubeden-client
-        image: registry.digitalocean.com/kubeden/kubeden-client:798e46c
+        image: registry.digitalocean.com/kubeden/kubeden-client:4579a24
         ports:
         - containerPort: 8080
         env:
