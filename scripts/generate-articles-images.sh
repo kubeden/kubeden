@@ -24,7 +24,7 @@ sanitize_title() {
 wrap_text() {
     local text="$1"
     local max_width=30  # Adjust this value to change the wrapping width
-    echo "$text" | fold -s -w $max_width | sed ':a;N;$!ba;s/\n/\\n/g'
+    echo "$text" | fold -s -w $max_width
 }
 
 # Loop through all Markdown files in the articles directory
@@ -43,15 +43,28 @@ for article in "$ARTICLES_DIR"/*.md; do
     # Sanitize the title for use in the output filename
     sanitized_title=$(sanitize_title "$title")
     
-    # Wrap and escape the title for ffmpeg
+    # Wrap the title
     wrapped_title=$(wrap_text "$title")
-    escaped_title=$(echo "$wrapped_title" | sed 's/[\\:*?"<>|]//g' | sed "s/'/'\\\\\\''/g")
+    
+    # Prepare the drawtext filters
+    drawtext_filters=""
+    line_count=$(echo "$wrapped_title" | wc -l)
+    current_line=1
+    while IFS= read -r line; do
+        escaped_line=$(echo "$line" | sed 's/[\\:*?"<>|]//g' | sed "s/'/'\\\\\\''/g")
+        y_position=$(awk "BEGIN {print 540 - ($line_count - 1) * 40 + ($current_line - 1) * 80}")
+        drawtext_filters="${drawtext_filters}drawtext=fontfile='$FONT_PATH':fontsize=80:fontcolor=white:x=(w-tw)/2:y=$y_position:text='$escaped_line',"
+        ((current_line++))
+    done <<< "$wrapped_title"
+    
+    # Add the website text
+    drawtext_filters="${drawtext_filters}drawtext=fontfile='$FONT_PATH':fontsize=40:fontcolor=white:x=(w-tw)/2:y=h-th-50:text='x.com/kubeden'"
+    
+    # Remove the trailing comma
+    drawtext_filters=${drawtext_filters%,}
     
     # Create the image using ffmpeg with wrapped text
-    ffmpeg -y -f lavfi -i color=c=black:s=1920x1080 -vf \
-    "drawtext=fontfile='$FONT_PATH':fontsize=90:fontcolor=white:x=(w-tw)/2:y=(h-th)/2:text='$escaped_title':box=1:boxcolor=black@0.5:boxborderw=5,\
-    drawtext=fontfile='$FONT_PATH':fontsize=40:fontcolor=white:x=(w-tw)/2:y=h-th-50:text='kubeden.io; geeklore.io'" \
-    -frames:v 1 "$OUTPUT_DIR/${sanitized_title}.png"
+    ffmpeg -y -f lavfi -i color=c=black:s=1920x1080 -vf "$drawtext_filters" -frames:v 1 "$OUTPUT_DIR/${sanitized_title}.png"
     
     if [ $? -eq 0 ]; then
         echo "Generated image for: $title"
