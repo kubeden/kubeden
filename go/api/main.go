@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/kubeden/kubeden/go/api/handlers"
 	"github.com/kubeden/kubeden/go/api/services"
@@ -25,6 +26,10 @@ func main() {
 	r.HandleFunc("/article/{id:[0-9]+}", handlers.GetArticleByID).Methods("GET")
 	r.HandleFunc("/article/{title}", handlers.GetArticleByTitle).Methods("GET")
 	r.HandleFunc("/info", handlers.GetInfo).Methods("GET")
+
+	// Serve images
+	imagesDir := filepath.Join(filepath.Dir(os.Args[0]), "..", "images")
+	r.PathPrefix("/images/").Handler(http.StripPrefix("/images/", http.FileServer(http.Dir(imagesDir))))
 
 	port := os.Getenv("PORT")
 	if port == "" {

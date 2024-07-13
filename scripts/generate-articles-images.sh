@@ -15,11 +15,6 @@ if [ ! -f "$FONT_PATH" ]; then
     exit 1
 fi
 
-# Function to sanitize the title
-sanitize_title() {
-    echo "$1" | sed -e 's/[^A-Za-z0-9._-]/_/g' | tr -s '_' | tr '[:upper:]' '[:lower:]'
-}
-
 # Function to wrap text
 wrap_text() {
     local text="$1"
@@ -39,9 +34,6 @@ for article in "$ARTICLES_DIR"/*.md; do
     if [ -z "$title" ]; then
         title=$filename
     fi
-    
-    # Sanitize the title for use in the output filename
-    sanitized_title=$(sanitize_title "$title")
     
     # Wrap the title
     wrapped_title=$(wrap_text "$title")
@@ -64,12 +56,12 @@ for article in "$ARTICLES_DIR"/*.md; do
     drawtext_filters=${drawtext_filters%,}
     
     # Create the image using ffmpeg with wrapped text
-    ffmpeg -y -f lavfi -i color=c=black:s=1920x1080 -vf "$drawtext_filters" -frames:v 1 "$OUTPUT_DIR/${sanitized_title}.png"
+    ffmpeg -y -f lavfi -i color=c=black:s=1920x1080 -vf "$drawtext_filters" -frames:v 1 "$OUTPUT_DIR/${filename}.png"
     
     if [ $? -eq 0 ]; then
-        echo "Generated image for: $title"
+        echo "Generated image for: $title (File: ${filename}.png)"
     else
-        echo "Failed to generate image for: $title"
+        echo "Failed to generate image for: $title (File: ${filename}.png)"
     fi
 done
 

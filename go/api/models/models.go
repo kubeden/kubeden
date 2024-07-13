@@ -1,9 +1,10 @@
 package models
 
 type Article struct {
-	ID      int    `json:"id"`
-	Title   string `json:"title"`
-	Content string `json:"content"`
+	ID        int    `json:"id"`
+	Title     string `json:"title"`
+	Content   string `json:"content"`
+	ImagePath string `json:"image_path"`
 }
 
 type PersonalInfo struct {

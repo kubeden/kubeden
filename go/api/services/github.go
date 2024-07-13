@@ -121,9 +121,24 @@ func FetchArticle(title string) (models.Article, error) {
 	articleTitle := strings.TrimPrefix(lines[0], "# ")
 	articleContent := strings.Join(lines[1:], "\n")
 
+	sanitizedTitle := sanitizeTitle(title)
+	imageURL := fmt.Sprintf("https://raw.githubusercontent.com/%s/%s/main/images/%s.png", owner, repo, sanitizedTitle)
+
 	return models.Article{
-		ID:      TitleMap[title],
-		Title:   articleTitle,
-		Content: strings.TrimSpace(articleContent),
+		ID:        TitleMap[title],
+		Title:     articleTitle,
+		Content:   strings.TrimSpace(articleContent),
+		ImagePath: imageURL,
 	}, nil
+}
+
+func sanitizeTitle(title string) string {
+	sanitized := strings.Map(func(r rune) rune {
+		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '-' || r == '_' {
+			return r
+		}
+		return '_'
+	}, title)
+
+	return strings.ToLower(sanitized)
 }
