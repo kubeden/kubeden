@@ -1,2 +1,5 @@
+.terraform
+.terraform.lock.hcl
 .env
+*.tfstate
 cloudflare-secret.yaml
