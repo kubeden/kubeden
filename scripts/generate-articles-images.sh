@@ -4,9 +4,16 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ARTICLES_DIR="$SCRIPT_DIR/../articles"
 OUTPUT_DIR="$SCRIPT_DIR/../images"
+FONT_PATH="$SCRIPT_DIR/RobotoMono-Regular.ttf"
 
 # Create the output directory if it doesn't exist
 mkdir -p "$OUTPUT_DIR"
+
+# Check if the font file exists
+if [ ! -f "$FONT_PATH" ]; then
+    echo "Error: Font file not found at $FONT_PATH"
+    exit 1
+fi
 
 # Function to sanitize the title
 sanitize_title() {
@@ -42,9 +49,9 @@ for article in "$ARTICLES_DIR"/*.md; do
     
     # Create the image using ffmpeg with wrapped text
     ffmpeg -y -f lavfi -i color=c=black:s=1920x1080 -vf \
-    "drawtext=fontfile=/RobotoMono-Regular.ttf:fontsize=90:fontcolor=white:x=(w-tw)/2:y=(h-th)/2:text='$escaped_title':box=1:boxcolor=black@0.5:boxborderw=5,\
-    drawtext=fontfile=/RobotoMono-Regular.ttf:fontsize=40:fontcolor=white:x=(w-tw)/2:y=h-th-50:text='x.com/kubeden'" \
-    "$OUTPUT_DIR/${sanitized_title}.png"
+    "drawtext=fontfile='$FONT_PATH':fontsize=90:fontcolor=white:x=(w-tw)/2:y=(h-th)/2:text='$escaped_title':box=1:boxcolor=black@0.5:boxborderw=5,\
+    drawtext=fontfile='$FONT_PATH':fontsize=40:fontcolor=white:x=(w-tw)/2:y=h-th-50:text='kubeden.io; geeklore.io'" \
+    -frames:v 1 "$OUTPUT_DIR/${sanitized_title}.png"
     
     if [ $? -eq 0 ]; then
         echo "Generated image for: $title"
