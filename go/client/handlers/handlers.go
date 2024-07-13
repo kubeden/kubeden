@@ -99,8 +99,9 @@ func HandleSingleArticle(w http.ResponseWriter, r *http.Request) {
 	htmlContent := utils.MarkdownToHTML(article.Content)
 
 	renderTemplate(w, "single-article", map[string]interface{}{
-		"Title":   article.Title,
-		"Content": template.HTML(htmlContent),
+		"Title":     article.Title,
+		"Content":   template.HTML(htmlContent),
+		"ImagePath": article.ImagePath,
 	})
 }
 

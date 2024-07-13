@@ -1,4 +1,6 @@
 {{ define "content" }}
+<meta name="twitter:description" content="{{ .Description }}">
+
 <div id="article">
     <h1 class="text-4xl tracking-wide mb-2 p-8 font-bold bg-black rounded-md rounded-t-none md:rounded-t-md text-white">{{ .Title }}</h1>
     <div class="prose prose-invert">
@@ -7,6 +9,18 @@
         </div>
     </div>
 </div>
+{{ end }}
 
-
+<!-- block declaration meta -->
+{{ define "meta" }}
+    {{ if .ImagePath }}
+        <meta property="og:image" content="{{ .ImagePath }}">
+        <meta name="twitter:image" content="{{ .ImagePath }}">
+    {{ end }}
+    <meta property="og:title" content="{{ .Title }}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ .CurrentURL }}">
+    <meta property="og:description" content="{{ .Description }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ .Title }}">
 {{ end }}
