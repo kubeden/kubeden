@@ -1,6 +1,6 @@
 # Simple And Fully Automated Kubernetes Bootstrapping with DigitalOcean & Cloudflare
 
-This is a straight to the point practical post about bootstrapping a Kubernetes cluster into a fully functional production environment using DigitalOcean and Cloudflare.
+This is a straight to the point practical article about bootstrapping a Kubernetes cluster into a fully functional production environment using DigitalOcean and Cloudflare.
 
 All of the files here are also available on my [Github repository](https://github.com/kubeden/kubeden) so you can use it as a mirror / template to compare to.
 
