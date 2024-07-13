@@ -1,0 +1,32 @@
+name: Generate Article Images
+
+on:
+  push:
+    paths:
+      - 'articles/**'
+
+jobs:
+  generate-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Make script executable
+        run: chmod +x scripts/generate-articles-images.sh
+
+      - name: Generate images
+        run: ./scripts/generate-articles-images.sh
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.email 'actions@github.com'
+          git config --global user.name 'GitHub Actions'
+          git add images/
+          git commit -m "Generate article images" || echo "No changes to commit"
+          git push
