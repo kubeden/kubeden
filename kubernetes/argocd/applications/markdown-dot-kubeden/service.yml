@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: markdown-dot-kubeden-service
+spec:
+  selector:
+    app: markdown-dot-kubeden
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000

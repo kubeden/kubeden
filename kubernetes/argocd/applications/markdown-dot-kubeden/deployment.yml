@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: markdown-dot-kubeden
+  labels:
+    app: markdown-dot-kubeden
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: markdown-dot-kubeden
+  template:
+    metadata:
+      labels:
+        app: markdown-dot-kubeden
+    spec:
+      containers:
+      - name: markdown-dot-kubeden
+        image: registry.digitalocean.com/kubeden/markdown-dot-kubeden:latest
+        ports:
+        - containerPort: 3000
