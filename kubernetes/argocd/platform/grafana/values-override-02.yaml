@@ -17,3 +17,25 @@ ingress:
 persistence:
   enabled: true
   size: 5Gi
+
+grafana.ini:
+  rendering:
+    server_url: http://grafana-image-renderer:8081/render
+    callback_url: http://grafana.kubeden.io/
+
+plugins:
+  - grafana-image-renderer
+
+imageRenderer:
+  enabled: true
+  replicas: 1
+  service:
+    enabled: true
+    portName: 'http'
+    port: 8081
+
+sidecar:
+  datasources:
+    enabled: true
+  dashboards:
+    enabled: true
