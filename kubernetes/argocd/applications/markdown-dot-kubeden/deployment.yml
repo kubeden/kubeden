@@ -19,3 +19,9 @@ spec:
         image: registry.digitalocean.com/kubeden/markdown-dot-kubeden:latest
         ports:
         - containerPort: 3000
+        env:
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: mongodb-uri
