@@ -107,7 +107,7 @@ export default function Home() {
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <Head>
-        <title>Markdown Editor</title>
+        <title>KUBERDENIS' Markdown Editor</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
