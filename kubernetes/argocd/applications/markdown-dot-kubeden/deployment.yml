@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: markdown-dot-kubeden
-        image: registry.digitalocean.com/kubeden/markdown-dot-kubeden:latest
+        image: registry.digitalocean.com/kubeden/markdown-dot-kubeden:17b7a4b
         ports:
         - containerPort: 3000
         env:
