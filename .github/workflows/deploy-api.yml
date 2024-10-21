@@ -5,10 +5,6 @@ on:
     workflows: ["Build and Push API to DigitalOcean"]
     types:
       - completed
-  push:
-    branches: [ main ]
-    paths-ignore:
-      - 'go/api/**'
 
 env:
   DEPLOYMENT_FILE: kubernetes/argocd/applications/kubeden-api/deployment.yml
