@@ -35,6 +35,6 @@ I have been mainly in operations through the years and I do not feel confident i
 - [kubeden.io](https://kubeden.io): My baby project and personal blog. Built entirely for my own satisfaction with Golang, hosted on an ArgoCD Kubernetes cluster with CI/CD enabled.
 
 ### My Links:
-- X/Twitter: [x.com/kubeden](x.com/kubeden)
-- Youtube: [yt.com/@kubeden](https://youtube.com/@kubeden)
+- X/Twitter: [x.com/kubeden](x.com/kuberdenis)
+- Youtube: [yt.com/@kubeden](https://youtube.com/@kuberdenis)
 - Geeklore Profile: [@kubeden](https://www.geeklore.io/profiles/7)
