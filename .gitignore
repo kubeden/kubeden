@@ -3,3 +3,6 @@
 .env
 *.tfstate
 cloudflare-secret.yaml
+.empyrea
+
+*-secret.yml
