@@ -20,6 +20,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: horizon.md
+            name: horizon-md
             port: 
               number: 80
