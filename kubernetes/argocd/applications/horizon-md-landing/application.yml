@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: horizon-md
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/kubeden/kubeden.git
+    targetRevision: HEAD
+    path: kubernetes/argocd/applications/horizon-md-landing
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: horizon-md
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true

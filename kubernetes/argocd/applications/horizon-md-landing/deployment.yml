@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: horizon-md
+  namespace: horizon-md
+  labels:
+    app: horizon-md
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: horizon-md
+  template:
+    metadata:
+      labels:
+        app: horizon-md
+    spec:
+      containers:
+      - name: horizon-md
+        image: registry.digitalocean.com/kubeden/horizon-md/landing:latest
+        ports:
+        - containerPort: 80
