@@ -1,0 +1,18 @@
+# application.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: horizon-laravel
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/kubeden/kubeden.git
+    targetRevision: HEAD
+    path: kubernetes/argocd/applications/horizon-laravel
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: horizon-laravel
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
