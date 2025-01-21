@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/kuberdenis/elonlist.git
+    repoURL: https://github.com/kubeden/kubeden.git
     targetRevision: HEAD
     path: kubernetes/argocd/applications/elonlist
   destination:
