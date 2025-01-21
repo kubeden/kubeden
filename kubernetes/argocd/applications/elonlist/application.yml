@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: elonlist
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/your-repo/elonlist.git
+    targetRevision: HEAD
+    path: kubernetes/argocd/applications/elonlist
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: elonlist
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
