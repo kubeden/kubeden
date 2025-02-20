@@ -1,10 +1,9 @@
 {{ define "content" }}
-<meta name="twitter:description" content="{{ .Description }}">
 
-<div id="article">
-    <h1 class="text-4xl tracking-wide mb-2 p-8 font-bold bg-black rounded-md rounded-t-none md:rounded-t-md text-white m-6">{{ .Title }}</h1>
+<div id="article" class="pt-4 px-1.5">
+    <h1 class="text-4xl tracking-wide mb-2 px-6 py-8 md:px-12 md:py-8 font-bold bg-black rounded-md text-white m-2 md:m-6 mt-0 md:mt-0">{{ .Title }}</h1>
     <div class="prose prose-invert">
-        <div class="markdown-body p-8 rounded-md">
+        <div class="markdown-body px-3 md:px-12 py-3 md:py-8 rounded-md">
             {{ .Content }}
         </div>
     </div>
@@ -23,4 +22,5 @@
     <meta property="og:description" content="{{ .Description }}">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ .Title }}">
+    <meta name="twitter:description" content="{{ .Description }}">
 {{ end }}
