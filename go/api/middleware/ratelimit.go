@@ -25,8 +25,8 @@ func NewIPRateLimiter() *IPRateLimiter {
 	irl := &IPRateLimiter{
 		ips:     make(map[string]*rate.Limiter),
 		mu:      &sync.RWMutex{},
-		rate:    rate.Limit(9.0 / 60.0), // 9 requests per minute
-		burst:   3,                      // Max burst of 3
+		rate:    rate.Limit(40.0 / 60.0), // 9 requests per minute
+		burst:   3,                       // Max burst of 3
 		cleanup: time.NewTicker(10 * time.Minute),
 	}
 
