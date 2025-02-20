@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/kubeden/kubeden/go/api/handlers"
+	"github.com/kubeden/kubeden/go/api/middleware"
 	"github.com/kubeden/kubeden/go/api/services"
 
 	"github.com/gorilla/mux"
@@ -21,7 +22,15 @@ func main() {
 		log.Fatalf("Failed to build article map: %v", err)
 	}
 
+	// Create a new rate limiter
+	rateLimiter := middleware.NewIPRateLimiter()
+	defer rateLimiter.Stop()
+
 	r := mux.NewRouter()
+
+	// Apply rate limiting to all routes
+	r.Use(rateLimiter.RateLimit)
+
 	r.HandleFunc("/articles", handlers.GetArticles).Methods("GET")
 	r.HandleFunc("/article/{id:[0-9]+}", handlers.GetArticleByID).Methods("GET")
 	r.HandleFunc("/article/{title}", handlers.GetArticleByTitle).Methods("GET")

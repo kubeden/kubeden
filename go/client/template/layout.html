@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,8 +10,11 @@
 
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.6.1/github-markdown-light.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.6.1/github-markdown-light.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
@@ -24,40 +28,50 @@
         .htmx-indicator {
             display: none;
         }
+
         .htmx-request .htmx-indicator {
             display: block;
         }
+
         .htmx-request.htmx-indicator {
             display: block;
         }
     </style>
 </head>
-<body class="text-white bg-stone-100">
-    <nav class="top-0 sticky md:top-2 p-4 w-full bg-black max-w-7xl m-auto rounded-none md:rounded-md z-10">
-        <ul class="flex max-w-7xl m-auto justify-between px-2 md:px-10">
-            <li>
-                <a class="text-base flex flex-row items-center justify-center gap-x-1" href="https://x.com/kubeden">
-                    <span class="fa-brands fa-x-twitter"></span>
-                    <span> / Kuberdenis</span>
-                    <img class="w-4 h-4" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Twitter_Verified_Badge.svg/1200px-Twitter_Verified_Badge.svg.png" alt="">
-                </a>
-            </li>
-            
-            <div class="flex flex-row gap-x-4">
-                <li><a href="/" class="hover:text-gray-300">Home</a></li>
-                <li><a href="/blog" class="hover:text-gray-300">Blog</a></li>
-                <li><a href="/info" class="hover:text-gray-300">Info</a></li>
-            </div>
-        </ul>
+
+<body class="text-stone-100 bg-black">
+    <nav class="top-0 sticky flex flex-col -mb-5 z-10">
+        <div class="p-4 w-full bg-black max-w-full m-auto z-10 pb-6">
+            <ul class="flex max-w-7xl m-auto justify-between px-5">
+                <li>
+                    <a class="text-base flex flex-row items-center justify-center gap-x-1 font-bold" href="/">
+                        <span>Denislav Gavrilov</span>
+                    </a>
+                </li>
+
+                <div class="flex flex-row gap-x-4">
+                    <li><a href="/" class="hover:text-gray-300">Home</a></li>
+                    <li><a href="/blog" class="hover:text-gray-300">Blog</a></li>
+                    <li><a href="/info" class="hover:text-gray-300">Info</a></li>
+                </div>
+            </ul>
+        </div>
     </nav>
-    <main class="container mx-auto mt-0 md:mt-0 max-w-7xl text-black">
-        {{ template "content" . }}
+    <main class="container mx-auto mt-0 md:mt-0 max-w-full text-black p-8 pt-0 rounded-xl">
+        <div class="bg-stone-50 w-full m-auto rounded-t-xl bottom-1 relative max-w-7xl px-8 pt-3 sticky top-14 z-10 border-4 border-b-0 border-blue-500"></div>
+        <div class="border-4 border-blue-500 max-w-7xl m-auto bg-stone-50">
+            {{ template "content" . }}
+        </div>
+        <div class="flex flex-col bg-black pb-4 sticky bottom-0 relative max-w-7xl w-full m-auto -mt-4">
+            <div class="bg-stone-50 rounded-b-xl px-8 pt-3 z-10 relative bottom-0 border-4 border-t-0 border-blue-500"></div>
+        </div>
     </main>
-    
-    <nav class="p-2 md:p-4 w-full bg-black my-0 md:my-2 max-w-7xl m-auto rounded-none md:rounded-md">
-        <div class="flex max-w-7xl m-auto justify-center items-center px-10">
-            <a href="https://x.com/kubeden" class="fa-brands fa-x-twitter text-2xl"></a>
+
+    <nav class="p-2 w-full bg-black pb-12 max-w-7xl m-auto rounded-none md:rounded-md">
+        <div class="flex max-w-7xl m-auto justify-center items-center px-10 py-48">
+            <p>~ - ~</p>
         </div>
     </nav>
 </body>
+
 </html>
