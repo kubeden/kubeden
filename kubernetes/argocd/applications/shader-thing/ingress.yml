@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shader-thing-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    external-dns.alpha.kubernetes.io/hostname: wasmplay.kubeden.io
+spec:
+  tls:
+  - hosts:
+    - wasmplay.kubeden.io
+    secretName: shader-thing-tls
+  rules:
+  - host: wasmplay.kubeden.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: shader-thing-service
+            port: 
+              number: 80
