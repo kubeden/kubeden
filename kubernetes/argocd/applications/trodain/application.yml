@@ -11,7 +11,7 @@ spec:
     path: kubernetes/argocd/applications/trodain
   destination:
     server: https://kubernetes.default.svc
-    namespace: trodain
+    namespace: argocd
   syncPolicy:
     syncOptions:
     - CreateNamespace=true
