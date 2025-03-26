@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: trodain-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    external-dns.alpha.kubernetes.io/hostname: trodain.com
+spec:
+  tls:
+  - hosts:
+    - trodain.com
+    secretName: trodain-tls
+  rules:
+  - host: trodain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: trodain-service
+            port: 
+              number: 80

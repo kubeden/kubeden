@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trodain
+  labels:
+    app: trodain
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trodain
+  template:
+    metadata:
+      labels:
+        app: trodain
+    spec:
+      containers:
+      - name: trodain
+        image: registry.digitalocean.com/kubeden/trodain:latest
+        ports:
+        - containerPort: 3000
