@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trodain-editor
+  labels:
+    app: trodain-editor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trodain-editor
+  template:
+    metadata:
+      labels:
+        app: trodain-editor
+    spec:
+      containers:
+      - name: trodain-editor
+        image: registry.digitalocean.com/kubeden/trodain-editor:latest
+        ports:
+        - containerPort: 3000

@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: markdown-dot-kubeden
+  name: boardchan
   labels:
-    app: markdown-dot-kubeden
+    app: boardchan
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: markdown-dot-kubeden
+      app: boardchan
   template:
     metadata:
       labels:
-        app: markdown-dot-kubeden
+        app: boardchan
     spec:
       containers:
-      - name: markdown-dot-kubeden
-        image: registry.digitalocean.com/kubeden/markdown-dot-kubeden:17b7a4b
+      - name: boardchan
+        image: registry.digitalocean.com/kubeden/boardchan:17b7a4b
         ports:
         - containerPort: 3000
         env:

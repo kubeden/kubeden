@@ -1,10 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: elonlist-service
+  name: boardchan-service
+  namespace: boardchan
 spec:
   selector:
-    app: elonlist
+    app: boardchan
   ports:
     - protocol: TCP
       port: 80

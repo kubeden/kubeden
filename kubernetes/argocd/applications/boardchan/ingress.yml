@@ -1,24 +1,24 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: elonlist-ingress
+  name: boardchan-ingress
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    external-dns.alpha.kubernetes.io/hostname: elonlist.com
+    external-dns.alpha.kubernetes.io/hostname: boardchan.com
 spec:
   tls:
   - hosts:
-    - elonlist.com
-    secretName: elonlist-tls
+    - boardchan.com
+    secretName: boardchan-client-tls
   rules:
-  - host: elonlist.com
+  - host: boardchan.com
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: elonlist-service
+            name: boardchan-service
             port: 
               number: 80
