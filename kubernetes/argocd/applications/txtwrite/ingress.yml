@@ -5,7 +5,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    external-dns.alpha.kubernetes.io/hostname: txtwrite.com
+    external-dns.alpha.kubernetes.io/hostname: txtwrite.com, www.txtwrite.com
     
     # Cookie and session handling
     nginx.ingress.kubernetes.io/affinity: "cookie"
@@ -38,9 +38,20 @@ spec:
   tls:
   - hosts:
     - txtwrite.com
+    - www.txtwrite.com
     secretName: txtwrite-tls
   rules:
   - host: txtwrite.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: txtwrite-service
+            port: 
+              number: 80
+  - host: www.txtwrite.com
     http:
       paths:
       - path: /
