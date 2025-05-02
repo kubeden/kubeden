@@ -1,0 +1,26 @@
+# Redirect Ingress for www.txtwrite.com to txtwrite.com
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: txtwrite-www-redirect
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    external-dns.alpha.kubernetes.io/hostname: www.txtwrite.com
+    nginx.ingress.kubernetes.io/permanent-redirect: https://txtwrite.com$request_uri
+spec:
+  tls:
+  - hosts:
+    - www.txtwrite.com
+    secretName: txtwrite-www-tls
+  rules:
+  - host: www.txtwrite.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: txtwrite-service
+            port:
+              number: 80
