@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: trodain-editor
+  name: txtwrite
   labels:
-    app: trodain-editor
+    app: txtwrite
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: trodain-editor
+      app: txtwrite
   template:
     metadata:
       labels:
-        app: trodain-editor
+        app: txtwrite
     spec:
       containers:
-      - name: trodain-editor
-        image: registry.digitalocean.com/kubeden/trodain-editor:latest
+      - name: txtwrite
+        image: registry.digitalocean.com/kubeden/txtwrite:latest
         ports:
         - containerPort: 3000

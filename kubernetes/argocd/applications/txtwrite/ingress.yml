@@ -1,15 +1,15 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: trodain-editor-ingress
+  name: txtwrite-ingress
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    external-dns.alpha.kubernetes.io/hostname: md.trodain.com
+    external-dns.alpha.kubernetes.io/hostname: txtwrite.com
     
     # Cookie and session handling
     nginx.ingress.kubernetes.io/affinity: "cookie"
-    nginx.ingress.kubernetes.io/session-cookie-name: "trodain-editor-cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "txtwrite-cookie"
     nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
     nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
@@ -37,16 +37,16 @@ metadata:
 spec:
   tls:
   - hosts:
-    - md.trodain.com
-    secretName: trodain-editor-tls
+    - txtwrite.com
+    secretName: txtwrite-tls
   rules:
-  - host: md.trodain.com
+  - host: txtwrite.com
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: trodain-editor-service
+            name: txtwrite-service
             port: 
               number: 80

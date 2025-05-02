@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: trodain-editor
+  name: txtwrite
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/kubeden/kubeden.git
     targetRevision: HEAD
-    path: kubernetes/argocd/applications/trodain-editor
+    path: kubernetes/argocd/applications/txtwrite
   destination:
     server: https://kubernetes.default.svc
-    namespace: trodain-editor
+    namespace: txtwrite
   syncPolicy:
     syncOptions:
     - CreateNamespace=true

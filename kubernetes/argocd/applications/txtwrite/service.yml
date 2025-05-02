@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: trodain-editor-service
+  name: txtwrite-service
 spec:
   selector:
-    app: trodain-editor
+    app: txtwrite
   ports:
     - protocol: TCP
       port: 80
