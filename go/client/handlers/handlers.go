@@ -47,10 +47,10 @@ func HandleAPIArticles(w http.ResponseWriter, r *http.Request) {
 	var content strings.Builder
 	for _, article := range articles {
 		content.WriteString(fmt.Sprintf(`
-			<div class="bg-gray-800 rounded-md p-6 pb-10 mb-4 shadow-md relative">
+			<div class="bg-gray-100 rounded-md p-6 pb-10 mb-4 relative text-black">
 			<p class="absolute top-0 left-0 bg-black text-white px-2 py-1 text-xs rounded-md rounded-bl-none">ID: %d</p>
 			<a href="/article/%d" class="absolute bottom-0 right-0 bg-black px-4 py-1 rounded-md text-white rounded-tr-none">Read More</a>
-				<pre class="yaml-content"><code>
+				<pre class="yaml-content !text-black"><code>
 title: |
 	<a href="/article/%d" class="hover:text-red-500 text-lime-500 font-bold text-xl">%s</a>
 
@@ -120,7 +120,7 @@ func HandleAPIInfo(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/html")
 	infoHTML := fmt.Sprintf(`
-		<pre class="yaml-content"><code>
+		<pre class="yaml-content text-black"><code>
 name: %s
 age: %d
 location: %s
