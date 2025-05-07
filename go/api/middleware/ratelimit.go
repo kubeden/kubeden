@@ -130,6 +130,8 @@ func (irl *IPRateLimiter) RateLimit(next http.Handler) http.Handler {
 		w.Header().Set("X-RateLimit-Limit", fmt.Sprintf("%d", int(irl.rate*60)))
 		w.Header().Set("X-RateLimit-Remaining", fmt.Sprintf("%d", remaining))
 
+		// asd
+
 		next.ServeHTTP(w, r)
 	})
 }
