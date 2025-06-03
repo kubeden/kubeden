@@ -1,15 +1,15 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: trodain-ingress
+  name: notate-ingress
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    external-dns.alpha.kubernetes.io/hostname: trodain.com
+    external-dns.alpha.kubernetes.io/hostname: notate.so
     
     # Cookie and session handling
     nginx.ingress.kubernetes.io/affinity: "cookie"
-    nginx.ingress.kubernetes.io/session-cookie-name: "trodain-cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "notate-cookie"
     nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
     nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
@@ -37,16 +37,16 @@ metadata:
 spec:
   tls:
   - hosts:
-    - trodain.com
-    secretName: trodain-tls
+    - notate.so
+    secretName: notate-tls
   rules:
-  - host: trodain.com
+  - host: notate.so
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: trodain-service
+            name: notate-service
             port: 
               number: 80

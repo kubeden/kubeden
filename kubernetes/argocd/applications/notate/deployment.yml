@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: trodain
+  name: notate
   labels:
-    app: trodain
+    app: notate
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: trodain
+      app: notate
   template:
     metadata:
       labels:
-        app: trodain
+        app: notate
     spec:
       containers:
-      - name: trodain
-        image: registry.digitalocean.com/kubeden/trodain:latest
+      - name: notate
+        image: registry.digitalocean.com/kubeden/notate:latest
         ports:
         - containerPort: 3000
