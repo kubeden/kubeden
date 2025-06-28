@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: notate
-        image: registry.digitalocean.com/kubeden/notate:latest
+        image: registry.digitalocean.com/kubeden/notate:latest-asd
         ports:
         - containerPort: 3000
