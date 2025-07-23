@@ -5,7 +5,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    external-dns.alpha.kubernetes.io/hostname: notate.so
+    external-dns.alpha.kubernetes.io/hostname: notate.so,www.notate.so
     
     # Cookie and session handling
     nginx.ingress.kubernetes.io/affinity: "cookie"
@@ -38,9 +38,20 @@ spec:
   tls:
   - hosts:
     - notate.so
+    - www.notate.so
     secretName: notate-tls
   rules:
   - host: notate.so
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: notate-service
+            port: 
+              number: 80
+  - host: www.notate.so
     http:
       paths:
       - path: /
