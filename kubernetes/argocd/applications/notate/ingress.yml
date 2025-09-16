@@ -40,6 +40,8 @@ metadata:
       if ($host = 'www.notate.so') {
         return 301 https://notate.so$request_uri;
       }
+      large_client_header_buffers 8 64k;
+      client_header_buffer_size 64k;
 spec:
   tls:
   - hosts:
