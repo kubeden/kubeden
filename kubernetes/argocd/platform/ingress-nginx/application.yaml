@@ -11,6 +11,10 @@ spec:
     chart: ingress-nginx
     helm:
       releaseName: ingress-nginx
+      values: |
+        controller:
+          config:
+            allow-snippet-annotations: 'true'
   destination:
     server: https://kubernetes.default.svc
     namespace: nginx
