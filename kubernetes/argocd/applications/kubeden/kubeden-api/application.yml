@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/kubeden/kubeden/kubeden.git
+    repoURL: https://github.com/kubeden/kubeden.git
     targetRevision: HEAD
-    path: kubernetes/argocd/applications/kubeden-api
+    path: kubernetes/argocd/applications/kubeden/kubeden-api
   destination:
     server: https://kubernetes.default.svc
     namespace: kubeden-api
