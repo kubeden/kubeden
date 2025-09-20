@@ -7,15 +7,16 @@ spec:
   project: default
   source:
     repoURL: https://github.com/kubeden/kubeden.git
-    targetRevision: main
+    targetRevision: HEAD
     path: kubernetes/argocd/applications/kubeden/app-of-apps
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
   syncPolicy:
-    automated:
+    manual:
       prune: true
       selfHeal: true
+      autoCreateNamespace: true
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -26,7 +27,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/kubeden/kubeden.git
-    targetRevision: main
+    targetRevision: HEAD
     path: kubernetes/argocd/applications/kubeden/kubeden-client
   destination:
     server: https://kubernetes.default.svc
@@ -45,7 +46,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/kubeden/kubeden.git
-    targetRevision: main
+    targetRevision: HEAD
     path: kubernetes/argocd/applications/kubeden/kubeden-api
   destination:
     server: https://kubernetes.default.svc
