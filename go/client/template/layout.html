@@ -40,7 +40,7 @@
 </head>
 
 <body class="text-black bg-gray-50">
-    <nav class="top-0 sticky flex flex-col z-10 bg-gray-50 py-4 px-0 md:px-7 border-b">
+    <nav class="top-0 sticky flex flex-col z-10 bg-gray-50 py-4 px-0 md:px-7 border-b max-w-5xl m-auto border-s border-e">
         <div class="p-0 w-full bg-gray-50 max-w-full m-auto z-10">
             <ul class="flex max-w-full m-auto justify-between px-3 md:px-4">
                 <li>
@@ -52,12 +52,12 @@
                 <div class="flex flex-row gap-x-4">
                     <li><a href="/" class="hover:text-stone-700">Home</a></li>
                     <li><a href="/blog" class="hover:text-stone-700">Blog</a></li>
-                    <li><a href="/info" class="hover:text-stone-700">Info</a></li>
+                    <!-- <li><a href="/info" class="hover:text-stone-700">Info</a></li> -->
                 </div>
             </ul>
         </div>
     </nav>
-    <main class="container max-w-full ms-auto text-black">
+    <main class="container max-w-5xl mx-auto text-black border-s border-e">
         <div class="max-w-full ms-auto bg-stone-50">
             {{ template "content" . }}
         </div>
