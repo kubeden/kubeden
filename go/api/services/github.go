@@ -1,17 +1,17 @@
 package services
 
 import (
-	"context"
-	"encoding/base64"
-	"fmt"
-	"os"
-	"sort"
-	"strings"
+    "context"
+    "encoding/base64"
+    "fmt"
+    "os"
+    "sort"
+    "strings"
 
-	"github.com/kubeden/kubeden/go/api/models"
+    "github.com/kubeden/kubeden/go/api/models"
 
-	"github.com/google/go-github/v39/github"
-	"golang.org/x/oauth2"
+    "github.com/google/go-github/v39/github"
+    "golang.org/x/oauth2"
 )
 
 var (
@@ -24,28 +24,30 @@ var (
 )
 
 func InitGitHubClient() error {
-	token := os.Getenv("GITHUB_TOKEN")
-	if token == "" {
-		return fmt.Errorf("GITHUB_TOKEN environment variable is not set")
-	}
+    token := os.Getenv("GITHUB_TOKEN")
 
-	owner = os.Getenv("GITHUB_OWNER")
-	if owner == "" {
-		return fmt.Errorf("GITHUB_OWNER environment variable is not set")
-	}
+    owner = os.Getenv("GITHUB_OWNER")
+    if owner == "" {
+        return fmt.Errorf("GITHUB_OWNER environment variable is not set")
+    }
 
-	repo = os.Getenv("GITHUB_REPO")
-	if repo == "" {
-		return fmt.Errorf("GITHUB_REPO environment variable is not set")
-	}
+    repo = os.Getenv("GITHUB_REPO")
+    if repo == "" {
+        return fmt.Errorf("GITHUB_REPO environment variable is not set")
+    }
 
-	ctx := context.Background()
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: token},
-	)
-	tc := oauth2.NewClient(ctx, ts)
+    ctx := context.Background()
 
-	githubClient = github.NewClient(tc)
+    if token != "" {
+        ts := oauth2.StaticTokenSource(
+            &oauth2.Token{AccessToken: token},
+        )
+        tc := oauth2.NewClient(ctx, ts)
+        githubClient = github.NewClient(tc)
+    } else {
+        // Fallback to unauthenticated client for public repositories
+        githubClient = github.NewClient(nil)
+    }
 
 	ArticleMap = make(map[int]string)
 	TitleMap = make(map[string]int)
@@ -59,7 +61,7 @@ func InitGitHubClient() error {
 		Bio:         "I have been mainly in operations through the years and I do not feel confident in my programming skills but I somehow manage to write code that is often shipped to production.",
 	}
 
-	return nil
+    return nil
 }
 
 func BuildArticleMap() error {
