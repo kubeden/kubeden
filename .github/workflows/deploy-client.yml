@@ -7,7 +7,7 @@ on:
       - completed
 
 env:
-  DEPLOYMENT_FILE: kubernetes/argocd/applications/kubeden-client/deployment.yml
+  DEPLOYMENT_FILE: kubernetes/argocd/applications/kubeden/kubeden-client/deployment.yml
 
 jobs:
   update-deployment:
