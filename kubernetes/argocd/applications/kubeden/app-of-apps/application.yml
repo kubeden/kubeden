@@ -1,0 +1,56 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kubeden-app-of-apps
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/kubeden/kubeden.git
+    targetRevision: main
+    path: kubernetes/argocd/applications/kubeden/app-of-apps
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kubeden-client
+  namespace: kubeden-client
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/kubeden/kubeden.git
+    targetRevision: main
+    path: kubernetes/argocd/applications/kubeden/kubeden-client
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kubeden-client
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kubeden-api
+  namespace: kubeden-api
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/kubeden/kubeden.git
+    targetRevision: main
+    path: kubernetes/argocd/applications/kubeden/kubeden-api
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kubeden-api
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kubeden-api
+  name: kubeden-client
   labels:
-    app: kubeden-api
+    app: kubeden-client
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: kubeden-api
+      app: kubeden-client
   template:
     metadata:
       labels:
-        app: kubeden-api
+        app: kubeden-client
     spec:
       containers:
-      - name: kubeden-api
-        image: registry.digitalocean.com/kubeden/kubeden-api:f0fc79e
+      - name: kubeden-client
+        image: registry.digitalocean.com/kubeden/kubeden-client:2270519
         ports:
         - containerPort: 8080
         env:
