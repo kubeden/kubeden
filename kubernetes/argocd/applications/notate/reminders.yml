@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: notate-reminders-runner
-  namespace: default
+  namespace: argocd
 spec:
   schedule: "*/15 * * * *"
   concurrencyPolicy: Forbid
