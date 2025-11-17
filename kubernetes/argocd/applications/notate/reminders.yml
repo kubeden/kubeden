@@ -2,8 +2,9 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: notate-reminders-runner
+  namespace: default
 spec:
-  schedule: "*/15 * * * *" # every 15 minutes
+  schedule: "*/15 * * * *"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3
@@ -16,13 +17,12 @@ spec:
           containers:
             - name: runner
               image: curlimages/curl:8.5.0
+              command: ["/bin/sh", "-c"]
               args:
-                - -sS
-                - -X
-                - POST
-                - -H
-                - x-cron-secret: $(REMINDERS_CRON_SECRET)
-                - $(REMINDERS_RUN_URL)
+                - |
+                  curl -sS -X POST \
+                    -H "x-cron-secret: ${REMINDERS_CRON_SECRET}" \
+                    "${REMINDERS_RUN_URL}"
               env:
                 - name: REMINDERS_CRON_SECRET
                   valueFrom:
