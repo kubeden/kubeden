@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: notate-reminders-runner
+spec:
+  schedule: "*/15 * * * *" # every 15 minutes
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: runner
+              image: curlimages/curl:8.5.0
+              args:
+                - -sS
+                - -X
+                - POST
+                - -H
+                - x-cron-secret: $(REMINDERS_CRON_SECRET)
+                - $(REMINDERS_RUN_URL)
+              env:
+                - name: REMINDERS_CRON_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: reminders-cron-secret
+                      key: secret
+                - name: REMINDERS_RUN_URL
+                  value: "https://notate.so/api/reminders/run-due"
