@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kubeden-unemployment
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/kubeden/kubeden.git
+    targetRevision: HEAD
+    path: kubernetes/argocd/applications/kubeden/kubeden-unemployment
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kubeden-unemployment
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true

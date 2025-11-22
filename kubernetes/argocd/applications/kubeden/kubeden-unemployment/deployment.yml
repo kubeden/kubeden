@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubeden-unemployment
+  labels:
+    app: kubeden-unemployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kubeden-unemployment
+  template:
+    metadata:
+      labels:
+        app: kubeden-unemployment
+    spec:
+      containers:
+      - name: kubeden-unemployment
+        image: registry.digitalocean.com/kubeden/kubeden-unemployment:latest
+        ports:
+        - containerPort: 80

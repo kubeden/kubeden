@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kubeden-unemployment-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    external-dns.alpha.kubernetes.io/hostname: unemployment.kubeden.io
+spec:
+  tls:
+  - hosts:
+    - unemployment.kubeden.io
+    secretName: unemployment-kubeden-tls
+  rules:
+  - host: unemployment.kubeden.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kubeden-unemployment-service
+            port: 
+              number: 80

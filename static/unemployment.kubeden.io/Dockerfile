@@ -1,0 +1,1 @@
+## Dockerfile for static html into nginx container on container port 80
