@@ -1,1 +1,6 @@
-## Dockerfile for static html into nginx container on container port 80
+FROM nginx:alpine
+
+# Serve the provided static page via nginx on port 80
+COPY index.html /usr/share/nginx/html/index.html
+
+EXPOSE 80
