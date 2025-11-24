@@ -25,8 +25,8 @@ func NewIPRateLimiter() *IPRateLimiter {
 	irl := &IPRateLimiter{
 		ips:     make(map[string]*rate.Limiter),
 		mu:      &sync.RWMutex{},
-		rate:    rate.Limit(40.0 / 60.0), // 9 requests per minute
-		burst:   3,                       // Max burst of 3
+		rate:    rate.Limit(100.0 / 60.0), // 100 requests per minute per IP
+		burst:   100,                      // Allow short bursts up to the minute quota
 		cleanup: time.NewTicker(10 * time.Minute),
 	}
 
@@ -47,39 +47,23 @@ func (irl *IPRateLimiter) cleanupRoutine() {
 }
 
 func (irl *IPRateLimiter) extractIP(r *http.Request) string {
-	// Check X-Forwarded-For header first
-	forwarded := r.Header.Get("X-Forwarded-For")
-	if forwarded != "" {
-		// Get the first IP in the list
-		ips := strings.Split(forwarded, ",")
-		if len(ips) > 0 {
-			clientIP := strings.TrimSpace(ips[0])
-			if ip := net.ParseIP(clientIP); ip != nil {
-				return ip.String()
-			}
+	// Prefer headers that carry the original client IP when behind proxies/CDN
+	headerCandidates := []string{
+		r.Header.Get("CF-Connecting-IP"),
+		r.Header.Get("True-Client-IP"),
+		r.Header.Get("X-Forwarded-For"), // First entry is the client
+		r.Header.Get("X-Real-IP"),
+	}
+
+	for _, raw := range headerCandidates {
+		if ip := parseIPFromList(raw); ip != "" {
+			return ip
 		}
 	}
 
-	// Check X-Real-IP header
-	if realIP := r.Header.Get("X-Real-IP"); realIP != "" {
-		if ip := net.ParseIP(realIP); ip != nil {
-			return ip.String()
-		}
-	}
-
-	// Fall back to RemoteAddr
-	ip, _, err := net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		// If SplitHostPort fails, try RemoteAddr directly
-		if parsedIP := net.ParseIP(r.RemoteAddr); parsedIP != nil {
-			return parsedIP.String()
-		}
-		return "unknown" // Fallback value if everything fails
-	}
-
-	// Validate the extracted IP
-	if parsedIP := net.ParseIP(ip); parsedIP != nil {
-		return parsedIP.String()
+	// Fall back to remote address
+	if ip := normalizeIP(r.RemoteAddr); ip != "" {
+		return ip
 	}
 
 	return "unknown"
@@ -96,6 +80,38 @@ func (irl *IPRateLimiter) GetLimiter(ip string) *rate.Limiter {
 	}
 
 	return limiter
+}
+
+func parseIPFromList(raw string) string {
+	if raw == "" {
+		return ""
+	}
+
+	for _, candidate := range strings.Split(raw, ",") {
+		if ip := normalizeIP(strings.TrimSpace(candidate)); ip != "" {
+			return ip
+		}
+	}
+
+	return ""
+}
+
+func normalizeIP(raw string) string {
+	if raw == "" {
+		return ""
+	}
+
+	if ip := net.ParseIP(raw); ip != nil {
+		return ip.String()
+	}
+
+	if host, _, err := net.SplitHostPort(raw); err == nil {
+		if ip := net.ParseIP(host); ip != nil {
+			return ip.String()
+		}
+	}
+
+	return ""
 }
 
 func (irl *IPRateLimiter) RateLimit(next http.Handler) http.Handler {
