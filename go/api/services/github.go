@@ -11,6 +11,7 @@ import (
 	"github.com/kubeden/kubeden/go/api/models"
 
 	"github.com/google/go-github/v39/github"
+	"golang.org/x/oauth2"
 )
 
 var (
@@ -34,7 +35,14 @@ func InitGitHubClient() error {
 		return fmt.Errorf("GITHUB_REPO environment variable is not set")
 	}
 
-	githubClient = github.NewClient(nil)
+	token := os.Getenv("GITHUB_TOKEN")
+	if token != "" {
+		tokenSource := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token})
+		client := oauth2.NewClient(context.Background(), tokenSource)
+		githubClient = github.NewClient(client)
+	} else {
+		githubClient = github.NewClient(nil)
+	}
 
 	ArticleMap = make(map[int]string)
 	TitleMap = make(map[string]int)

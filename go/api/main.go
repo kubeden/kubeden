@@ -22,8 +22,8 @@ func main() {
 		log.Fatalf("Failed to build article map: %v", err)
 	}
 
-	// Create a new rate limiter
-	rateLimiter := middleware.NewIPRateLimiter()
+	// Create a new global rate limiter
+	rateLimiter := middleware.NewGlobalRateLimiter()
 	defer rateLimiter.Stop()
 
 	r := mux.NewRouter()
