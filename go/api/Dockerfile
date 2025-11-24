@@ -4,13 +4,14 @@ FROM golang:1.18-alpine AS builder
 WORKDIR /app
 
 # Copy module files
-COPY go/api/go.mod go/api/go.sum ./
+COPY go.mod ./
+COPY go.sum ./
 
 # Download dependencies
 RUN go mod download
 
 # Copy source plus local content
-COPY go/api/. .
+COPY . .
 COPY articles ./articles
 COPY images ./images
 
