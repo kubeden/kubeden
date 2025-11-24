@@ -1,48 +1,29 @@
 package services
 
 import (
-	"context"
-	"encoding/base64"
 	"fmt"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 
 	"github.com/kubeden/kubeden/go/api/models"
-
-	"github.com/google/go-github/v39/github"
-	"golang.org/x/oauth2"
 )
 
 var (
-	githubClient *github.Client
-	owner        string
-	repo         string
 	ArticleMap   map[int]string
 	TitleMap     map[string]int
 	PersonalInfo models.PersonalInfo
+
+	articlesDir string
 )
 
-func InitGitHubClient() error {
-
-	owner = os.Getenv("GITHUB_OWNER")
-	if owner == "" {
-		return fmt.Errorf("GITHUB_OWNER environment variable is not set")
+func InitContentStore() error {
+	dir, err := resolveArticlesDir()
+	if err != nil {
+		return err
 	}
-
-	repo = os.Getenv("GITHUB_REPO")
-	if repo == "" {
-		return fmt.Errorf("GITHUB_REPO environment variable is not set")
-	}
-
-	token := os.Getenv("GITHUB_TOKEN")
-	if token != "" {
-		tokenSource := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token})
-		client := oauth2.NewClient(context.Background(), tokenSource)
-		githubClient = github.NewClient(client)
-	} else {
-		githubClient = github.NewClient(nil)
-	}
+	articlesDir = dir
 
 	ArticleMap = make(map[int]string)
 	TitleMap = make(map[string]int)
@@ -59,17 +40,62 @@ func InitGitHubClient() error {
 	return nil
 }
 
+func resolveArticlesDir() (string, error) {
+	candidates := []string{
+		os.Getenv("ARTICLES_DIR"),
+		filepath.Join(".", "articles"),
+		filepath.Join("..", "articles"),
+	}
+
+	if exePath, err := os.Executable(); err == nil {
+		exeDir := filepath.Dir(exePath)
+		candidates = append(candidates,
+			filepath.Join(exeDir, "articles"),
+			filepath.Join(exeDir, "..", "articles"),
+		)
+	}
+
+	seen := make(map[string]struct{})
+	for _, path := range candidates {
+		if path == "" {
+			continue
+		}
+
+		abs, err := filepath.Abs(path)
+		if err != nil {
+			continue
+		}
+
+		if _, ok := seen[abs]; ok {
+			continue
+		}
+		seen[abs] = struct{}{}
+
+		if info, err := os.Stat(abs); err == nil && info.IsDir() {
+			return abs, nil
+		}
+	}
+
+	return "", fmt.Errorf("articles directory not found; set ARTICLES_DIR")
+}
+
 func BuildArticleMap() error {
-	ctx := context.Background()
-	_, dirContent, _, err := githubClient.Repositories.GetContents(ctx, owner, repo, "articles", nil)
+	if articlesDir == "" {
+		return fmt.Errorf("articles directory is not initialized")
+	}
+
+	files, err := os.ReadDir(articlesDir)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to read articles directory %s: %w", articlesDir, err)
 	}
 
 	var titles []string
-	for _, file := range dirContent {
-		if strings.HasSuffix(*file.Name, ".md") {
-			titles = append(titles, strings.TrimSuffix(*file.Name, ".md"))
+	for _, file := range files {
+		if file.IsDir() {
+			continue
+		}
+		if strings.HasSuffix(file.Name(), ".md") {
+			titles = append(titles, strings.TrimSuffix(file.Name(), ".md"))
 		}
 	}
 
@@ -103,26 +129,31 @@ func FetchArticles() ([]models.Article, error) {
 }
 
 func FetchArticle(title string) (models.Article, error) {
-	ctx := context.Background()
-	fileContent, _, _, err := githubClient.Repositories.GetContents(ctx, owner, repo, fmt.Sprintf("articles/%s.md", title), nil)
-	if err != nil {
-		return models.Article{}, err
+	if articlesDir == "" {
+		return models.Article{}, fmt.Errorf("articles directory is not initialized")
 	}
 
-	content, err := base64.StdEncoding.DecodeString(*fileContent.Content)
+	articlePath := filepath.Join(articlesDir, fmt.Sprintf("%s.md", title))
+	content, err := os.ReadFile(articlePath)
 	if err != nil {
-		return models.Article{}, err
+		return models.Article{}, fmt.Errorf("failed to read article %q: %w", title, err)
 	}
 
 	lines := strings.Split(string(content), "\n")
+	if len(lines) == 0 {
+		return models.Article{}, fmt.Errorf("article %q is empty", title)
+	}
+
 	articleTitle := strings.TrimPrefix(lines[0], "# ")
 	articleContent := strings.Join(lines[1:], "\n")
 
 	sanitizedTitle := sanitizeTitle(title)
-	imageURL := fmt.Sprintf("https://raw.githubusercontent.com/%s/%s/main/images/%s.png", owner, repo, sanitizedTitle)
+	imageURL := fmt.Sprintf("/images/%s.png", sanitizedTitle)
+
+	id := TitleMap[title]
 
 	return models.Article{
-		ID:        TitleMap[title],
+		ID:        id,
 		Title:     articleTitle,
 		Content:   strings.TrimSpace(articleContent),
 		ImagePath: imageURL,

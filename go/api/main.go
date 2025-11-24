@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -14,8 +15,8 @@ import (
 )
 
 func main() {
-	if err := services.InitGitHubClient(); err != nil {
-		log.Fatalf("Failed to initialize GitHub client: %v", err)
+	if err := services.InitContentStore(); err != nil {
+		log.Fatalf("Failed to initialize content store: %v", err)
 	}
 
 	if err := services.BuildArticleMap(); err != nil {
@@ -37,7 +38,10 @@ func main() {
 	r.HandleFunc("/info", handlers.GetInfo).Methods("GET")
 
 	// Serve images
-	imagesDir := filepath.Join(filepath.Dir(os.Args[0]), "..", "images")
+	imagesDir, err := resolveImagesDir()
+	if err != nil {
+		log.Fatalf("Failed to locate images directory: %v", err)
+	}
 	r.PathPrefix("/images/").Handler(http.StripPrefix("/images/", http.FileServer(http.Dir(imagesDir))))
 
 	port := os.Getenv("PORT")
@@ -47,4 +51,41 @@ func main() {
 
 	log.Printf("Server starting on port %s...\n", port)
 	log.Fatal(http.ListenAndServe(":"+port, r))
+}
+
+func resolveImagesDir() (string, error) {
+	candidates := []string{
+		os.Getenv("IMAGES_DIR"),
+		filepath.Join(".", "images"),
+		filepath.Join("..", "images"),
+	}
+
+	if exePath, err := os.Executable(); err == nil {
+		exeDir := filepath.Dir(exePath)
+		candidates = append(candidates,
+			filepath.Join(exeDir, "images"),
+			filepath.Join(exeDir, "..", "images"),
+		)
+	}
+
+	seen := make(map[string]struct{})
+	for _, path := range candidates {
+		if path == "" {
+			continue
+		}
+		abs, err := filepath.Abs(path)
+		if err != nil {
+			continue
+		}
+		if _, ok := seen[abs]; ok {
+			continue
+		}
+		seen[abs] = struct{}{}
+
+		if info, err := os.Stat(abs); err == nil && info.IsDir() {
+			return abs, nil
+		}
+	}
+
+	return "", fmt.Errorf("images directory not found; set IMAGES_DIR")
 }

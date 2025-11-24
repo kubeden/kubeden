@@ -1,30 +1,31 @@
 # Start from the official golang image
 FROM golang:1.18-alpine AS builder
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy go mod and sum files
-COPY go.mod go.sum* ./
+# Copy module files
+COPY go/api/go.mod go/api/go.sum ./
 
-# Download all dependencies
+# Download dependencies
 RUN go mod download
 
-# Copy the source code into the container
-COPY . .
+# Copy source plus local content
+COPY go/api/. .
+COPY articles ./articles
+COPY images ./images
 
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
-# Start a new stage from scratch
-FROM alpine:latest  
+FROM alpine:latest
 
 RUN apk --no-cache add ca-certificates
 
-WORKDIR /root/
+WORKDIR /app
 
-# Copy the pre-built binary file from the previous stage
+# Copy the pre-built binary and local assets
 COPY --from=builder /app/main .
+COPY --from=builder /app/articles ./articles
+COPY --from=builder /app/images ./images
 
-# Command to run the executable
 CMD ["./main"]
