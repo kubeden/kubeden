@@ -17,6 +17,6 @@ spec:
       containers:
       - name: txtwrite
         image: registry.digitalocean.com/kubeden/txtwrite:latest
-        command: ["deno", "task", "dev", "--", "--host", "0.0.0.0", "--port", "4173", "--strictPort"]
+        command: ["deno","run","-A","npm:vite","preview","--host","0.0.0.0","--port","4173","--strictPort"]
         ports:
         - containerPort: 4173
