@@ -49,18 +49,18 @@ func HandleAPIArticles(w http.ResponseWriter, r *http.Request) {
 		content.WriteString(fmt.Sprintf(`
 			<div class="bg-gray-100 rounded-md p-6 pb-10 mb-4 relative text-black">
 			<p class="absolute top-0 left-0 bg-black text-white px-2 py-1 text-xs rounded-md rounded-bl-none">ID: %d</p>
-			<a href="/article/%d" class="absolute bottom-0 right-0 bg-black px-4 py-1 rounded-md text-white rounded-tr-none">Read More</a>
+			<a href="/article/%s" class="absolute bottom-0 right-0 bg-black px-4 py-1 rounded-md text-white rounded-tr-none">Read More</a>
 				<pre class="yaml-content !text-black"><code>
 title: |
-	<a href="/article/%d" class="hover:text-red-500 text-lime-500 font-bold text-xl">%s</a>
+	<a href="/article/%s" class="hover:text-red-500 text-lime-500 font-bold text-xl">%s</a>
 
 content: |
 	%s</code></pre>
 			</div>
 		`,
 			article.ID,
-			article.ID,
-			article.ID,
+			article.Slug,
+			article.Slug,
 			article.Title,
 			truncateContent(article.Content, 200)))
 	}
@@ -88,9 +88,9 @@ func truncateContent(content string, length int) string {
 
 func HandleSingleArticle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	articleID := vars["id"]
+	slug := vars["slug"]
 
-	article, err := services.FetchArticle(articleID)
+	article, err := services.FetchArticle(slug)
 	if err != nil {
 		http.Error(w, "Failed to fetch article", http.StatusInternalServerError)
 		return

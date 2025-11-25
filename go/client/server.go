@@ -17,7 +17,7 @@ func main() {
 
 	r.HandleFunc("/", handlers.HandleIndex)
 	r.HandleFunc("/blog", handlers.HandleBlog)
-	r.HandleFunc("/article/{id}", handlers.HandleSingleArticle)
+	r.HandleFunc("/article/{slug}", handlers.HandleSingleArticle)
 	r.HandleFunc("/info", handlers.HandleInfo)
 
 	r.HandleFunc("/api/articles", handlers.HandleAPIArticles) // Add this line

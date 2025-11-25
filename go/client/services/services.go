@@ -54,8 +54,8 @@ func FetchArticles() ([]models.Article, error) {
 	return articles, err
 }
 
-func FetchArticle(id string) (*models.Article, error) {
-	resp, err := http.Get(fmt.Sprintf("https://api.kubeden.io/article/%s", id))
+func FetchArticle(slug string) (*models.Article, error) {
+	resp, err := http.Get(fmt.Sprintf("https://api.kubeden.io/article/%s", slug))
 	if err != nil {
 		return nil, err
 	}

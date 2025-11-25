@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"hash/crc32"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -99,6 +101,8 @@ func BuildArticleMap() error {
 		return fmt.Errorf("articles directory is not initialized")
 	}
 
+	gitRoot := findGitRoot(articlesDir)
+
 	ArticleMap = make(map[int]string)
 	TitleMap = make(map[string]int)
 	articleBySlug = make(map[string]ArticleMetadata)
@@ -119,12 +123,11 @@ func BuildArticleMap() error {
 			continue
 		}
 
-		info, err := os.Stat(filepath.Join(articlesDir, file.Name()))
-		if err != nil {
+		path := filepath.Join(articlesDir, file.Name())
+		if _, err := os.Stat(path); err != nil {
 			return fmt.Errorf("failed to inspect file %s: %w", file.Name(), err)
 		}
 
-		path := filepath.Join(articlesDir, file.Name())
 		titleText, err := extractTitle(path)
 		if err != nil {
 			return fmt.Errorf("failed to parse title from %s: %w", file.Name(), err)
@@ -142,7 +145,7 @@ func BuildArticleMap() error {
 			Slug:     slug,
 			FileName: file.Name(),
 			Title:    titleText,
-			ModTime:  info.ModTime(),
+			ModTime:  fileModTime(path, gitRoot),
 		}
 
 		if _, exists := articleBySlug[slug]; exists {
@@ -250,6 +253,60 @@ func extractTitle(path string) (string, error) {
 	}
 
 	return "", fmt.Errorf("title not found")
+}
+
+func fileModTime(path, gitRoot string) time.Time {
+	if gitRoot != "" {
+		if ts, err := gitLastCommitTime(gitRoot, path); err == nil {
+			return ts
+		}
+	}
+
+	if info, err := os.Stat(path); err == nil {
+		return info.ModTime()
+	}
+
+	return time.Now()
+}
+
+func gitLastCommitTime(gitRoot, path string) (time.Time, error) {
+	relPath, err := filepath.Rel(gitRoot, path)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	cmd := exec.Command("git", "log", "-1", "--format=%ct", "--", relPath)
+	cmd.Dir = gitRoot
+	out, err := cmd.Output()
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	seconds, err := strconv.ParseInt(strings.TrimSpace(string(out)), 10, 64)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	return time.Unix(seconds, 0), nil
+}
+
+func findGitRoot(start string) string {
+	dir := start
+	for {
+		if dir == "" {
+			return ""
+		}
+
+		if info, err := os.Stat(filepath.Join(dir, ".git")); err == nil && info.IsDir() {
+			return dir
+		}
+
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			return ""
+		}
+		dir = parent
+	}
 }
 
 func slugifyTitle(title string) string {
