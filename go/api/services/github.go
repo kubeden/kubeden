@@ -1,19 +1,32 @@
 package services
 
 import (
+	"bufio"
 	"fmt"
+	"hash/fnv"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/kubeden/kubeden/go/api/models"
 )
 
+type ArticleMetadata struct {
+	ID       int
+	Slug     string
+	FileName string
+	Title    string
+	ModTime  time.Time
+}
+
 var (
-	ArticleMap   map[int]string
-	TitleMap     map[string]int
-	PersonalInfo models.PersonalInfo
+	ArticleMap          map[int]string // id -> slug
+	TitleMap            map[string]int // slug -> id
+	articleBySlug       map[string]ArticleMetadata
+	orderedArticleMetas []ArticleMetadata
+	PersonalInfo        models.PersonalInfo
 
 	articlesDir string
 )
@@ -27,6 +40,8 @@ func InitContentStore() error {
 
 	ArticleMap = make(map[int]string)
 	TitleMap = make(map[string]int)
+	articleBySlug = make(map[string]ArticleMetadata)
+	orderedArticleMetas = nil
 
 	PersonalInfo = models.PersonalInfo{
 		Name:        "Denislav Gavrilov (Dennis)",
@@ -84,89 +99,173 @@ func BuildArticleMap() error {
 		return fmt.Errorf("articles directory is not initialized")
 	}
 
+	ArticleMap = make(map[int]string)
+	TitleMap = make(map[string]int)
+	articleBySlug = make(map[string]ArticleMetadata)
+	orderedArticleMetas = nil
+
 	files, err := os.ReadDir(articlesDir)
 	if err != nil {
 		return fmt.Errorf("failed to read articles directory %s: %w", articlesDir, err)
 	}
 
-	var titles []string
+	var metas []ArticleMetadata
+
 	for _, file := range files {
 		if file.IsDir() {
 			continue
 		}
-		if strings.HasSuffix(file.Name(), ".md") {
-			titles = append(titles, strings.TrimSuffix(file.Name(), ".md"))
+		if !strings.HasSuffix(file.Name(), ".md") {
+			continue
 		}
+
+		info, err := file.Info()
+		if err != nil {
+			return fmt.Errorf("failed to inspect file %s: %w", file.Name(), err)
+		}
+
+		path := filepath.Join(articlesDir, file.Name())
+		titleText, err := extractTitle(path)
+		if err != nil {
+			return fmt.Errorf("failed to parse title from %s: %w", file.Name(), err)
+		}
+
+		slug := slugify(titleText)
+		if slug == "" {
+			slug = slugify(strings.TrimSuffix(file.Name(), ".md"))
+		}
+
+		id := stableArticleID(slug)
+
+		meta := ArticleMetadata{
+			ID:       id,
+			Slug:     slug,
+			FileName: file.Name(),
+			Title:    titleText,
+			ModTime:  info.ModTime(),
+		}
+
+		if _, exists := articleBySlug[slug]; exists {
+			return fmt.Errorf("duplicate article slug %q", slug)
+		}
+		if existing, exists := ArticleMap[id]; exists && existing != slug {
+			return fmt.Errorf("id collision for slug %q (already used by %q)", slug, existing)
+		}
+
+		metas = append(metas, meta)
+		ArticleMap[id] = slug
+		TitleMap[slug] = id
+		articleBySlug[slug] = meta
 	}
 
-	sort.Strings(titles)
+	sort.Slice(metas, func(i, j int) bool {
+		if metas[i].ModTime.Equal(metas[j].ModTime) {
+			return metas[i].Slug < metas[j].Slug
+		}
+		return metas[i].ModTime.After(metas[j].ModTime)
+	})
 
-	for i, title := range titles {
-		id := i + 1
-		ArticleMap[id] = title
-		TitleMap[title] = id
-	}
+	orderedArticleMetas = metas
 
 	return nil
 }
 
 func FetchArticles() ([]models.Article, error) {
 	var articles []models.Article
-	for id, title := range ArticleMap {
-		article, err := FetchArticle(title)
+	for _, meta := range orderedArticleMetas {
+		article, err := fetchArticleByMeta(meta)
 		if err != nil {
 			return nil, err
 		}
-		article.ID = id
+		article.ID = meta.ID
 		articles = append(articles, article)
 	}
-
-	sort.Slice(articles, func(i, j int) bool {
-		return articles[i].ID < articles[j].ID
-	})
 
 	return articles, nil
 }
 
-func FetchArticle(title string) (models.Article, error) {
+func FetchArticle(slug string) (models.Article, error) {
+	meta, ok := articleBySlug[slug]
+	if !ok {
+		return models.Article{}, fmt.Errorf("article not found")
+	}
+
+	return fetchArticleByMeta(meta)
+}
+
+func fetchArticleByMeta(meta ArticleMetadata) (models.Article, error) {
 	if articlesDir == "" {
 		return models.Article{}, fmt.Errorf("articles directory is not initialized")
 	}
 
-	articlePath := filepath.Join(articlesDir, fmt.Sprintf("%s.md", title))
+	articlePath := filepath.Join(articlesDir, meta.FileName)
 	content, err := os.ReadFile(articlePath)
 	if err != nil {
-		return models.Article{}, fmt.Errorf("failed to read article %q: %w", title, err)
+		return models.Article{}, fmt.Errorf("failed to read article %q: %w", meta.Slug, err)
 	}
 
 	lines := strings.Split(string(content), "\n")
 	if len(lines) == 0 {
-		return models.Article{}, fmt.Errorf("article %q is empty", title)
+		return models.Article{}, fmt.Errorf("article %q is empty", meta.Slug)
 	}
 
-	articleTitle := strings.TrimPrefix(lines[0], "# ")
 	articleContent := strings.Join(lines[1:], "\n")
 
-	sanitizedTitle := sanitizeTitle(title)
-	imageURL := fmt.Sprintf("/images/%s.png", sanitizedTitle)
-
-	id := TitleMap[title]
+	imageURL := fmt.Sprintf("/images/%s.png", meta.Slug)
 
 	return models.Article{
-		ID:        id,
-		Title:     articleTitle,
+		ID:        meta.ID,
+		Title:     meta.Title,
 		Content:   strings.TrimSpace(articleContent),
 		ImagePath: imageURL,
 	}, nil
 }
 
-func sanitizeTitle(title string) string {
+func extractTitle(path string) (string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" {
+			continue
+		}
+		trimmed := strings.TrimPrefix(line, "#")
+		trimmed = strings.TrimSpace(trimmed)
+		if trimmed != "" {
+			return trimmed, nil
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return "", err
+	}
+
+	return "", fmt.Errorf("title not found")
+}
+
+func slugify(title string) string {
 	sanitized := strings.Map(func(r rune) rune {
-		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '-' || r == '_' {
+		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '-' || r == '_' || r == ' ' {
 			return r
 		}
-		return '_'
+		return '-'
 	}, title)
 
-	return strings.ToLower(sanitized)
+	sanitized = strings.ToLower(sanitized)
+	sanitized = strings.TrimSpace(sanitized)
+	sanitized = strings.ReplaceAll(sanitized, " ", "-")
+	sanitized = strings.ReplaceAll(sanitized, "--", "-")
+
+	return sanitized
+}
+
+func stableArticleID(slug string) int {
+	h := fnv.New32a()
+	_, _ = h.Write([]byte(slug))
+	return int(h.Sum32())
 }
