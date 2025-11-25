@@ -18,7 +18,7 @@ spec:
       - name: kubeden-api
         image: registry.digitalocean.com/kubeden/kubeden-api:a2ca675
         ports:
-        - containerPort: 5173
+        - containerPort: 8080
         env:
         - name: GITHUB_OWNER
           value: "kubeden"

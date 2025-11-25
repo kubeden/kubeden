@@ -18,4 +18,4 @@ spec:
       - name: txtwrite
         image: registry.digitalocean.com/kubeden/txtwrite:latest
         ports:
-        - containerPort: 3000
+        - containerPort: 5173
