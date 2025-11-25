@@ -31,14 +31,8 @@ func GetArticleByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	article, err := services.FetchArticle(slug)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(article)
+	// Redirect old numeric URLs to slug-based canonical URLs.
+	http.Redirect(w, r, "/article/"+slug, http.StatusMovedPermanently)
 }
 
 func GetArticleBySlug(w http.ResponseWriter, r *http.Request) {

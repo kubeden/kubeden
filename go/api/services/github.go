@@ -119,7 +119,7 @@ func BuildArticleMap() error {
 			continue
 		}
 
-		info, err := file.Info()
+		info, err := os.Stat(filepath.Join(articlesDir, file.Name()))
 		if err != nil {
 			return fmt.Errorf("failed to inspect file %s: %w", file.Name(), err)
 		}
@@ -179,6 +179,7 @@ func FetchArticles() ([]models.Article, error) {
 		}
 		article.ID = meta.ID
 		article.Slug = meta.Slug
+		article.URL = fmt.Sprintf("/article/%s", meta.Slug)
 		articles = append(articles, article)
 	}
 
@@ -220,6 +221,7 @@ func fetchArticleByMeta(meta ArticleMetadata) (models.Article, error) {
 		Title:     meta.Title,
 		Content:   strings.TrimSpace(articleContent),
 		ImagePath: imageURL,
+		URL:       fmt.Sprintf("/article/%s", meta.Slug),
 	}, nil
 }
 

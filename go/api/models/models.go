@@ -6,6 +6,7 @@ type Article struct {
 	Title     string `json:"title"`
 	Content   string `json:"content"`
 	ImagePath string `json:"image_path"`
+	URL       string `json:"url"`
 }
 
 type PersonalInfo struct {
