@@ -34,7 +34,7 @@ func main() {
 
 	r.HandleFunc("/articles", handlers.GetArticles).Methods("GET")
 	r.HandleFunc("/article/{id:[0-9]+}", handlers.GetArticleByID).Methods("GET")
-	r.HandleFunc("/article/{title}", handlers.GetArticleByTitle).Methods("GET")
+	r.HandleFunc("/article/{slug}", handlers.GetArticleBySlug).Methods("GET")
 	r.HandleFunc("/info", handlers.GetInfo).Methods("GET")
 
 	// Serve images

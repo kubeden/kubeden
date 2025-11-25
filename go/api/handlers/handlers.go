@@ -25,13 +25,13 @@ func GetArticleByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
 
-	title, ok := services.ArticleMap[id]
+	slug, ok := services.ArticleMap[id]
 	if !ok {
 		http.Error(w, "Article not found", http.StatusNotFound)
 		return
 	}
 
-	article, err := services.FetchArticle(title)
+	article, err := services.FetchArticle(slug)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -41,11 +41,11 @@ func GetArticleByID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(article)
 }
 
-func GetArticleByTitle(w http.ResponseWriter, r *http.Request) {
+func GetArticleBySlug(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	title := vars["title"]
+	slug := vars["slug"]
 
-	article, err := services.FetchArticle(title)
+	article, err := services.FetchArticle(slug)
 	if err != nil {
 		http.Error(w, "Article not found", http.StatusNotFound)
 		return

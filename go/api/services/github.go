@@ -3,7 +3,7 @@ package services
 import (
 	"bufio"
 	"fmt"
-	"hash/fnv"
+	"hash/crc32"
 	"os"
 	"path/filepath"
 	"sort"
@@ -130,12 +130,12 @@ func BuildArticleMap() error {
 			return fmt.Errorf("failed to parse title from %s: %w", file.Name(), err)
 		}
 
-		slug := slugify(titleText)
+		slug := slugifyTitle(titleText)
 		if slug == "" {
-			slug = slugify(strings.TrimSuffix(file.Name(), ".md"))
+			slug = slugifyTitle(strings.TrimSuffix(file.Name(), ".md"))
 		}
 
-		id := stableArticleID(slug)
+		id := stableArticleID(slug, TitleMap)
 
 		meta := ArticleMetadata{
 			ID:       id,
@@ -178,6 +178,7 @@ func FetchArticles() ([]models.Article, error) {
 			return nil, err
 		}
 		article.ID = meta.ID
+		article.Slug = meta.Slug
 		articles = append(articles, article)
 	}
 
@@ -215,6 +216,7 @@ func fetchArticleByMeta(meta ArticleMetadata) (models.Article, error) {
 
 	return models.Article{
 		ID:        meta.ID,
+		Slug:      meta.Slug,
 		Title:     meta.Title,
 		Content:   strings.TrimSpace(articleContent),
 		ImagePath: imageURL,
@@ -248,7 +250,7 @@ func extractTitle(path string) (string, error) {
 	return "", fmt.Errorf("title not found")
 }
 
-func slugify(title string) string {
+func slugifyTitle(title string) string {
 	sanitized := strings.Map(func(r rune) rune {
 		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '-' || r == '_' || r == ' ' {
 			return r
@@ -259,13 +261,42 @@ func slugify(title string) string {
 	sanitized = strings.ToLower(sanitized)
 	sanitized = strings.TrimSpace(sanitized)
 	sanitized = strings.ReplaceAll(sanitized, " ", "-")
-	sanitized = strings.ReplaceAll(sanitized, "--", "-")
+
+	for strings.Contains(sanitized, "--") {
+		sanitized = strings.ReplaceAll(sanitized, "--", "-")
+	}
+
+	sanitized = strings.Trim(sanitized, "-")
 
 	return sanitized
 }
 
-func stableArticleID(slug string) int {
-	h := fnv.New32a()
-	_, _ = h.Write([]byte(slug))
-	return int(h.Sum32())
+// stableArticleID produces a short, stable numeric id per slug while avoiding collisions.
+func stableArticleID(slug string, existing map[string]int) int {
+	if id, ok := existing[slug]; ok {
+		return id
+	}
+
+	base := int(crc32.ChecksumIEEE([]byte(slug)) % 9000) // 0..8999
+	id := base + 1000                                    // keep IDs at least 4 digits
+
+	// Resolve rare collisions by bumping until free.
+	for {
+		duplicate := false
+		for usedID, usedSlug := range ArticleMap {
+			if usedSlug == slug {
+				return usedID
+			}
+			if usedID == id {
+				duplicate = true
+				break
+			}
+		}
+		if !duplicate {
+			break
+		}
+		id++
+	}
+
+	return id
 }
