@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: nginx
+  labels:
+    app.kubernetes.io/instance: clopus-watcher
+  name: clopus-watcher-ingress
+  namespace: clopus-watcher
+spec:
+  rules:
+    - host: k8s-watcher.clopus.live
+      http:
+        paths:
+          - backend:
+              service:
+                name: dashboard
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - k8s-watcher.clopus.live
+      secretName: clopus-watcher-tls
