@@ -16,6 +16,8 @@ spec:
         spec:
           serviceAccountName: clopus-watcher
           restartPolicy: Never
+          imagePullSecrets:
+            - name: kubeden
           containers:
             - name: watcher
               image: registry.digitalocean.com/kubeden/clopus-watcher:v0.1
