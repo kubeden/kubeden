@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: txtwrite
-        image: registry.digitalocean.com/kubeden/txtwrite:intentional-error
+        image: registry.digitalocean.com/kubeden/txtwrite:intentional-error-v2
         command: ["deno","run","-A","npm:vite","preview","--host","0.0.0.0","--port","4173","--strictPort"]
         ports:
         - containerPort: 4173
