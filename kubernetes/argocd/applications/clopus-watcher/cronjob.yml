@@ -1,0 +1,50 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: clopus-watcher
+  namespace: clopus-watcher
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      ttlSecondsAfterFinished: 300
+      template:
+        spec:
+          serviceAccountName: clopus-watcher
+          restartPolicy: Never
+          containers:
+            - name: watcher
+              image: registry.digitalocean.com/kubeden/clopus-watcher:v0.1
+              imagePullPolicy: Always
+              env:
+                - name: TARGET_NAMESPACE
+                  value: "default"
+                - name: SQLITE_PATH
+                  value: "/data/watcher.db"
+                - name: HOME
+                  value: "/home/claude"
+                - name: AUTH_MODE
+                  value: "api-key"
+                - name: ANTHROPIC_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: claude-auth
+                      key: api-key
+              volumeMounts:
+                - name: data
+                  mountPath: /data
+              resources:
+                requests:
+                  memory: "256Mi"
+                  cpu: "100m"
+                limits:
+                  memory: "1Gi"
+                  cpu: "500m"
+          volumes:
+            - name: data
+              persistentVolumeClaim:
+                claimName: watcher-data
