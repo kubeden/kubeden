@@ -24,7 +24,7 @@ spec:
               imagePullPolicy: Always
               env:
                 - name: TARGET_NAMESPACE
-                  value: "default"
+                  value: "txtwrite"
                 - name: SQLITE_PATH
                   value: "/data/watcher.db"
                 - name: HOME
