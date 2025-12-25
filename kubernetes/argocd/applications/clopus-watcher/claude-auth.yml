@@ -1,0 +1,14 @@
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: claude-auth
+  namespace: clopus-watcher
+spec:
+  encryptedData:
+    api-key: AgB91IkyISq2imX4HgaKqkCHqpbRn+KWq3vX/RRhR58iU1sJhVgWk7rBnhxb1yPDsb1MKznl1ac29Spf7cCaCXV0jMtRratUYl/pnIbUwvwJOglPiMIjG0yMtGei65nDKgOTXYJbJQxrg/NLTbRs5dH8KqmmWT3HXNvWveH3pEaQeucS3nci3ctPRGnq+oSerc7GW5UbqwJCNIb4OFfk3bsErfJGfUpTeyaobUfcfTcg8OSjzNFWZq85iwb3OsuncfvrmN0r2oMevFXbMvwyHYVnsTWS8HIn0uAi5W5PSHD8rRybz1glrzdri7upj/TyddbHaHi+rThBMFllhNRtKx1ZjDjMuEGQU+vrF2SoIp0/TbQQoElBuJGZ1hu+UBkg2OH0LB4h9oQdSmwNmFrCvVfSzLnuRKjObXChfxDVuMer/9ZEcw9WH9m767XzflSTYP5SDqqhqEWyz07hfjYazJLaljJ6H5eYR1C08RcCpxlhjwPv+kbn5GMEo3Ija59ROH38wCKShmdI8sgdcy/9eLnTEQZ+0v0XnBBhO7W7osXXjVbNJX7ohJlgu4Z6Tnb1qVTJKBVDCdRP/9fJN2pe/Q08qthhuN95/H0cYzhZ4NeoR2MFDtdUtk4SfDYZ5q6NUrQlqOXWrXt5VZPXz5XTs7W/KSPmI7Efup2Ml8eZjqXNpK+NRoYYOuj1yGz94ZuA32zzSYc6T+SSv1m21v97P+VxdJxDoXhdo6aSMyfU97Q+r5DmyMB5kS5htPieyepb26cphc6yn5yo9rsyEYSUtVPEY7JBaVZsCHaPWyM15IBJhhWypWqFfSerXQ/5A+mc474p0D76LIupJMORAqw=
+  template:
+    metadata:
+      creationTimestamp: null
+      name: claude-auth
+      namespace: clopus-watcher
