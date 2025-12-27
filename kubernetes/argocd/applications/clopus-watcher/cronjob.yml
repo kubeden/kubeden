@@ -29,11 +29,13 @@ spec:
                 runAsUser: 0
           containers:
             - name: watcher
-              image: registry.digitalocean.com/kubeden/clopus-watcher:v0.1
+              image: registry.digitalocean.com/kubeden/clopus-watcher:v0.2
               imagePullPolicy: Always
               env:
                 - name: TARGET_NAMESPACE
                   value: "txtwrite"
+                - name: WATCHER_MODE
+                  value: "autonomous"  # or "report" for report-only mode
                 - name: SQLITE_PATH
                   value: "/data/watcher.db"
                 - name: HOME

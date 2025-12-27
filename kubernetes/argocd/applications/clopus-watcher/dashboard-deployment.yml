@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: dashboard
-          image: registry.digitalocean.com/kubeden/clopus-watcher-dashboard:v0.1
+          image: registry.digitalocean.com/kubeden/clopus-watcher-dashboard:v0.2
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
