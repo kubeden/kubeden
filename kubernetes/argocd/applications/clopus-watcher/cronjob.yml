@@ -4,7 +4,7 @@ metadata:
   name: clopus-watcher
   namespace: clopus-watcher
 spec:
-  schedule: "*/5 * * * *"
+  schedule: "*/60 * * * *"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
