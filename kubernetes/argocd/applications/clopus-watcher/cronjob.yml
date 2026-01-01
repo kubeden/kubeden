@@ -16,6 +16,13 @@ spec:
         spec:
           serviceAccountName: clopus-watcher
           restartPolicy: Never
+          affinity:
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchLabels:
+                      app: dashboard
+                  topologyKey: kubernetes.io/hostname
           imagePullSecrets:
             - name: kubeden
           initContainers:

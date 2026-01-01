@@ -13,6 +13,8 @@ spec:
       labels:
         app: dashboard
     spec:
+      imagePullSecrets:
+        - name: kubeden
       containers:
         - name: dashboard
           image: registry.digitalocean.com/kubeden/clopus-watcher-dashboard:v0.2
