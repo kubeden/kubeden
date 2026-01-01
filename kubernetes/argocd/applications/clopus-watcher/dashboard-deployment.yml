@@ -14,7 +14,7 @@ spec:
         app: dashboard
     spec:
       nodeSelector:
-        kubernetes.io/hostname: kubeden-5h18y
+        kubernetes.io/hostname: kubeden-5h18f
       containers:
         - name: dashboard
           image: registry.digitalocean.com/kubeden/clopus-watcher-dashboard:v0.2
