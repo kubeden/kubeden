@@ -29,7 +29,7 @@ spec:
                 runAsUser: 0
           containers:
             - name: watcher
-              image: registry.digitalocean.com/kubeden/clopus-watcher:v0.2
+              image: registry.digitalocean.com/kubeden/clopus-watcher:v0.3
               imagePullPolicy: Always
               env:
                 - name: TARGET_NAMESPACE
@@ -47,6 +47,12 @@ spec:
                     secretKeyRef:
                       name: claude-auth
                       key: api-key
+                - name: SLACK_WEBHOOK_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: slack-webhook
+                      key: webhook-url
+                      optional: true
               volumeMounts:
                 - name: data
                   mountPath: /data
