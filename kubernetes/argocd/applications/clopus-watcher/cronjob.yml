@@ -16,13 +16,6 @@ spec:
         spec:
           serviceAccountName: clopus-watcher
           restartPolicy: Never
-          affinity:
-            podAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                - labelSelector:
-                    matchLabels:
-                      app: dashboard
-                  topologyKey: kubernetes.io/hostname
           imagePullSecrets:
             - name: kubeden
           initContainers:
@@ -65,11 +58,11 @@ spec:
                   mountPath: /data
               resources:
                 requests:
-                  memory: "128Mi"
-                  cpu: "50m"
+                  memory: "256Mi"
+                  cpu: "100m"
                 limits:
                   memory: "1Gi"
-                  cpu: "1000m"
+                  cpu: "500m"
           volumes:
             - name: data
               persistentVolumeClaim:
