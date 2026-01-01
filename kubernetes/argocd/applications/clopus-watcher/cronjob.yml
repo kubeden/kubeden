@@ -16,6 +16,8 @@ spec:
         spec:
           serviceAccountName: clopus-watcher
           restartPolicy: Never
+          nodeSelector:
+            kubernetes.io/hostname: kubeden-5h18y
           imagePullSecrets:
             - name: kubeden
           initContainers:
@@ -65,5 +67,6 @@ spec:
                   cpu: "500m"
           volumes:
             - name: data
-              persistentVolumeClaim:
-                claimName: watcher-data
+              hostPath:
+                path: /data/clopus-watcher
+                type: DirectoryOrCreate

@@ -13,6 +13,8 @@ spec:
       labels:
         app: dashboard
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: kubeden-5h18y
       containers:
         - name: dashboard
           image: registry.digitalocean.com/kubeden/clopus-watcher-dashboard:v0.2
@@ -48,5 +50,6 @@ spec:
             periodSeconds: 5
       volumes:
         - name: data
-          persistentVolumeClaim:
-            claimName: watcher-data
+          hostPath:
+            path: /data/clopus-watcher
+            type: DirectoryOrCreate
