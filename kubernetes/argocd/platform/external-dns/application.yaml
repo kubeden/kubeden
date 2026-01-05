@@ -5,17 +5,23 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: https://kubernetes-sigs.github.io/external-dns/
-    targetRevision: 1.15.0
-    chart: external-dns
-    helm:
-      releaseName: external-dns
-      valueFiles:
-        - https://raw.githubusercontent.com/kubeden/kubeden/main/kubernetes/argocd/platform/external-dns/values-override.yaml
+  sources:
+    - repoURL: https://kubernetes-sigs.github.io/external-dns/
+      targetRevision: 1.15.0
+      chart: external-dns
+      helm:
+        releaseName: external-dns
+        valueFiles:
+          - $values/kubernetes/argocd/platform/external-dns/values-override.yaml
+    - repoURL: https://github.com/kubeden/kubeden.git
+      targetRevision: main
+      ref: values
+    - repoURL: https://github.com/kubeden/kubeden.git
+      targetRevision: main
+      path: kubernetes/argocd/platform/external-dns/configs
   destination:
     server: https://kubernetes.default.svc
-    namespace: external-dns  # Or your preferred namespace
+    namespace: external-dns
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
