@@ -6,8 +6,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://charts.bitnami.com/bitnami
-    targetRevision: 8.0.2  # Replace with the desired ExternalDNS chart version
+    repoURL: https://kubernetes-sigs.github.io/external-dns/
+    targetRevision: 1.15.0
     chart: external-dns
     helm:
       releaseName: external-dns

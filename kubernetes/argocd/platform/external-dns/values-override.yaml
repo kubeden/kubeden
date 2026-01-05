@@ -1,18 +1,28 @@
-provider: cloudflare
-cloudflare:
-  secretName: cloudflare-api-token
-  proxied: true  # Set to true if you want Cloudflare to proxy your traffic
-  email: denislavgavrilov99@gmail.com
-txtOwnerId: "kubeden-k8s"  # A unique identifier for this ExternalDNS instance
-policy: sync  # Use 'upsert-only' if you want to avoid ExternalDNS deleting records
+provider:
+  name: cloudflare
+
+env:
+  - name: CF_API_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare-api-token
+        key: api-token
+
+extraArgs:
+  - --cloudflare-proxied
+  - --cloudflare-dns-records-per-page=5000
+
+txtOwnerId: "kubeden-k8s"
+policy: sync
 sources:
   - ingress
 domainFilters:
-  - kubeden.io  # Replace with your domain
+  - kubeden.io
 annotationFilter: kubernetes.io/ingress.class=nginx
+
 rbac:
   create: true
-  clusterRole: true
+
 serviceAccount:
   create: true
   name: external-dns
