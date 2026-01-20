@@ -68,7 +68,7 @@ spec:
                   optional: true
             # Scan interval (5 minutes)
             - name: SCAN_INTERVAL_SECONDS
-              value: "300"
+              value: "360000"
             - name: PROMPT_FILE
               value: "/app/master-prompt-interactive.md"
           volumeMounts:
