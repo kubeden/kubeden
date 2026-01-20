@@ -40,6 +40,8 @@ spec:
               value: "txtwrite"
             - name: TARGET_NAMESPACES
               value: "txtwrite"
+            - name: CLAUDE_MODEL
+              value: "opus" # or "sonet"
             - name: SQLITE_PATH
               value: "/data/sre.db"
             - name: HOME
