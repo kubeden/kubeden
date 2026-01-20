@@ -9,4 +9,19 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  storageClassName: do-block-storage
+  # Uncomment and set storageClassName if needed:
+  # storageClassName: standard
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: claude-sessions
+  namespace: a2w-sre
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  # Uncomment and set storageClassName if needed:
+  # storageClassName: standard
