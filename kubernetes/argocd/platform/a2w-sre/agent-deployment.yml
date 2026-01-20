@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: a2w-sre-agent
+  namespace: a2w-sre
+  labels:
+    app: a2w-sre-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: a2w-sre-agent
+  template:
+    metadata:
+      labels:
+        app: a2w-sre-agent
+    spec:
+      serviceAccountName: a2w-sre
+      nodeSelector:
+        kubernetes.io/hostname: kubeden-5h18f
+      imagePullSecrets:
+        - name: kubeden
+      initContainers:
+        - name: fix-permissions
+          image: busybox
+          command: ["sh", "-c", "chmod -R 777 /data"]
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          securityContext:
+            runAsUser: 0
+      containers:
+        - name: agent
+          image: registry.digitalocean.com/kubeden/a2w-sre-agent:v0.1
+          imagePullPolicy: Always
+          env:
+            - name: TARGET_NAMESPACE
+              value: "txtwrite"
+            - name: TARGET_NAMESPACES
+              value: "txtwrite"
+            - name: SQLITE_PATH
+              value: "/data/sre.db"
+            - name: HOME
+              value: "/home/claude"
+            - name: SRE_MODE
+              value: "autonomous"
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: claude-auth
+                  key: api-key
+            # Slack Bot credentials
+            - name: SLACK_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: slack-bot
+                  key: bot-token
+            - name: SLACK_APP_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: slack-bot
+                  key: app-token
+            - name: SRE_ALERT_CHANNEL
+              valueFrom:
+                secretKeyRef:
+                  name: slack-bot
+                  key: alert-channel
+                  optional: true
+            # Scan interval (5 minutes)
+            - name: SCAN_INTERVAL_SECONDS
+              value: "300"
+            - name: PROMPT_FILE
+              value: "/app/master-prompt-interactive.md"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+      volumes:
+        - name: data
+          hostPath:
+            path: /data/a2w-sre
+            type: DirectoryOrCreate
