@@ -1,13 +1,14 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: clopus-watcher
-  namespace: clopus-watcher
+  name: a2w-sre
+  namespace: a2w-sre
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
+kind: Role                          
 metadata:
-  name: clopus-watcher
+  name: a2w-sre
+  namespace: txtwrite               
 rules:
   - apiGroups: [""]
     resources: ["pods", "pods/status"]
@@ -26,14 +27,15 @@ rules:
     verbs: ["get", "list"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
+kind: RoleBinding                   
 metadata:
-  name: clopus-watcher
+  name: a2w-sre
+  namespace: txtwrite               
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: clopus-watcher
+  kind: Role                        
+  name: a2w-sre
 subjects:
   - kind: ServiceAccount
-    name: clopus-watcher
-    namespace: clopus-watcher
+    name: a2w-sre
+    namespace: a2w-sre              

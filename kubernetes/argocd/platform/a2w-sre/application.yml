@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: clopus-watcher
+  name: a2w-sre
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/kubeden/kubeden.git
     targetRevision: HEAD
-    path: kubernetes/argocd/applications/clopus-watcher
+    path: kubernetes/argocd/platform/a2w-sre
   destination:
     server: https://kubernetes.default.svc
-    namespace: clopus-watcher
+    namespace: a2w-sre
   syncPolicy:
     syncOptions:
     - CreateNamespace=true

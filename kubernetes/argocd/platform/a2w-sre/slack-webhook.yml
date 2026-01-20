@@ -4,7 +4,7 @@ kind: SealedSecret
 metadata:
   creationTimestamp: null
   name: slack-webhook
-  namespace: clopus-watcher
+  namespace: a2w-sre
 spec:
   encryptedData:
     webhook-url: AgB4PtubeudJ/a04hhaKY9BEEd8hBRUrndW6RixxjCAnVON5WIBmGWdEAUsclcwFsD03k0x1p2HxRDCdlt8sPJwR1OAy4FQh2nLA1E2Q5sIKl4Q9umi+eo5eFpNXbj7Jd9/f/8ZT3azHsKdQ0HAcUDqJrffdDDoOAeFUe6W/ZRkvVt5cgwgocVFppue8ssTEvNEEuVBY7aEm925EZ1XTxp+sDaahG1JxNlDwWeHCNDjQrwSes9N570RfazXjK9QOQtdV1SUp/nAM3Dj+s0MGmPvhm3W3EVxNUkkwU/DL461VrHnKEBR4mqoEAYkN/lbuykqu9jBzFAEMSmVMImTx69CxQi2f2c/y/oC+81+F/DlX6y5VdT3RvUW4RSVOA5cB59L6j1d77X3j5T5qoE4R7GSRZahtkuqd1fQitgXGu3viJer2Q9axKQO21lfTDY0AzHWf5LsOX9hvf59kpYpdxDSwyIAVVPXZigGw1kplQsxzxhz1mQUlr9KDTRKuZYvRylrQLOo4W9y0nwPWKAL2w/ylEtKYerPYRQpA/hPhCUfwycpWxphbc5GzCwAq/0qKA7L3w0AIiRj4scizKk7biqf0bPGpHd3NbRrZEA2N96GyKf6kX7sT2/q7qrLTgD4076CIDY1jDMqoCj72Lw/z2p/LkSan0y5GElK4iTD9ZoQozqMyFcIkaqdciVoKbXf9TFkrQqUajmJukc7lcbxTX199yoEmxg6BQvxWskvFNmQsuzpKnOfEL5Mus4pUI9FcpYHsM6/UhEmz+m3cHSnKENKr9ayykX+IXhaDxvlWu1PR8u4=
@@ -12,4 +12,4 @@ spec:
     metadata:
       creationTimestamp: null
       name: slack-webhook
-      namespace: clopus-watcher
+      namespace: a2w-sre

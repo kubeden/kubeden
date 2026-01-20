@@ -1,8 +1,8 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: clopus-watcher
-  namespace: clopus-watcher
+  name: a2w-sre
+  namespace: a2w-sre
 spec:
   schedule: "*/60 * * * *"
   concurrencyPolicy: Forbid
@@ -14,7 +14,7 @@ spec:
       ttlSecondsAfterFinished: 300
       template:
         spec:
-          serviceAccountName: clopus-watcher
+          serviceAccountName: a2w-sre
           restartPolicy: Never
           nodeSelector:
             kubernetes.io/hostname: kubeden-5h18f
@@ -30,16 +30,16 @@ spec:
               securityContext:
                 runAsUser: 0
           containers:
-            - name: watcher
-              image: registry.digitalocean.com/kubeden/clopus-watcher:v0.3
+            - name: sre
+              image: registry.digitalocean.com/kubeden/a2w-sre:v0.3
               imagePullPolicy: Always
               env:
                 - name: TARGET_NAMESPACE
                   value: "txtwrite"
-                - name: WATCHER_MODE
+                - name: SRE_MODE
                   value: "autonomous"  # or "report" for report-only mode
                 - name: SQLITE_PATH
-                  value: "/data/watcher.db"
+                  value: "/data/sre.db"
                 - name: HOME
                   value: "/home/claude"
                 - name: AUTH_MODE
@@ -68,5 +68,5 @@ spec:
           volumes:
             - name: data
               hostPath:
-                path: /data/clopus-watcher
+                path: /data/a2w-sre
                 type: DirectoryOrCreate

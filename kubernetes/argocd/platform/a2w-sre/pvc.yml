@@ -1,8 +1,8 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: watcher-data
-  namespace: clopus-watcher
+  name: sre-data
+  namespace: a2w-sre
 spec:
   accessModes:
     - ReadWriteOnce

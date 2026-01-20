@@ -5,12 +5,12 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     kubernetes.io/ingress.class: nginx
   labels:
-    app.kubernetes.io/instance: clopus-watcher
-  name: clopus-watcher-ingress
-  namespace: clopus-watcher
+    app.kubernetes.io/instance: a2w-sre
+  name: a2w-sre-ingress
+  namespace: a2w-sre
 spec:
   rules:
-    - host: k8s-watcher.clopus.live
+    - host: sre.kubeden.io
       http:
         paths:
           - backend:
@@ -22,5 +22,5 @@ spec:
             pathType: Prefix
   tls:
     - hosts:
-        - k8s-watcher.clopus.live
-      secretName: clopus-watcher-tls
+        - sre.kubeden.io
+      secretName: a2w-sre-tls
