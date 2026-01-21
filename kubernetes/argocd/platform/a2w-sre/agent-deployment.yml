@@ -31,6 +31,12 @@ spec:
               mountPath: /claude-sessions
           securityContext:
             runAsUser: 0
+        - name: copy-skills
+          image: registry.digitalocean.com/kubeden/a2w-sre-agent:v0.1
+          command: ["sh", "-c", "cp -r /home/claude/.claude/skills /claude-sessions/ 2>/dev/null || true"]
+          volumeMounts:
+            - name: claude-sessions
+              mountPath: /claude-sessions
       containers:
         - name: agent
           image: registry.digitalocean.com/kubeden/a2w-sre-agent:v0.1
@@ -41,7 +47,7 @@ spec:
             - name: TARGET_NAMESPACES
               value: "txtwrite"
             - name: CLAUDE_MODEL
-              value: "opus" # or "sonet"
+              value: "opus" # or "sonnet"
             - name: SQLITE_PATH
               value: "/data/sre.db"
             - name: HOME
