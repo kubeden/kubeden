@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: a2w-sre
-  namespace: a2w-sre
+  name: a2w-lucas
+  namespace: a2w-lucas
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role                          
 metadata:
-  name: a2w-sre
+  name: a2w-lucas
   namespace: txtwrite               
 rules:
   - apiGroups: [""]
@@ -33,13 +33,13 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding                   
 metadata:
-  name: a2w-sre
+  name: a2w-lucas
   namespace: txtwrite               
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role                        
-  name: a2w-sre
+  name: a2w-lucas
 subjects:
   - kind: ServiceAccount
-    name: a2w-sre
-    namespace: a2w-sre              
+    name: a2w-lucas
+    namespace: a2w-lucas              

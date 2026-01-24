@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: a2w-sre
+  name: a2w-lucas
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/kubeden/kubeden.git
     targetRevision: HEAD
-    path: kubernetes/argocd/platform/a2w-sre
+    path: kubernetes/argocd/platform/a2w-lucas
   destination:
     server: https://kubernetes.default.svc
-    namespace: a2w-sre
+    namespace: a2w-lucas
   syncPolicy:
     syncOptions:
     - CreateNamespace=true

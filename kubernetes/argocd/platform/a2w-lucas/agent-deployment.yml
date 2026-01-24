@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: a2w-sre-agent
-  namespace: a2w-sre
+  name: a2w-lucas-agent
+  namespace: a2w-lucas
   labels:
-    app: a2w-sre-agent
+    app: a2w-lucas-agent
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: a2w-sre-agent
+      app: a2w-lucas-agent
   template:
     metadata:
       labels:
-        app: a2w-sre-agent
+        app: a2w-lucas-agent
     spec:
-      serviceAccountName: a2w-sre
+      serviceAccountName: a2w-lucas
       nodeSelector:
         kubernetes.io/hostname: kubeden-5h18f
       imagePullSecrets:
@@ -32,14 +32,14 @@ spec:
           securityContext:
             runAsUser: 0
         - name: copy-skills
-          image: registry.digitalocean.com/kubeden/a2w-sre-agent:v0.1
+          image: registry.digitalocean.com/kubeden/a2w/lucas:v0.1
           command: ["sh", "-c", "cp -r /home/claude/.claude/skills /claude-sessions/ 2>/dev/null || true"]
           volumeMounts:
             - name: claude-sessions
               mountPath: /claude-sessions
       containers:
         - name: agent
-          image: registry.digitalocean.com/kubeden/a2w-sre-agent:v0.1
+          image: registry.digitalocean.com/kubeden/a2w/lucas:v0.1
           imagePullPolicy: Always
           env:
             - name: TARGET_NAMESPACE
@@ -52,7 +52,7 @@ spec:
               value: "/data/sre.db"
             - name: HOME
               value: "/home/claude"
-            - name: SRE_MODE
+            - name: LUCAS_MODE
               value: "autonomous"
             - name: ANTHROPIC_API_KEY
               valueFrom:

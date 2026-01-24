@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: dashboard
-  namespace: a2w-sre
+  namespace: a2w-lucas
 spec:
   replicas: 1
   selector:
@@ -17,7 +17,7 @@ spec:
         kubernetes.io/hostname: kubeden-5h18f
       containers:
         - name: dashboard
-          image: registry.digitalocean.com/kubeden/a2w-sre-dashboard:v0.1
+          image: registry.digitalocean.com/kubeden/a2w/lucas-dashboard:v0.1
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

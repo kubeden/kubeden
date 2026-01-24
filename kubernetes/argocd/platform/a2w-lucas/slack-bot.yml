@@ -3,7 +3,7 @@ kind: SealedSecret
 metadata:
   creationTimestamp: null
   name: slack-bot
-  namespace: a2w-sre
+  namespace: a2w-lucas
 spec:
   encryptedData:
     alert-channel: AgBWf2PDugotNixPO03TAq9W0kAs4t2dcbyLYJ6nXTkgiWMLDaBScMDEROO6lkfqgjz3ZWHzE0UhT8UWm41g/nNHoz3Tm21J/VaJDk6TZV7R34Qi0aSaUmMGREvJTBt+JbAG2HX5YPNvcMDI0bvDYHDgVeNXnVAED7dysPkwV8HFmaqUuJT9KnOGvGhRMG+5bmimJ9PVWMSVTId1ivimhHhQnX0lkcPQ/W0n9GiGhhvE3IjKhJUqinejUEPv53rKwOHzeT45oHekhonnZnJ+FbuV+2kK0SZTxElzq/DISaqYrHu0Ag1TVxqtxZ4HSOScEx8mRXMpPsgp42sJnvK3tnuxefTYCP0tN9/P5+LuslQ773gmKMTlPPcuMAiAxJKOJss9MPe5pWq7iv1pBSZSkH+FATTlfXudQ7T94LdUaXk8+FQuEvCZF4rmfOddOdnq9ctCkAEc/IYpzjHNzP9V6/bRjAAaS20R87i89jWnbiDjpl/OUqtfDVyq0pKHmUfz49+WCCR8W+qiTQVSKOxpbaSrsunq3GbIzuLKk2phegdc69BDIbtFWC3J+7oJ1szspvQI7nTaabYzzewUOITSB3H9Gumx5fg5J6qLsALpYOX3wkG6Yg/g/aB5Uqh7TaanORsxxtWkwJyh79bdxAI8UUH0SgkiwQmLKZCx1T5yEszkeperSDxRuR2uOHKiL/UdmDq3X/KczZeoiRvQgg==
@@ -13,4 +13,4 @@ spec:
     metadata:
       creationTimestamp: null
       name: slack-bot
-      namespace: a2w-sre
+      namespace: a2w-lucas
