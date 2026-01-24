@@ -10,7 +10,7 @@ spec:
     targetRevision: HEAD
     path: kubernetes/argocd/platform
     directory:
-      exclude: '**/configs/*'
+      exclude: '{**/configs/*,**/base/*}'
       recurse: true
   destination:
     server: https://kubernetes.default.svc

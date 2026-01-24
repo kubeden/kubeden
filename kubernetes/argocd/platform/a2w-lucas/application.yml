@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/kubeden/kubeden.git
     targetRevision: HEAD
-    path: kubernetes/argocd/platform/a2w-lucas
+    path: kubernetes/argocd/platform/a2w-lucas/base
   destination:
     server: https://kubernetes.default.svc
     namespace: a2w-lucas
