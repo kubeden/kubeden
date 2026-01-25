@@ -19,3 +19,19 @@ spec:
         image: registry.digitalocean.com/kubeden/a2w/landing:v1
         ports:
         - containerPort: 3000
+        env:
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: a2w-secrets
+              key: openai-api-key
+        - name: BEEHIIV_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: a2w-secrets
+              key: beehiiv-api-key
+        - name: BEEHIIV_PUBLICATION_ID
+          valueFrom:
+            secretKeyRef:
+              name: a2w-secrets
+              key: beehiiv-publication-id
