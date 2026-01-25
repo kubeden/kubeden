@@ -1,0 +1,71 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: a2w-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    external-dns.alpha.kubernetes.io/hostname: a2w.io,www.a2w.io
+    
+    # Cookie and session handling
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "a2w-cookie"
+    nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/affinity-mode: persistent
+    nginx.ingress.kubernetes.io/session-cookie-hash: sha1
+    
+    # Increase timeouts for auth processes
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, OPTIONS, DELETE"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
+
+    nginx.ingress.kubernetes.io/proxy-body-size: "8m"
+
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
+
+    # Ensure cookie headers are preserved
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header Cookie $http_cookie;
+      proxy_pass_header Set-Cookie;
+    
+    # Redirect www to apex domain
+    nginx.ingress.kubernetes.io/server-snippet: |
+      if ($host = 'www.a2w.io') {
+        return 301 https://a2w.io$request_uri;
+      }
+      large_client_header_buffers 8 64k;
+      client_header_buffer_size 64k;
+spec:
+  tls:
+  - hosts:
+    - a2w.io
+    - www.a2w.io
+    secretName: a2w-tls
+  rules:
+  - host: a2w.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: a2w-service
+            port: 
+              number: 80
+  - host: www.a2w.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: a2w-service
+            port: 
+              number: 80

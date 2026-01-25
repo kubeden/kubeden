@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: a2w
+  labels:
+    app: a2w
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: a2w
+  template:
+    metadata:
+      labels:
+        app: a2w
+    spec:
+      containers:
+      - name: a2w
+        image: registry.digitalocean.com/kubeden/a2w/landing:v1
+        ports:
+        - containerPort: 3000
