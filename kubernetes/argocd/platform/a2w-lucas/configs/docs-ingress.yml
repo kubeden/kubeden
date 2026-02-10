@@ -8,10 +8,10 @@ metadata:
   namespace: a2w-lucas
 spec:
   rules:
-    - host: docs.lucas.kubeden.io
+    - host: docs.a2w.io
       http:
         paths:
-          - path: /
+          - path: /lucas
             pathType: Prefix
             backend:
               service:
@@ -20,5 +20,5 @@ spec:
                   number: 80
   tls:
     - hosts:
-        - docs.lucas.kubeden.io
+        - docs.a2w.io
       secretName: a2w-lucas-docs-tls
