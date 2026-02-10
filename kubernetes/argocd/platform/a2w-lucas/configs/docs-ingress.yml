@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: nginx
+  name: lucas-docs-ingress
+  namespace: a2w-lucas
+spec:
+  rules:
+    - host: docs.lucas.kubeden.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: lucas-docs
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - docs.lucas.kubeden.io
+      secretName: a2w-lucas-docs-tls
