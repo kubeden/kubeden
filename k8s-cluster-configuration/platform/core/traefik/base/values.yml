@@ -1,6 +1,12 @@
 deployment:
   replicas: 1
 
+service:
+  annotations:
+    load-balancer.hetzner.cloud/location: nbg1
+    load-balancer.hetzner.cloud/use-private-ip: "true"
+    load-balancer.hetzner.cloud/name: kubeden-traefik
+
 ingressClass:
   enabled: false
 
