@@ -27,7 +27,7 @@ spec:
   listeners:
     - name: https
       protocol: HTTPS
-      port: 443
+      port: 8443
       hostname: argocd.k6nis.dev
       tls:
         mode: Terminate
