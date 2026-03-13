@@ -1,6 +1,7 @@
 configs:
   cm:
     exec.enabled: true
+    kustomize.buildOptions: "--enable-helm"
   params:
     server.insecure: true
 
