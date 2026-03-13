@@ -1,0 +1,56 @@
+---
+# Certificate for ArgoCD via cert-manager
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: argocd-tls
+  namespace: argocd
+spec:
+  secretName: argocd-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - argocd.k6nis.dev
+---
+# Gateway for ArgoCD using Traefik GatewayClass
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: argocd-gateway
+  namespace: argocd
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "argocd.k6nis.dev"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 8443
+      hostname: argocd.k6nis.dev
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: argocd-tls
+            kind: Secret
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+# HTTPRoute for ArgoCD
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: argocd-server
+  namespace: argocd
+spec:
+  parentRefs:
+    - name: argocd-gateway
+      namespace: argocd
+  hostnames:
+    - argocd.k6nis.dev
+  rules:
+    - backendRefs:
+        - name: argocd-server
+          port: 80

@@ -1,0 +1,14 @@
+configs:
+  cm:
+    exec.enabled: true
+  params:
+    server.insecure: true
+
+applicationSet:
+  enabled: true
+
+server:
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: false

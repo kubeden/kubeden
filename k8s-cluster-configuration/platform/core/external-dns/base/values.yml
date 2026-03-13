@@ -1,0 +1,32 @@
+provider:
+  name: cloudflare
+
+env:
+  - name: CF_API_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare-api-token
+        key: api-token
+
+extraArgs:
+  - --cloudflare-proxied
+  - --cloudflare-dns-records-per-page=5000
+
+txtOwnerId: "kubeden-k8s"
+policy: sync
+sources:
+  - ingress
+domainFilters:
+  - kubeden.io
+
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
+  name: external-dns
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi

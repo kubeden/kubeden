@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: a2w-lucas
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/kubeden/kubeden.git
+    targetRevision: HEAD
+    path: k8s-cluster-configuration/platform/core/a2w-lucas/configs
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: a2w-lucas
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
