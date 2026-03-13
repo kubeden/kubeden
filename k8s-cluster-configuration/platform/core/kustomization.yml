@@ -9,4 +9,5 @@ resources:
   - cert-manager/application.yml
   - sealed-secrets/application.yml
   - external-dns/application.yaml
+  - hcloud-ccm/application.yml
   # - a2w-lucas/application.yml

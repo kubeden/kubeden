@@ -1,0 +1,11 @@
+networking:
+  enabled: true
+  clusterCIDR: 10.42.0.0/16
+
+monitoring:
+  enabled: true
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 50Mi
