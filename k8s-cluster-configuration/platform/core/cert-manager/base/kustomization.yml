@@ -12,4 +12,4 @@ helmCharts:
 
 resources:
   - cluster-issuers.yml
-  - cloudflare-secret.yml
+  - cloudflare-sealed.yml

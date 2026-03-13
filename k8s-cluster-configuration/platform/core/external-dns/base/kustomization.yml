@@ -10,4 +10,4 @@ helmCharts:
     valuesFile: values.yml
 
 resources:
-  - configs/cloudflare.yaml
+  - configs/cloudflare-sealed.yaml

@@ -10,4 +10,4 @@ helmCharts:
     valuesFile: values.yml
 
 resources:
-  - configs/hcloud-secret.yaml
+  - configs/hcloud-sealed.yaml
