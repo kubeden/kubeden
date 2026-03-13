@@ -15,9 +15,11 @@ extraArgs:
 txtOwnerId: "kubeden-k8s"
 policy: sync
 sources:
-  - ingress
+  - gateway-httproute
+  - gateway-grpcroute
 domainFilters:
   - kubeden.io
+  - k6nis.dev
 
 rbac:
   create: true
