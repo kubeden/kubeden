@@ -2,8 +2,7 @@ deployment:
   replicas: 1
 
 ingressClass:
-  enabled: true
-  isDefaultClass: true
+  enabled: false
 
 ingressRoute:
   dashboard:
@@ -11,12 +10,14 @@ ingressRoute:
 
 providers:
   kubernetesCRD:
-    enabled: true
-    allowCrossNamespace: true
+    enabled: false
   kubernetesIngress:
+    enabled: false
+  kubernetesGateway:
     enabled: true
-    publishedService:
-      enabled: true
+
+gateway:
+  enabled: true
 
 ports:
   web:
