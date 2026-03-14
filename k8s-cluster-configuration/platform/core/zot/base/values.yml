@@ -19,7 +19,7 @@ env:
 
 secretFiles:
   htpasswd: |-
-    admin:$2y$05$hwKOg7L.euzJkgfM2NKpJeJ0FskmH9AYccbPoc9pUU9s7u7Ljuk8C
+    admin:$2y$05$cZoisS5MLIkYpLHp5cpRtesFgMEF6oohITGd1Fs9dYNu5BVdZwHve
 
 configFiles:
   config.json: |-
