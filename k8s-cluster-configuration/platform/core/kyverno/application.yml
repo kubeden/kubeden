@@ -23,6 +23,8 @@ spec:
       jqPathExpressions:
         - .status
         - .metadata.labels
+        - .spec.rules[]?.skipBackgroundRequests
+        - .spec.validationFailureAction
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
