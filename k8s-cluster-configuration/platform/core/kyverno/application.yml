@@ -17,10 +17,12 @@ spec:
       kind: CustomResourceDefinition
       jqPathExpressions:
         - .spec.versions[]?.schema?.openAPIV3Schema
+        - .metadata.labels
     - group: kyverno.io
       kind: ClusterPolicy
       jqPathExpressions:
         - .status
+        - .metadata.labels
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
