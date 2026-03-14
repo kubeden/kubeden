@@ -6,7 +6,7 @@ helmCharts:
     repo: http://zotregistry.dev/helm-charts
     version: 0.1.102
     releaseName: zot
-    namespace: container-registry
+    namespace: zot
     valuesFile: values.yml
 
 resources:

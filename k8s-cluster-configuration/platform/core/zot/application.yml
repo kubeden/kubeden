@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: container-registry
+  name: zot
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/kubeden/kubeden.git
     targetRevision: main
-    path: k8s-cluster-configuration/platform/core/container-registry/base
+    path: k8s-cluster-configuration/platform/core/zot/base
   destination:
     server: https://kubernetes.default.svc
-    namespace: container-registry
+    namespace: zot
   syncPolicy:
     syncOptions:
       - CreateNamespace=true

@@ -2,7 +2,7 @@ apiVersion: bitnami.com/v1alpha1
 kind: SealedSecret
 metadata:
   name: registry-s3-credentials
-  namespace: container-registry
+  namespace: zot
 spec:
   encryptedData:
     accessKey: AgCYqWRgFzKbJfYUkTnhww2XFC9iOEMEp4iaKZ6fyOMayUhiz6PnQfUwxoAmukMyrjxjLEdvM2SNsRJGHJKHazBuOG729UFwANjlhYXhdprRWyam878lSzNjrwcwcNRT5F5J/+yPaGB7+rRsiwzGHE/tEq3rEzcy7R/08X470+afvqX59XlO15wnHgeN9Gn83K5lBvEvCOLz4fJiefJMVMaiYsz4Ks8PtMffNu/+jQ3dU8KcQr/3KRPGYkHxTFZd6IxlJvCghqTuZ0N5cJUpDZvLdxPDOTLKjhv4DDYk6piihDpbPjxx+tfaBdlLhGQ1aVeaIpL+dm9u1i5Zc7+dVWPyd6fAkx85oHnSdJZJHjqJL0cRIEZfUZHYnp+rMItc/U9d+R1owA8xcKrcjYAiqE1iuvA0oeD/O8NmOe8SfwpQFqDkZcwFphxG/maoFZZOoH8g4arrzW1tVAWMV+m9L+UJ6cM5cPAQtgrAE5SJRGu6+DQrzTvUyCTmvmsgeK+orbrBlAdrFlXo8z/+7VXTHLy3mlcKa0LdcSNYnWQzVt5mvtI5nEi/nXAqaIN8lcX8R22WA81r0zCtb2lBzFrupurR/Ecp+SLgtlvMvVDnB2wlVsfuiYpSM5SzlMJhm/uI0S9ZYunoAbTDwRV01gQk7l7v+czUGK6dObC03Gehrg5xnCAhkx19qLPgXW1ftRnO3Cd4ofMtJAU/LXogxi+Vek0UrGtgtw==
@@ -10,5 +10,5 @@ spec:
   template:
     metadata:
       name: registry-s3-credentials
-      namespace: container-registry
+      namespace: zot
     type: Opaque

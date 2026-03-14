@@ -3,7 +3,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: registry-tls
-  namespace: container-registry
+  namespace: zot
 spec:
   secretName: registry-tls
   issuerRef:
@@ -16,7 +16,7 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: registry-gateway
-  namespace: container-registry
+  namespace: zot
   annotations:
     external-dns.alpha.kubernetes.io/hostname: "registry.k6nis.dev"
     external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
@@ -41,20 +41,20 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: registry
-  namespace: container-registry
+  namespace: zot
 spec:
   parentRefs:
     - group: gateway.networking.k8s.io
       kind: Gateway
       name: registry-gateway
-      namespace: container-registry
+      namespace: zot
   hostnames:
     - registry.k6nis.dev
   rules:
     - backendRefs:
         - group: ''
           kind: Service
-          name: container-registry-docker-registry
+          name: zot
           port: 5000
           weight: 1
       matches:
