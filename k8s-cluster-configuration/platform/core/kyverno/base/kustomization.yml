@@ -11,5 +11,6 @@ helmCharts:
     valuesFile: values.yml
 
 resources:
+  - rbac.yml
   - policies.yml
   - registry-credentials-sealed.yml
