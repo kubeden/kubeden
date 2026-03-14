@@ -30,8 +30,9 @@ spec:
       tls:
         mode: Terminate
         certificateRefs:
-          - name: registry-tls
+          - group: ''
             kind: Secret
+            name: registry-tls
       allowedRoutes:
         namespaces:
           from: Same
@@ -43,11 +44,20 @@ metadata:
   namespace: container-registry
 spec:
   parentRefs:
-    - name: registry-gateway
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: registry-gateway
       namespace: container-registry
   hostnames:
     - registry.k6nis.dev
   rules:
     - backendRefs:
-        - name: container-registry-docker-registry
+        - group: ''
+          kind: Service
+          name: container-registry-docker-registry
           port: 5000
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
