@@ -1,17 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: kubeden-api
+  name: container-registry
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/kubeden/kubeden.git
-    targetRevision: HEAD
-    path: kubernetes/argocd/applications/kubeden/kubeden-api
+    targetRevision: main
+    path: k8s-cluster-configuration/platform/core/container-registry/base
   destination:
     server: https://kubernetes.default.svc
-    namespace: kubeden-api
+    namespace: container-registry
   syncPolicy:
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true
+      - ServerSideApply=true

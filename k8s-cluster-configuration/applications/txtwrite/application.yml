@@ -7,11 +7,12 @@ spec:
   project: default
   source:
     repoURL: https://github.com/kubeden/kubeden.git
-    targetRevision: HEAD
-    path: kubernetes/argocd/applications/txtwrite
+    targetRevision: main
+    path: k8s-cluster-configuration/applications/txtwrite/base
   destination:
     server: https://kubernetes.default.svc
     namespace: txtwrite
   syncPolicy:
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true
+      - ServerSideApply=true

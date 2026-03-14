@@ -1,0 +1,53 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: registry-tls
+  namespace: container-registry
+spec:
+  secretName: registry-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - registry.k6nis.dev
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: registry-gateway
+  namespace: container-registry
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "registry.k6nis.dev"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 8443
+      hostname: registry.k6nis.dev
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: registry-tls
+            kind: Secret
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: registry
+  namespace: container-registry
+spec:
+  parentRefs:
+    - name: registry-gateway
+      namespace: container-registry
+  hostnames:
+    - registry.k6nis.dev
+  rules:
+    - backendRefs:
+        - name: container-registry-docker-registry
+          port: 5000

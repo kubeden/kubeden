@@ -1,0 +1,84 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: txtwrite-tls
+  namespace: txtwrite
+spec:
+  secretName: txtwrite-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - txtwrite.com
+    - www.txtwrite.com
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: txtwrite-gateway
+  namespace: txtwrite
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "txtwrite.com,www.txtwrite.com"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 8443
+      hostname: txtwrite.com
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: txtwrite-tls
+            kind: Secret
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: https-www
+      protocol: HTTPS
+      port: 8443
+      hostname: www.txtwrite.com
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: txtwrite-tls
+            kind: Secret
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: txtwrite
+  namespace: txtwrite
+spec:
+  parentRefs:
+    - name: txtwrite-gateway
+      namespace: txtwrite
+  hostnames:
+    - txtwrite.com
+  rules:
+    - backendRefs:
+        - name: txtwrite-service
+          port: 80
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: txtwrite-www-redirect
+  namespace: txtwrite
+spec:
+  parentRefs:
+    - name: txtwrite-gateway
+      namespace: txtwrite
+  hostnames:
+    - www.txtwrite.com
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            hostname: txtwrite.com
+            statusCode: 301

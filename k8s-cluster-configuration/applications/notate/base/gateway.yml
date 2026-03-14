@@ -1,0 +1,84 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: notate-tls
+  namespace: notate
+spec:
+  secretName: notate-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - notate.so
+    - www.notate.so
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: notate-gateway
+  namespace: notate
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "notate.so,www.notate.so"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 8443
+      hostname: notate.so
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: notate-tls
+            kind: Secret
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: https-www
+      protocol: HTTPS
+      port: 8443
+      hostname: www.notate.so
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: notate-tls
+            kind: Secret
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: notate
+  namespace: notate
+spec:
+  parentRefs:
+    - name: notate-gateway
+      namespace: notate
+  hostnames:
+    - notate.so
+  rules:
+    - backendRefs:
+        - name: notate-service
+          port: 80
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: notate-www-redirect
+  namespace: notate
+spec:
+  parentRefs:
+    - name: notate-gateway
+      namespace: notate
+  hostnames:
+    - www.notate.so
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            hostname: notate.so
+            statusCode: 301

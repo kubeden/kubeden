@@ -10,4 +10,5 @@ resources:
   - sealed-secrets/application.yml
   - external-dns/application.yaml
   - hcloud-ccm/application.yml
+  - container-registry/application.yml
   # - a2w-lucas/application.yml

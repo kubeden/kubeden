@@ -7,11 +7,12 @@ spec:
   project: default
   source:
     repoURL: https://github.com/kubeden/kubeden.git
-    targetRevision: HEAD
-    path: kubernetes/argocd/applications/notate
+    targetRevision: main
+    path: k8s-cluster-configuration/applications/notate/base
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: notate
   syncPolicy:
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true
+      - ServerSideApply=true

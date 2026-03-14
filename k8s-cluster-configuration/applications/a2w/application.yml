@@ -7,11 +7,12 @@ spec:
   project: default
   source:
     repoURL: https://github.com/kubeden/kubeden.git
-    targetRevision: HEAD
-    path: kubernetes/argocd/applications/a2w
+    targetRevision: main
+    path: k8s-cluster-configuration/applications/a2w/base
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: a2w
   syncPolicy:
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true
+      - ServerSideApply=true

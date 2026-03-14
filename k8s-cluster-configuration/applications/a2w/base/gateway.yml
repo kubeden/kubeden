@@ -1,0 +1,84 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: a2w-tls
+  namespace: a2w
+spec:
+  secretName: a2w-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - a2w.io
+    - www.a2w.io
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: a2w-gateway
+  namespace: a2w
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "a2w.io,www.a2w.io"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 8443
+      hostname: a2w.io
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: a2w-tls
+            kind: Secret
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: https-www
+      protocol: HTTPS
+      port: 8443
+      hostname: www.a2w.io
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: a2w-tls
+            kind: Secret
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: a2w
+  namespace: a2w
+spec:
+  parentRefs:
+    - name: a2w-gateway
+      namespace: a2w
+  hostnames:
+    - a2w.io
+  rules:
+    - backendRefs:
+        - name: a2w-service
+          port: 80
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: a2w-www-redirect
+  namespace: a2w
+spec:
+  parentRefs:
+    - name: a2w-gateway
+      namespace: a2w
+  hostnames:
+    - www.a2w.io
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            hostname: a2w.io
+            statusCode: 301

@@ -7,11 +7,12 @@ spec:
   project: default
   source:
     repoURL: https://github.com/kubeden/kubeden.git
-    targetRevision: HEAD
-    path: kubernetes/argocd/applications/excalidraw
+    targetRevision: main
+    path: k8s-cluster-configuration/applications/excalidraw/base
   destination:
     server: https://kubernetes.default.svc
     namespace: excalidraw
   syncPolicy:
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true
+      - ServerSideApply=true

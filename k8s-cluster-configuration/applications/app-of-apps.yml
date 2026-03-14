@@ -1,17 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: kubeden-client
+  name: kubeden-apps
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/kubeden/kubeden.git
-    targetRevision: HEAD
-    path: kubernetes/argocd/applications/kubeden/kubeden-client
+    targetRevision: main
+    path: k8s-cluster-configuration/applications
   destination:
     server: https://kubernetes.default.svc
-    namespace: kubeden-client
+    namespace: argocd
   syncPolicy:
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true
+      - PruneLast=true
+      - ServerSideApply=true

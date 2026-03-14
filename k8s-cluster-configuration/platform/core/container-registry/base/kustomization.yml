@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+helmCharts:
+  - name: zot
+    repo: http://zotregistry.dev/helm-charts
+    version: 0.1.102
+    releaseName: zot
+    namespace: container-registry
+    valuesFile: values.yml
+
+resources:
+  - gateway.yml
+  - configs/registry-sealed.yaml
