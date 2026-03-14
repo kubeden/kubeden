@@ -33,7 +33,7 @@ configFiles:
           "region": "fsn1",
           "regionendpoint": "https://fsn1.your-objectstorage.com",
           "bucket": "kubeden",
-          "rootdirectory": "infra/zot",
+          "rootdirectory": "/infra/zot",
           "secure": true,
           "skipverify": false,
           "forcepathstyle": true
