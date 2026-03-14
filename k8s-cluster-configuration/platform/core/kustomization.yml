@@ -11,4 +11,5 @@ resources:
   - external-dns/application.yaml
   - hcloud-ccm/application.yml
   - zot/application.yml
+  - kyverno/application.yml
   # - a2w-lucas/application.yml

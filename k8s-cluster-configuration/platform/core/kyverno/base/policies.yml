@@ -1,0 +1,49 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: inject-registry-pull-secret
+spec:
+  rules:
+    - name: add-pull-secret
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      mutate:
+        patchStrategicMerge:
+          spec:
+            imagePullSecrets:
+              - name: registry-credentials
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: sync-registry-credentials
+spec:
+  rules:
+    - name: sync-secret
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+      exclude:
+        any:
+          - resources:
+              namespaces:
+                - kube-system
+                - kube-public
+                - kube-node-lease
+                - kyverno
+      generate:
+        generateExisting: true
+        synchronize: true
+        apiVersion: v1
+        kind: Secret
+        name: registry-credentials
+        namespace: "{{request.object.metadata.name}}"
+        clone:
+          namespace: kyverno
+          name: registry-credentials
