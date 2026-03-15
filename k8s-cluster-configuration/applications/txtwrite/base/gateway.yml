@@ -31,8 +31,9 @@ spec:
       tls:
         mode: Terminate
         certificateRefs:
-          - name: txtwrite-tls
+          - group: ''
             kind: Secret
+            name: txtwrite-tls
       allowedRoutes:
         namespaces:
           from: Same
@@ -43,8 +44,9 @@ spec:
       tls:
         mode: Terminate
         certificateRefs:
-          - name: txtwrite-tls
+          - group: ''
             kind: Secret
+            name: txtwrite-tls
       allowedRoutes:
         namespaces:
           from: Same
@@ -56,14 +58,23 @@ metadata:
   namespace: txtwrite
 spec:
   parentRefs:
-    - name: txtwrite-gateway
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: txtwrite-gateway
       namespace: txtwrite
   hostnames:
     - txtwrite.com
   rules:
     - backendRefs:
-        - name: txtwrite-service
+        - group: ''
+          kind: Service
+          name: txtwrite-service
           port: 80
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
@@ -72,7 +83,9 @@ metadata:
   namespace: txtwrite
 spec:
   parentRefs:
-    - name: txtwrite-gateway
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: txtwrite-gateway
       namespace: txtwrite
   hostnames:
     - www.txtwrite.com

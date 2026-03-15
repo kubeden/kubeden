@@ -31,8 +31,9 @@ spec:
       tls:
         mode: Terminate
         certificateRefs:
-          - name: a2w-tls
+          - group: ''
             kind: Secret
+            name: a2w-tls
       allowedRoutes:
         namespaces:
           from: Same
@@ -43,8 +44,9 @@ spec:
       tls:
         mode: Terminate
         certificateRefs:
-          - name: a2w-tls
+          - group: ''
             kind: Secret
+            name: a2w-tls
       allowedRoutes:
         namespaces:
           from: Same
@@ -56,14 +58,23 @@ metadata:
   namespace: a2w
 spec:
   parentRefs:
-    - name: a2w-gateway
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: a2w-gateway
       namespace: a2w
   hostnames:
     - a2w.io
   rules:
     - backendRefs:
-        - name: a2w-service
+        - group: ''
+          kind: Service
+          name: a2w-service
           port: 80
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
@@ -72,7 +83,9 @@ metadata:
   namespace: a2w
 spec:
   parentRefs:
-    - name: a2w-gateway
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: a2w-gateway
       namespace: a2w
   hostnames:
     - www.a2w.io

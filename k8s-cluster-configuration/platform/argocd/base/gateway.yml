@@ -1,5 +1,4 @@
 ---
-# Certificate for ArgoCD via cert-manager
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -13,7 +12,6 @@ spec:
   dnsNames:
     - argocd.k6nis.dev
 ---
-# Gateway for ArgoCD using Traefik GatewayClass
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
@@ -32,13 +30,13 @@ spec:
       tls:
         mode: Terminate
         certificateRefs:
-          - name: argocd-tls
+          - group: ''
             kind: Secret
+            name: argocd-tls
       allowedRoutes:
         namespaces:
           from: Same
 ---
-# HTTPRoute for ArgoCD
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -46,11 +44,20 @@ metadata:
   namespace: argocd
 spec:
   parentRefs:
-    - name: argocd-gateway
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: argocd-gateway
       namespace: argocd
   hostnames:
     - argocd.k6nis.dev
   rules:
     - backendRefs:
-        - name: argocd-server
+        - group: ''
+          kind: Service
+          name: argocd-server
           port: 80
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /

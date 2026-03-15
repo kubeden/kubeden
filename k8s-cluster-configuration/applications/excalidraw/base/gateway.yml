@@ -10,7 +10,7 @@ spec:
     name: letsencrypt-prod
     kind: ClusterIssuer
   dnsNames:
-    - excalidraw.kubeden.io
+    - excalidraw.k6nis.dev
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
@@ -18,7 +18,7 @@ metadata:
   name: excalidraw-gateway
   namespace: excalidraw
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: "excalidraw.kubeden.io"
+    external-dns.alpha.kubernetes.io/hostname: "excalidraw.k6nis.dev"
     external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
 spec:
   gatewayClassName: traefik
@@ -26,12 +26,13 @@ spec:
     - name: https
       protocol: HTTPS
       port: 8443
-      hostname: excalidraw.kubeden.io
+      hostname: excalidraw.k6nis.dev
       tls:
         mode: Terminate
         certificateRefs:
-          - name: excalidraw-tls
+          - group: ''
             kind: Secret
+            name: excalidraw-tls
       allowedRoutes:
         namespaces:
           from: Same
@@ -43,11 +44,20 @@ metadata:
   namespace: excalidraw
 spec:
   parentRefs:
-    - name: excalidraw-gateway
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: excalidraw-gateway
       namespace: excalidraw
   hostnames:
-    - excalidraw.kubeden.io
+    - excalidraw.k6nis.dev
   rules:
     - backendRefs:
-        - name: excalidraw
+        - group: ''
+          kind: Service
+          name: excalidraw
           port: 80
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
