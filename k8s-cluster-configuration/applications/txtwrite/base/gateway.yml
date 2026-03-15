@@ -95,3 +95,7 @@ spec:
           requestRedirect:
             hostname: txtwrite.com
             statusCode: 301
+      matches:
+        - path:
+            type: PathPrefix
+            value: /

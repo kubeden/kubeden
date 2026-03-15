@@ -95,3 +95,7 @@ spec:
           requestRedirect:
             hostname: notate.so
             statusCode: 301
+      matches:
+        - path:
+            type: PathPrefix
+            value: /

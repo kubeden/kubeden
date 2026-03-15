@@ -95,3 +95,7 @@ spec:
           requestRedirect:
             hostname: a2w.io
             statusCode: 301
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
