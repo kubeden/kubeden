@@ -18,8 +18,9 @@ sources:
   - gateway-httproute
   - gateway-grpcroute
 domainFilters:
-  - kubeden.io
   - k6nis.dev
+  - notate.so
+  - txtwrite.com
 
 rbac:
   create: true
