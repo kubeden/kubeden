@@ -6,9 +6,6 @@ commonLabels:
 
 resources:
   # - a2w/application.yml
-  # - excalidraw/application.yml
-  # - notate/application.yml
-  # - txtwrite/application.yml
-  # - kubeden/kubeden-api/application.yml
-  # - kubeden/kubeden-client/application.yml
-  # - kubeden/kubeden-unemployment/application.yml
+  - excalidraw/application.yml
+  - notate/application.yml
+  - txtwrite/application.yml

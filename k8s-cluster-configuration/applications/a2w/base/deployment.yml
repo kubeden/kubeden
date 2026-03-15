@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: a2w
-        image: registry.digitalocean.com/kubeden/a2w/landing:v3
+        image: registry.k6nis.dev/a2w/landing:v3
         ports:
         - containerPort: 3000
         env:
