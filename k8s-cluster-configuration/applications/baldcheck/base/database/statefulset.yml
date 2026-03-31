@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: baldcheck-db
+  namespace: baldcheck
+  labels:
+    app: baldcheck-db
+spec:
+  serviceName: baldcheck-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: baldcheck-db
+  template:
+    metadata:
+      labels:
+        app: baldcheck-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:17-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: baldcheck
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: baldcheck-secrets
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: baldcheck-secrets
+              key: POSTGRES_PASSWORD
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        volumeMounts:
+        - name: db-storage
+          mountPath: /var/lib/postgresql/data
+        - name: init-sql
+          mountPath: /docker-entrypoint-initdb.d
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        readinessProbe:
+          exec:
+            command: ["pg_isready", "-U", "baldcheck"]
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          exec:
+            command: ["pg_isready", "-U", "baldcheck"]
+          initialDelaySeconds: 15
+          periodSeconds: 30
+      volumes:
+      - name: db-storage
+        persistentVolumeClaim:
+          claimName: baldcheck-db-pvc
+      - name: init-sql
+        configMap:
+          name: baldcheck-init-sql

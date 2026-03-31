@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: baldcheck-init-sql
+  namespace: baldcheck
+data:
+  init.sql: |
+    CREATE TABLE IF NOT EXISTS license_keys (
+      id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      key         TEXT UNIQUE NOT NULL,
+      created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+      source      TEXT NOT NULL,
+      source_id   TEXT UNIQUE NOT NULL,
+      is_gift     BOOLEAN NOT NULL DEFAULT true,
+      redeemed    BOOLEAN NOT NULL DEFAULT false,
+      redeemed_at TIMESTAMPTZ,
+      redeemed_by TEXT
+    );
+    CREATE INDEX IF NOT EXISTS idx_license_keys_key ON license_keys (key);
+    CREATE INDEX IF NOT EXISTS idx_license_keys_source_id ON license_keys (source_id);

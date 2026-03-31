@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: baldcheck-tls
+  namespace: baldcheck
+spec:
+  secretName: baldcheck-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - baldcheck.com
+    - www.baldcheck.com

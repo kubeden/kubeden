@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: baldcheck-config
+  namespace: baldcheck
+data:
+  NEXT_PUBLIC_APP_URL: "https://baldcheck.com"
