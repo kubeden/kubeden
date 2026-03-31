@@ -9,3 +9,4 @@ resources:
   - excalidraw/application.yml
   - notate/application.yml
   - txtwrite/application.yml
+  - baldcheck/application.yml
