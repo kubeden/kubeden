@@ -20,3 +20,13 @@ data:
     );
     CREATE INDEX IF NOT EXISTS idx_license_keys_key ON license_keys (key);
     CREATE INDEX IF NOT EXISTS idx_license_keys_source_id ON license_keys (source_id);
+
+    CREATE TABLE IF NOT EXISTS baldchecks (
+      id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      slug        TEXT UNIQUE NOT NULL,
+      recipient   TEXT,
+      sender      TEXT,
+      created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+    CREATE INDEX IF NOT EXISTS idx_baldchecks_slug ON baldchecks (slug);
+    CREATE INDEX IF NOT EXISTS idx_baldchecks_created_at ON baldchecks (created_at DESC);
