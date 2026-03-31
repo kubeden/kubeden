@@ -21,6 +21,7 @@ domainFilters:
   - k6nis.dev
   - notate.so
   - txtwrite.com
+  - baldcheck.com
 
 rbac:
   create: true
