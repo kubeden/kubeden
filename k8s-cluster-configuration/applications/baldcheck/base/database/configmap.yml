@@ -26,6 +26,8 @@ data:
       slug        TEXT UNIQUE NOT NULL,
       recipient   TEXT,
       sender      TEXT,
+      x_handle    TEXT,
+      x_avatar_b64 TEXT,
       created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
     );
     CREATE INDEX IF NOT EXISTS idx_baldchecks_slug ON baldchecks (slug);
