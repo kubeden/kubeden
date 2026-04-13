@@ -1,0 +1,49 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: globchess
+  namespace: globchess
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: globchess-gateway
+      namespace: globchess
+  hostnames:
+    - globchess.com
+  rules:
+    - backendRefs:
+        - group: ''
+          kind: Service
+          name: globchess-service
+          port: 80
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: globchess-www-redirect
+  namespace: globchess
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: globchess-gateway
+      namespace: globchess
+  hostnames:
+    - www.globchess.com
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            hostname: globchess.com
+            statusCode: 301
+      matches:
+        - path:
+            type: PathPrefix
+            value: /

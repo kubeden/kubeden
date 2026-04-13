@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: globchess-db
+  namespace: globchess
+  labels:
+    app: globchess-db
+spec:
+  serviceName: globchess-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: globchess-db
+  template:
+    metadata:
+      labels:
+        app: globchess-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:17-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: globchess
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: globchess-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: globchess-secrets
+                  key: POSTGRES_PASSWORD
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: db-storage
+              mountPath: /var/lib/postgresql/data
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "globchess"]
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-U", "globchess"]
+            initialDelaySeconds: 15
+            periodSeconds: 30
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: globchess-db-pvc

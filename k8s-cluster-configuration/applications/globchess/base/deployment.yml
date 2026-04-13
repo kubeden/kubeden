@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: globchess
+  namespace: globchess
+  labels:
+    app: globchess
+spec:
+  # Pinned at 1 until a Redis Socket.io adapter is added — broadcasts
+  # only reach clients on the same pod without one, so scaling out would
+  # silo the realtime layer.
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: globchess
+  template:
+    metadata:
+      labels:
+        app: globchess
+    spec:
+      # Two init containers run in order before the app boots:
+      #   1. wait-for-db — blocks until postgres is accepting connections
+      #   2. migrate     — runs `prisma migrate deploy` + seed (idempotent)
+      initContainers:
+        - name: wait-for-db
+          image: postgres:17-alpine
+          command:
+            - /bin/sh
+            - -c
+            - |
+              until pg_isready -h globchess-db -p 5432 -U "$POSTGRES_USER"; do
+                echo "waiting for globchess-db…"; sleep 2
+              done
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: globchess-secrets
+                  key: POSTGRES_USER
+        - name: migrate
+          image: registry.k6nis.dev/globchess/webapp:latest
+          imagePullPolicy: Always
+          workingDir: /app
+          command:
+            - /bin/sh
+            - -c
+            - "npx prisma migrate deploy && node prisma/seed.mjs"
+          envFrom:
+            - configMapRef:
+                name: globchess-config
+            - secretRef:
+                name: globchess-secrets
+      containers:
+        - name: globchess
+          image: registry.k6nis.dev/globchess/webapp:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+              name: http
+          envFrom:
+            - configMapRef:
+                name: globchess-config
+            - secretRef:
+                name: globchess-secrets
+          readinessProbe:
+            httpGet:
+              path: /api/version
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/version
+              port: 3000
+            initialDelaySeconds: 20
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi

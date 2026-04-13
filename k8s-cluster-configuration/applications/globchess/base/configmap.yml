@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: globchess-config
+  namespace: globchess
+data:
+  NODE_ENV: "production"
+  PORT: "3000"
+  HOSTNAME: "0.0.0.0"
+  NEXT_PUBLIC_APP_VERSION: "0.2.0"
+  NEXT_PUBLIC_SITE_URL: "https://globchess.com"
+  NEXTAUTH_URL: "https://globchess.com"
+
+  # Resend
+  RESEND_FROM_EMAIL: "no-reply@globchess.com"
+  RESEND_FROM_NAME: "Dennis G."
+
+  # OTP — production values (much stricter than the dev defaults)
+  OTP_TTL_SECONDS: "600"
+  OTP_REQUEST_COOLDOWN_SECONDS: "60"
+  OTP_MAX_ATTEMPTS: "5"
+  OTP_MAX_REQUESTS_PER_HOUR: "5"
+  AUTH_TICKET_TTL_SECONDS: "120"
+
+  # External chess evaluation API
+  CHESS_API_URL: "https://chess-api.com/v1"
+
+  # Feature flags — moves are free, no Stripe path in the UI.
+  FEATURE_EMAIL: "true"
+  FEATURE_AUTH: "true"
+  FEATURE_GAME: "true"
+  FEATURE_CHAT: "true"
+  FEATURE_LEADERBOARD: "true"
+  FEATURE_REALTIME: "true"
+  FEATURE_STRIPE: "false"
+  FEATURE_STORAGE: "false"
+  FEATURE_EVALUATION: "true"

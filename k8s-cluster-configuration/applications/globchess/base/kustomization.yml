@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - deployment.yml
+  - configmap.yml
+  - secrets.yml
+  - database/pvc.yml
+  - database/statefulset.yml
+  - database/service.yml
+  - database/networkpolicy.yml
+  - networking/certificate.yml
+  - networking/gateway.yml
+  - networking/httproute.yml
+  - networking/service.yml
