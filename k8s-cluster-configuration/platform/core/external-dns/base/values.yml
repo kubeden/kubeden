@@ -22,6 +22,7 @@ domainFilters:
   - notate.so
   - txtwrite.com
   - baldcheck.com
+  - globchess.com
 
 rbac:
   create: true
