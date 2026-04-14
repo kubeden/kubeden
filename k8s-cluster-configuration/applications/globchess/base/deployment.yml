@@ -45,18 +45,16 @@ spec:
         - name: migrate
           image: registry.k6nis.dev/globchess/webapp:latest
           imagePullPolicy: Always
-          workingDir: /migrator
-          # Runs from /migrator which has a full prod-only node_modules
-          # with all of prisma's transitive deps. Standalone output's
-          # /app/node_modules is missing effect et al — do NOT run migrate
-          # from there.
+          workingDir: /app
+          # /app/node_modules is the full prod-only tree (has prisma CLI
+          # + effect + all transitive deps). No more /migrator split.
           command:
             - /bin/sh
             - -c
             - |
               set -e
-              node /migrator/node_modules/prisma/build/index.js migrate deploy
-              node /migrator/prisma/seed.mjs
+              node /app/node_modules/prisma/build/index.js migrate deploy
+              node /app/prisma/seed.mjs
           envFrom:
             - configMapRef:
                 name: globchess-config
