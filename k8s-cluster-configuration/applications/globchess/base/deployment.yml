@@ -46,10 +46,19 @@ spec:
           image: registry.k6nis.dev/globchess/webapp:latest
           imagePullPolicy: Always
           workingDir: /app
+          # Invoke prisma via `node` directly instead of `npx prisma`.
+          # Next.js `output: 'standalone'` emits a pruned node_modules
+          # that doesn't recreate the `node_modules/.bin/` symlinks, so
+          # `npx prisma` can't find the CLI even though the prisma
+          # package itself is present. Calling the built entry script
+          # by absolute path sidesteps the symlink entirely.
           command:
             - /bin/sh
             - -c
-            - "npx prisma migrate deploy && node prisma/seed.mjs"
+            - |
+              set -e
+              node /app/node_modules/prisma/build/index.js migrate deploy
+              node /app/prisma/seed.mjs
           envFrom:
             - configMapRef:
                 name: globchess-config
