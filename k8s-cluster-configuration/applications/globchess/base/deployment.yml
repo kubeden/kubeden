@@ -46,36 +46,48 @@ spec:
           image: registry.k6nis.dev/globchess/webapp:latest
           imagePullPolicy: Always
           workingDir: /app
-          # Diagnostic migrate: every step echoes via `set -x` so we can
-          # see exactly how far the container got before dying. Drop back
-          # to a terse one-liner once this is green.
+          # DEBUG MODE — stays alive for 1h after diagnostics so we can
+          # `kubectl exec` into it regardless of what fails. Restore the
+          # real migrate command once we know the root cause.
           command:
             - /bin/sh
-            - -xeuc
+            - -c
             - |
-              echo "=== arch / node / user ==="
-              uname -m
+              set +e
+              exec 2>&1
+              echo "=== start $(date) ==="
+              echo "--- uname ---"
+              uname -a
+              echo "--- id ---"
               id
-              node --version
-              echo "=== /app tree (1 level) ==="
-              ls -la /app
-              echo "=== /app/node_modules (top) ==="
-              ls /app/node_modules | head -40
-              echo "=== /app/node_modules/prisma ==="
-              ls -la /app/node_modules/prisma 2>&1 || echo "NO prisma dir"
-              echo "=== /app/node_modules/@prisma ==="
-              ls -la /app/node_modules/@prisma 2>&1 || echo "NO @prisma dir"
-              echo "=== /app/node_modules/.prisma ==="
-              ls -la /app/node_modules/.prisma 2>&1 || echo "NO .prisma dir"
-              echo "=== /app/prisma (schema + migrations) ==="
-              ls -la /app/prisma 2>&1 || echo "NO prisma schema dir"
-              echo "=== DATABASE_URL (masked) ==="
-              echo "${DATABASE_URL%%@*}@..."
-              echo "=== running prisma migrate deploy ==="
+              echo "--- pwd ---"
+              pwd
+              echo "--- node ---"
+              command -v node && node --version
+              echo "--- ls /app ---"
+              ls -la /app 2>&1 | head -40
+              echo "--- ls /app/node_modules (top 30) ---"
+              ls /app/node_modules 2>&1 | head -30
+              echo "--- prisma CLI script ---"
+              ls -la /app/node_modules/prisma/build/index.js 2>&1
+              echo "--- @prisma ---"
+              ls /app/node_modules/@prisma 2>&1
+              echo "--- .prisma ---"
+              ls /app/node_modules/.prisma 2>&1
+              echo "--- prisma schema dir ---"
+              ls -la /app/prisma 2>&1
+              echo "--- DATABASE_URL masked ---"
+              printenv DATABASE_URL | sed 's|://[^@]*@|://***:***@|'
+              echo "--- env keys ---"
+              printenv | cut -d= -f1 | sort
+              echo "--- attempt migrate deploy ---"
               node /app/node_modules/prisma/build/index.js migrate deploy
-              echo "=== running seed ==="
+              echo "--- migrate exit: $? ---"
+              echo "--- attempt seed ---"
               node /app/prisma/seed.mjs
-              echo "=== DONE ==="
+              echo "--- seed exit: $? ---"
+              echo "=== sleeping 3600s for exec debugging ==="
+              sleep 3600
           envFrom:
             - configMapRef:
                 name: globchess-config
