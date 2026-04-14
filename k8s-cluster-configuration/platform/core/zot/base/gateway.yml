@@ -42,6 +42,14 @@ kind: HTTPRoute
 metadata:
   name: registry
   namespace: zot
+  annotations:
+    # external-dns's gateway-httproute source reads annotations from the
+    # HTTPRoute, not the parent Gateway, so the proxied=false override
+    # MUST live here. Global default is --cloudflare-proxied (set true
+    # in platform/core/external-dns/base/values.yml) for public apps,
+    # so internal hosts like the registry need an explicit opt-out or
+    # Cloudflare's 100 MB upload limit blocks image pushes.
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
 spec:
   parentRefs:
     - group: gateway.networking.k8s.io
