@@ -1,0 +1,78 @@
+# velero-ui (seriohub/vui chart 1.0.6)
+#
+# Runs in its own "velero-ui" namespace and talks to the velero server
+# living in the "velero" namespace via the cluster DNS. Intentionally NOT
+# exposed through the Gateway API by default — access during initial
+# setup is via kubectl port-forward:
+#
+#   kubectl port-forward -n velero-ui svc/vui-ui-service 3000:80
+#
+# Once you're comfortable adding an auth proxy (Cloudflare Access, oauth2-proxy,
+# or the chart's built-in BUILT-IN auth with a strong password), add a
+# gateway/httproute/certificate trio here mirroring the baldcheck pattern.
+#
+# Chart default login is admin/admin. Fine for a first boot behind a
+# port-forward but UNACCEPTABLE for anything internet-facing — rotate it
+# immediately on first login.
+
+global:
+  veleroNamespace: velero
+  clusterName: k6nis
+
+auth:
+  enabled: true
+  mode: BUILT-IN
+
+apiService:
+  replicas: 1
+  config:
+    apiEndpointPort: 8001
+    apiTokenExpirationMin: 60
+  secret:
+    defaultAdminUsername: admin
+    defaultAdminPassword: admin      # ROTATE AFTER FIRST LOGIN
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+uiService:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 20m
+      memory: 64Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
+
+coreService:
+  replicas: 1
+  secret:
+    defaultAdminUsername: admin
+    defaultAdminPassword: admin      # ROTATE AFTER FIRST LOGIN
+  resources:
+    requests:
+      cpu: 20m
+      memory: 64Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
+
+watchdogService:
+  replicas: 1
+  config:
+    apiEndpointPort: 8001
+  resources:
+    requests:
+      cpu: 20m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+exposure:
+  mode: clusterIP

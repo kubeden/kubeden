@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "seriohub-velero.fullname" . }}-api-deploy
+  labels:
+    component: api
+  {{- include "seriohub-velero.labels" . | nindent 4 }}
+  {{- with .Values.apiService.deployment.annotations }}
+  annotations: {{ toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.apiService.deployment.replicas }}
+  selector:
+    matchLabels:
+      component: api
+    {{- include "seriohub-velero.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        component: api
+      {{- include "seriohub-velero.selectorLabels" . | nindent 8 }}
+      {{- with .Values.apiService.deployment.podAnnotations }}
+      annotations: {{ toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      containers:
+      - name: api-server
+        image: {{ .Values.apiService.deployment.image.registry | trimSuffix "/" }}/{{ .Values.apiService.deployment.image.repository }}:{{ .Values.apiService.deployment.image.tag }}
+        imagePullPolicy: {{ .Values.apiService.deployment.imagePullPolicy }}
+        env:
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+        envFrom:
+          - configMapRef:
+              name: {{ include "seriohub-velero.fullname" . }}-api-config
+          - configMapRef:
+              name: {{ include "seriohub-velero.fullname" . }}-helm-config
+          {{- if not .Values.apiService.secret.existingSecret }}
+          - secretRef:
+              name: {{ include "seriohub-velero.fullname" . }}-api-secret
+          {{- else }}
+          - secretRef:
+              name: {{ .Values.apiService.secret.existingSecret }}
+          {{- end }}
+        ports:
+          - containerPort: 8001
+            name: api
+        {{- if .Values.apiService.deployment.securityContext.enabled }}
+        securityContext:
+          {{- toYaml (omit .Values.apiService.deployment.securityContext "enabled") | nindent 10 }}
+        {{- end }}
+        {{- with .Values.apiService.deployment.resources }}
+        resources:
+          {{ . | toYaml | nindent 10 }}
+        {{- end }}
+        volumeMounts:
+        {{- with .Values.apiService.deployment.volumeMounts }}
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+          - name: data
+            mountPath: /app/data
+      {{- with .Values.apiService.deployment.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.apiService.deployment.podSecurityContext.enabled }}
+      securityContext:
+        {{- toYaml (omit .Values.apiService.deployment.podSecurityContext "enabled") | nindent 8 }}
+      {{- end }}
+      {{- with .Values.apiService.deployment.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.apiService.deployment.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.apiService.deployment.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      {{- with .Values.apiService.deployment.volumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.apiService.deployment.storage.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "seriohub-velero.fullname" $ }}-vui-api-pvc
+      {{- else }}
+        - name: data
+          emptyDir: {}
+      {{- end}}
+      serviceAccountName: {{ include "seriohub-velero.fullname" . }}-admin-sa

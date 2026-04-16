@@ -1,0 +1,18 @@
+{{- if or (eq .Values.exposure.mode "ingress") (eq .Values.exposure.mode "clusterIP") }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "seriohub-velero.fullname" . }}-api-clusterip-svc
+  labels:
+    {{- include "seriohub-velero.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    component: api
+    {{- include "seriohub-velero.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: vui-api
+      port: 80
+      protocol: TCP
+      targetPort: api
+{{- end }}

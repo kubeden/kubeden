@@ -1,0 +1,70 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "seriohub-velero.fullname" . }}-cluster-readonly
+  labels:
+  {{- include "seriohub-velero.labels" . | nindent 4 }}
+rules:
+  # Allows read-only access (get, list, watch) to all namespaces in the cluster
+  - apiGroups:
+      - ""
+    resources:
+      - namespaces
+    verbs:
+      - get
+      - list
+      - watch
+
+   # Allows read-only access to all storage classes in the cluster
+  - apiGroups:
+      - storage.k8s.io
+    resources:
+      - storageclasses
+    verbs:
+      - get
+      - list
+      - watch
+
+  # Allows read-only access to all cluster nodes
+  - apiGroups:
+      - ""
+    resources:
+      - nodes
+    verbs:
+      - get
+      - watch
+      - list
+
+{{- if .Values.apiService.config.inspectBackupEnabled }}
+  # If `inspectBackupEnabled` is true, grants read-only access to all resources in the cluster,
+  # including Custom Resource Definitions (CRDs)
+  - apiGroups:
+      - "*"
+    resources:
+      - "*"
+    verbs:
+      - get
+      - list
+      - watch
+{{- end }}
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "seriohub-velero.fullname" . }}-cluster-readonly-binding
+  labels:
+  {{- include "seriohub-velero.labels" . | nindent 4 }}
+
+# Binds the ClusterRole to the specified ServiceAccount
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "seriohub-velero.fullname" . }}-cluster-readonly
+
+subjects:
+  # Grants the permissions defined in the ClusterRole to the specified ServiceAccount
+  - kind: ServiceAccount
+    name: {{ include "seriohub-velero.fullname" . }}-admin-sa
+    namespace: {{ .Release.Namespace }}

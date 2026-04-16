@@ -1,0 +1,82 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "seriohub-velero.fullname" . }}-report-cronjob
+  labels:
+  {{- include "seriohub-velero.labels" . | nindent 4 }}
+  {{- with .Values.cronJobs.report.jobSpec.annotations }}
+  annotations: {{ toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  failedJobsHistoryLimit: {{ .Values.cronJobs.report.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          {{- with .Values.cronJobs.report.jobSpec.annotations }}
+          annotations: {{ toYaml . | nindent 8 }}
+          {{- end }}
+        spec:
+          {{- with .Values.cronJobs.report.jobSpec.volumes }}
+          volumes:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.cronJobs.report.jobSpec.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.cronJobs.report.jobSpec.podSecurityContext.enabled }}
+          securityContext:
+            {{- toYaml (omit .Values.cronJobs.report.jobSpec.podSecurityContext "enabled") | nindent 12 }}
+          {{- end }}
+          {{- with .Values.cronJobs.report.jobSpec.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.cronJobs.report.jobSpec.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.cronJobs.report.jobSpec.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          containers:
+          - name: velero-watchdog-report
+            image: {{ .Values.cronJobs.report.jobSpec.image.registry | trimSuffix "/" }}/{{ .Values.cronJobs.report.jobSpec.image.repository }}:{{ .Values.cronJobs.report.jobSpec.image.tag }}
+            imagePullPolicy: {{ .Values.cronJobs.report.jobSpec.imagePullPolicy }}            
+            command:
+              - python3
+              - watchdog.py
+            env:
+              - name: POD_NAME
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.name
+              - name: POD_NAMESPACE
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.namespace
+            envFrom:
+              - configMapRef:
+                  name: {{ include "seriohub-velero.fullname" $ }}-watchdog-config
+              - configMapRef:
+                  name: {{ include "seriohub-velero.fullname" $ }}-helm-config
+              - secretRef:
+                  name: {{ include "seriohub-velero.fullname" $ }}-watchdog-secret
+            {{- if .Values.cronJobs.report.jobSpec.securityContext.enabled }}
+            securityContext:
+              {{- toYaml (omit .Values.cronJobs.report.jobSpec.securityContext "enabled") | nindent 14 }}
+            {{- end }}
+            {{- with .Values.cronJobs.report.jobSpec.resources }}
+            resources:
+              {{- . | toYaml | nindent 14 }}
+            {{- end }}
+            {{- with .Values.cronJobs.report.jobSpec.volumeMounts }}
+            volumeMounts:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+          restartPolicy: Never
+          serviceAccountName: {{ include "seriohub-velero.fullname" . }}-readonly-sa
+  schedule: {{ .Values.cronJobs.report.schedule | quote }}
+  successfulJobsHistoryLimit: {{ .Values.cronJobs.report.successfulJobsHistoryLimit }}

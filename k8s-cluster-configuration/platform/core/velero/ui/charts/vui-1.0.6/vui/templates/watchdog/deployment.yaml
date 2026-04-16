@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "seriohub-velero.fullname" . }}-watchdog-deploy
+  # name: velero-watchdog
+  labels:
+    component: watchdog
+  {{- include "seriohub-velero.labels" . | nindent 4 }}
+  {{- with .Values.watchdogService.deployment.annotations }}
+  annotations: {{ toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.watchdogService.deployment.replicas }}
+  selector:
+    matchLabels:
+      component: watchdog
+    {{- include "seriohub-velero.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        component: watchdog
+      {{- include "seriohub-velero.selectorLabels" . | nindent 8 }}
+      {{- with .Values.watchdogService.deployment.annotations }}
+      annotations: {{ toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- with .Values.watchdogService.deployment.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.watchdogService.deployment.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.watchdogService.deployment.podSecurityContext.enabled }}
+      securityContext:
+        {{- toYaml (omit .Values.watchdogService.deployment.podSecurityContext "enabled") | nindent 8 }}
+      {{- end }}
+      {{- with .Values.watchdogService.deployment.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.watchdogService.deployment.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.watchdogService.deployment.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: velero-monitoring
+        image: {{ .Values.watchdogService.deployment.image.registry | trimSuffix "/" }}/{{ .Values.watchdogService.deployment.image.repository }}:{{ .Values.watchdogService.deployment.image.tag }}
+        imagePullPolicy: {{ .Values.watchdogService.deployment.imagePullPolicy }}        
+        env:
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+        envFrom:
+          - configMapRef:
+              name: {{ include "seriohub-velero.fullname" . }}-helm-config
+          - configMapRef:
+              name: {{ include "seriohub-velero.fullname" $ }}-watchdog-config
+          {{- if not .Values.watchdogService.secret.existingSecret }}
+          - secretRef:
+              name: {{ include "seriohub-velero.fullname" $ }}-watchdog-secret
+          {{- else }}
+          - secretRef:
+              name: {{ .Values.watchdogService.secret.existingSecret }}
+          {{- end }}
+        ports:
+          - name: api
+            containerPort: 8001
+        {{- if .Values.watchdogService.deployment.securityContext.enabled }}
+        securityContext:
+          {{- toYaml (omit .Values.watchdogService.deployment.securityContext "enabled") | nindent 10 }}
+        {{- end }}
+        {{- with .Values.watchdogService.deployment.resources }}
+        resources:
+          {{ . | toYaml | nindent 10 }}
+        {{- end }}
+        {{- with .Values.watchdogService.deployment.volumeMounts }}
+        volumeMounts:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      serviceAccountName: {{ include "seriohub-velero.fullname" . }}-readonly-sa

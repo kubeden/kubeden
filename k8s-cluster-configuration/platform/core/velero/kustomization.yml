@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Top-level kustomization for the velero Argo Application. Each subdir is
+# its own helm chart inflation — core/ is the velero server itself,
+# ui/ is the seriohub/vui web frontend. Both are rendered into a single
+# Argo sync so they come up together and you only manage one Application
+# object in Argo.
+
+resources:
+  - core
+  - ui

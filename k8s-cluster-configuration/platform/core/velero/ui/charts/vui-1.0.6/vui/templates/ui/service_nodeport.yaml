@@ -1,0 +1,19 @@
+{{- if not .Values.global.agentMode }}
+{{- if eq .Values.exposure.mode "nodePort" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "seriohub-velero.fullname" . }}-ui-nodeport-svc
+  labels:
+  {{- include "seriohub-velero.labels" . | nindent 4 }}
+spec:
+  type: NodePort
+  selector:
+    component: ui
+  {{- include "seriohub-velero.selectorLabels" . | nindent 4 }}
+  ports:
+    - nodePort: {{ .Values.exposure.nodePort.uiPort }}
+      port: 80
+      targetPort: run
+{{- end }}
+{{- end }}

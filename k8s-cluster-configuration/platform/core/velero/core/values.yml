@@ -1,0 +1,102 @@
+# Velero v1.17.1 (helm chart 12.0.0) — Hetzner Object Storage backend.
+#
+# Backend: S3-compatible bucket at nbg1.your-objectstorage.com.
+# Volume data: filesystem backups via node-agent + kopia uploader.
+# Why kopia/FSB instead of CSI snapshots:
+#   - simpler — one codepath that always works
+#   - deduplicated, incremental, compressed by kopia → tiny bucket footprint
+#   - CSI data mover is fine too, can be enabled later by swapping uploader
+#     and adding a VolumeSnapshotLocation.
+
+image:
+  repository: velero/velero
+  tag: v1.17.1
+
+# Plugins — v1.13.x is the matched plugin track for Velero 1.17.x
+initContainers:
+  - name: velero-plugin-for-aws
+    image: velero/velero-plugin-for-aws:v1.13.0
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+      - mountPath: /target
+        name: plugins
+
+# Run filesystem backups via node-agent (one pod per node) + kopia.
+deployNodeAgent: true
+nodeAgent:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+# Velero server pod
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+replicas: 1
+
+# Credentials come from the sealed Secret in hetzner-credentials-sealed.yml.
+credentials:
+  useSecret: true
+  existingSecret: velero-hetzner-credentials
+
+configuration:
+  uploaderType: kopia
+  defaultBackupTTL: 720h           # 30 days
+  defaultVolumesToFsBackup: true   # opt-in all PVs unless annotated otherwise
+
+  backupStorageLocation:
+    - name: default
+      provider: aws
+      bucket: kubeden-backups        # CHANGE if you name the Hetzner bucket differently
+      default: true
+      config:
+        region: nbg1
+        s3Url: https://nbg1.your-objectstorage.com
+        s3ForcePathStyle: "true"
+
+  # No volume snapshots — we rely entirely on filesystem backups. The
+  # chart scaffolds a default VSL with provider: null if we don't set
+  # this explicitly, which errors at runtime, so force an empty list.
+  # To switch to CSI snapshots later: add a VSL with provider: csi,
+  # enable features: EnableCSI, and drop defaultVolumesToFsBackup.
+  volumeSnapshotLocation: []
+
+# Scheduled daily backup of everything that matters.
+schedules:
+  daily:
+    disabled: false
+    schedule: "0 3 * * *"
+    useOwnerReferencesInBackup: false
+    template:
+      ttl: 720h
+      storageLocation: default
+      snapshotVolumes: true
+      includedNamespaces:
+        - "*"
+      excludedNamespaces:
+        - kube-system
+        - kube-public
+        - kube-node-lease
+        - velero
+        - velero-ui
+      excludedResources:
+        - events
+        - events.events.k8s.io
+
+installCRDs: true
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: false
+
+cleanUpCRDs: false

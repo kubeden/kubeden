@@ -1,0 +1,33 @@
+{{- with .Values.watchdogService.config }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "seriohub-velero.fullname" $ }}-watchdog-config
+  labels:
+  {{- include "seriohub-velero.labels" $ | nindent 4 }}
+data:
+  API_ENDPOINT_URL: {{ .apiEndpointUrl | quote }}
+  API_ENDPOINT_PORT: {{ .apiEndpointPort | quote }}
+  
+  DEBUG: {{ .debugLevel | quote }}  
+  DEBUG_LEVEL: {{ .debugLevel | quote }}
+  
+  CLUSTER_ID: {{ $.Values.global.clusterName | quote  }} 
+  K8S_IN_CLUSTER_MODE: {{ $.Values.global.k8SInclusterMode | quote  }} 
+  K8S_VELERO_NAMESPACE: {{ $.Values.global.veleroNamespace | quote  }} 
+  K8S_VELERO_UI_NAMESPACE: {{ $.Release.Namespace }}
+  
+  # USER CONFIGURATION FROM HELM
+  SEND_START_MESSAGE: {{ .sendStartMessage | quote }}
+  SEND_REPORT_AT_STARTUP: {{ .sendReportAtStartup | quote }}
+  BACKUP_ENABLED: {{ .backupEnable | quote }}
+  SCHEDULE_ENABLED: {{ .scheduleEnable | quote }}  
+  NOTIFICATION_SKIP_COMPLETED: {{ .notificationSkipCompleted | quote }}
+  NOTIFICATION_SKIP_INPROGRESS: {{ .notificationSkipInProgress | quote }}
+  NOTIFICATION_SKIP_REMOVED: {{ .notificationSkipRemoved | quote }}
+  NOTIFICATION_SKIP_DELETING: {{ .notificationSkipDeleting | quote }}  
+  EXPIRES_DAYS_WARNING: {{ .expiresDaysWarning | quote }}
+  PROCESS_CYCLE_SEC: {{ .processCycleSec | quote }}
+  REPORT_BACKUP_ITEM_PREFIX: {{ .reportBackupItemPrefix | quote }}
+  REPORT_SCHEDULE_ITEM_PREFIX: {{ .reportScheduleItemPrefix | quote }}  
+{{- end }}

@@ -1,0 +1,83 @@
+{{- if not .Values.global.agentMode }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "seriohub-velero.fullname" . }}-ui-deploy
+  # name: velero-ui
+  labels:
+    component: ui
+  {{- include "seriohub-velero.labels" . | nindent 4 }}
+  {{- with .Values.uiService.deployment.annotations }}
+  annotations: {{ toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.uiService.deployment.replicas }}
+  selector:
+    matchLabels:
+      component: ui
+    {{- include "seriohub-velero.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        component: ui
+      {{- include "seriohub-velero.selectorLabels" . | nindent 8 }}
+      {{- with .Values.uiService.deployment.annotations }}
+      annotations: {{ toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- with .Values.uiService.deployment.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.uiService.deployment.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.uiService.deployment.podSecurityContext.enabled }}
+      securityContext:
+        {{- toYaml (omit .Values.uiService.deployment.podSecurityContext "enabled") | nindent 8 }}
+      {{- end }}
+      {{- with .Values.uiService.deployment.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.uiService.deployment.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.uiService.deployment.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        envFrom:
+        - configMapRef:
+            name: {{ include "seriohub-velero.fullname" $ }}-ui-config
+        image: {{ .Values.uiService.deployment.image.registry | trimSuffix "/" }}/{{ .Values.uiService.deployment.image.repository }}:{{ .Values.uiService.deployment.image.tag }}
+        imagePullPolicy: {{ .Values.uiService.deployment.imagePullPolicy }}
+        name: webserver
+        ports:
+        - containerPort: 3000
+          name: run
+        {{- if .Values.uiService.deployment.securityContext.enabled }}
+        securityContext:
+          {{- toYaml (omit .Values.uiService.deployment.securityContext "enabled") | nindent 10 }}
+        {{- end }}
+        {{- with .Values.uiService.deployment.resources }}
+        resources:
+          {{- . | toYaml | nindent 10 }}
+        {{- end }}
+        {{- with .Values.uiService.deployment.volumeMounts }}
+        volumeMounts:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+{{- end }}

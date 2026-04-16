@@ -17,7 +17,7 @@ spec:
         kubernetes.io/hostname: kubeden-5h18f
       containers:
         - name: dashboard
-          image: registry.digitalocean.com/kubeden/a2w/lucas-dashboard:v0.1
+          image: registry.k6nis.dev/a2w/lucas-dashboard:v0.1
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
