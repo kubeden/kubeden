@@ -1,0 +1,15 @@
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: claude-auth
+  namespace: a2w-lucas
+spec:
+  encryptedData:
+    api-key: AgB3Yqxiz5MRW+BheT/AYSpk8oW8JEchkAB26LsDyPeQFa5WEPu8aF5IipEPoDPmkX3Flng42qet/5Pp4CfrKEleMVIOyaKzXUV/gvuZpe+5TtdIMviYR+0aCG0yoQrR5dr736Xp3hVjD7lKp4yCaCjkeaN3CwpLqKU6PJvPQLB2m0YZSZLTkgjRnHC/gNZbe/3FnaIU+KQSLzxUVTwwn8MwKZBuM2gRJ5U45+Tvcdo/fDu75RolOsDltGB1hE1BPR3YgCksn/8gmk1F/H3DEjStTk0AmFQ1truUvqZ/RmfokwmLBhUsnNlLeRAkLcyQL4aEQEPz1cj/gzdrgY0efnyLomjB3Ddv4mS6DIApdrbXefrUlbFbZROYf3xJJvJk+p0Ydl87UJ0aRQoDVaKxIU3B6OeIuczfj68H2TNH9GmPYCTJmRz71Ke3c/Sv54dZlepA3UVDEPpNZ9jjZfhgCDbSgR08ykCyFqAoYu8b6+TyuHjGxFS0RJcgtWBF7YSdKMbZBYfW1okaYcC1uUbuqaawKpRVT8wWlethG3ZPZQ5Arwo1YXk8oVBUTOz9dMqusgzqpWUBjH9OctE6+hqUTt6fRDIqBRAEEMr5fchVGHfmKBGtqsw1QPQnvRdsBrpuL4yc2YHQJ9h4obGPLojGpZg8474YpH6ZCxaRnzIDTWFYh4lN9E15c1v7kOSXxh7MT9LeNRkJcIfmItvTOws1BeT6xQnl20YdyOtLw9O7uUgRpFRymKXXcOSphIWLmS6GyXDTo7K0hMYQvd7BNWm7OLfXB1BkUUVfx8fRR6FSiKO7tOamSgSrzqGjsYMv9uy+3rob2bNQJzu6Ramm83A=
+  template:
+    metadata:
+      creationTimestamp: null
+      name: claude-auth
+      namespace: a2w-lucas
