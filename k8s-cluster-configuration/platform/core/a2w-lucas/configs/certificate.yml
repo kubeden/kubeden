@@ -1,0 +1,25 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: a2w-lucas-tls
+  namespace: a2w-lucas
+spec:
+  secretName: a2w-lucas-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - lucas.kubeden.io
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: a2w-lucas-docs-tls
+  namespace: a2w-lucas
+spec:
+  secretName: a2w-lucas-docs-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - docs.a2w.io

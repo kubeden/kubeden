@@ -1,0 +1,55 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: a2w-lucas-dashboard
+  namespace: a2w-lucas
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: a2w-lucas-gateway
+      namespace: a2w-lucas
+  hostnames:
+    - lucas.kubeden.io
+  rules:
+    - backendRefs:
+        - group: ''
+          kind: Service
+          name: dashboard
+          port: 80
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: lucas-docs
+  namespace: a2w-lucas
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: lucas-docs-gateway
+      namespace: a2w-lucas
+  hostnames:
+    - docs.a2w.io
+  rules:
+    - backendRefs:
+        - group: ''
+          kind: Service
+          name: lucas-docs
+          port: 80
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /lucas
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /

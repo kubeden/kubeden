@@ -1,0 +1,49 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: a2w-lucas-gateway
+  namespace: a2w-lucas
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "lucas.kubeden.io"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 8443
+      hostname: lucas.kubeden.io
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - group: ''
+            kind: Secret
+            name: a2w-lucas-tls
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: lucas-docs-gateway
+  namespace: a2w-lucas
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "docs.a2w.io"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 8443
+      hostname: docs.a2w.io
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - group: ''
+            kind: Secret
+            name: a2w-lucas-docs-tls
+      allowedRoutes:
+        namespaces:
+          from: Same
