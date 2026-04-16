@@ -4,7 +4,7 @@ metadata:
   name: a2w-lucas-gateway
   namespace: a2w-lucas
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: "lucas.kubeden.io"
+    external-dns.alpha.kubernetes.io/hostname: "lucas.k6nis.dev"
     external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
 spec:
   gatewayClassName: traefik
@@ -12,7 +12,7 @@ spec:
     - name: https
       protocol: HTTPS
       port: 8443
-      hostname: lucas.kubeden.io
+      hostname: lucas.k6nis.dev
       tls:
         mode: Terminate
         certificateRefs:

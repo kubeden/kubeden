@@ -10,7 +10,7 @@ spec:
       name: a2w-lucas-gateway
       namespace: a2w-lucas
   hostnames:
-    - lucas.kubeden.io
+    - lucas.k6nis.dev
   rules:
     - backendRefs:
         - group: ''

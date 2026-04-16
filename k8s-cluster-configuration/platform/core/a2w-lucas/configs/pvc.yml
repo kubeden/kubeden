@@ -9,8 +9,6 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  # Uncomment and set storageClassName if needed:
-  storageClassName: do-block-storage
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -23,5 +21,3 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  # Uncomment and set storageClassName if needed:
-  storageClassName: do-block-storage
