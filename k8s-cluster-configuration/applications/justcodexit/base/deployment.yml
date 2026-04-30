@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: justcodexit
+  labels:
+    app: justcodexit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: justcodexit
+  template:
+    metadata:
+      labels:
+        app: justcodexit
+    spec:
+      containers:
+      - name: justcodexit
+        image: registry.k6nis.dev/justcodexit:latest
+        ports:
+        - containerPort: 80

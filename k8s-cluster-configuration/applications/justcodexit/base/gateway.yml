@@ -1,0 +1,101 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: justcodexit-tls
+  namespace: justcodexit
+spec:
+  secretName: justcodexit-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - justcodexit.com
+    - www.justcodexit.com
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: justcodexit-gateway
+  namespace: justcodexit
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "justcodexit.com,www.justcodexit.com"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 8443
+      hostname: justcodexit.com
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - group: ''
+            kind: Secret
+            name: justcodexit-tls
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: https-www
+      protocol: HTTPS
+      port: 8443
+      hostname: www.justcodexit.com
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - group: ''
+            kind: Secret
+            name: justcodexit-tls
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: justcodexit
+  namespace: justcodexit
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: justcodexit-gateway
+      namespace: justcodexit
+  hostnames:
+    - justcodexit.com
+  rules:
+    - backendRefs:
+        - group: ''
+          kind: Service
+          name: justcodexit-service
+          port: 80
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: justcodexit-www-redirect
+  namespace: justcodexit
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: justcodexit-gateway
+      namespace: justcodexit
+  hostnames:
+    - www.justcodexit.com
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            hostname: justcodexit.com
+            statusCode: 301
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
