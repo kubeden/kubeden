@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: a2w-codex-terraform-tls
+  namespace: a2w-codex-terraform
+spec:
+  secretName: a2w-codex-terraform-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - infra.codex.k6nis.dev
