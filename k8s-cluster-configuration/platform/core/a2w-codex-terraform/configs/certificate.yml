@@ -9,4 +9,4 @@ spec:
     name: letsencrypt-prod
     kind: ClusterIssuer
   dnsNames:
-    - infra.codex.k6nis.dev
+    - infra-codex.k6nis.dev

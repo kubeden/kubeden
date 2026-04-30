@@ -4,7 +4,7 @@ metadata:
   name: a2w-codex-terraform
   namespace: a2w-codex-terraform
   annotations:
-    external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
 spec:
   parentRefs:
     - group: gateway.networking.k8s.io
@@ -12,7 +12,7 @@ spec:
       name: a2w-codex-terraform-gateway
       namespace: a2w-codex-terraform
   hostnames:
-    - infra.codex.k6nis.dev
+    - infra-codex.k6nis.dev
   rules:
     - backendRefs:
         - group: ''
