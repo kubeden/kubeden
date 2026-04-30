@@ -11,3 +11,4 @@ resources:
   - certificate.yml
   - gateway.yml
   - httproute.yml
+  - secrets-sealed.yml
