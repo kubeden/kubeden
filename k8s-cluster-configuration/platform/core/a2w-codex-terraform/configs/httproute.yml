@@ -12,7 +12,7 @@ spec:
       name: a2w-codex-terraform-gateway
       namespace: a2w-codex-terraform
   hostnames:
-    - infra-codex.k6nis.dev
+    - a2w-code.k6nis.dev
   rules:
     - backendRefs:
         - group: ''
