@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: a2w-codex-terraform
+  name: a2w-code
   namespace: argocd
 spec:
   project: default
