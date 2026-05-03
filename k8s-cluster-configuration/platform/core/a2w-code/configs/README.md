@@ -1,6 +1,6 @@
-# A2W Codex Terraform
+# A2W Code
 
-Self-hosted A2W-Codex-Terraform deployment for the Kubeden platform cluster.
+Self-hosted A2W Code deployment for the Kubeden platform cluster.
 
 The runtime Secret is intentionally not committed here. Generate it with `kubeseal` and add the resulting `secrets-sealed.yml` to this directory before syncing the Argo CD Application.
 

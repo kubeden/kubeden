@@ -14,4 +14,4 @@ resources:
   - kyverno/application.yml
   - velero/application.yml
   - a2w-lucas/application.yml
-  - a2w-codex-terraform/application.yml
+  - a2w-code/application.yml

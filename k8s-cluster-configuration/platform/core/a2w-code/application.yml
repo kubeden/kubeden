@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/kubeden/kubeden.git
     targetRevision: main
-    path: k8s-cluster-configuration/platform/core/a2w-codex-terraform/configs
+    path: k8s-cluster-configuration/platform/core/a2w-code/configs
   destination:
     server: https://kubernetes.default.svc
     namespace: a2w-codex-terraform
