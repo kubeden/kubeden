@@ -25,7 +25,7 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
       containers:
         - name: web
-          image: registry.k6nis.dev/a2w/codex-terraform:sha-ef93dfe35267
+          image: registry.k6nis.dev/a2w/codex-terraform:sha-cbbc4d4b32c3
           imagePullPolicy: Always
           ports:
             - name: http

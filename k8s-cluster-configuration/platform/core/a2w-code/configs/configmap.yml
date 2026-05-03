@@ -18,5 +18,5 @@ data:
   A2W_K8S_DATA_PVC: "a2w-codex-terraform-data"
   A2W_K8S_SANDBOX_SERVICE_ACCOUNT: "default"
   A2W_K8S_SANDBOX_IMAGE_PULL_POLICY: "Always"
-  A2W_SANDBOX_IMAGE: "registry.k6nis.dev/a2w/infra-sandbox:sha-ef93dfe35267"
+  A2W_SANDBOX_IMAGE: "registry.k6nis.dev/a2w/infra-sandbox:sha-cbbc4d4b32c3"
   A2W_ENABLE_TERRAFORM_APPLY: "false"
