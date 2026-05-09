@@ -7,7 +7,6 @@ commonLabels:
 resources:
   # - a2w/application.yml
   - excalidraw/application.yml
-  - penpot/application.yml
   - notate/application.yml
   - txtwrite/application.yml
   - justcodexit/application.yml
