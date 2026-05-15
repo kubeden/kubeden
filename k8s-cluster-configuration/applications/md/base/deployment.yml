@@ -13,6 +13,8 @@ spec:
     metadata:
       labels:
         app: md
+      annotations:
+        txtwrite.k6nis.dev/image-sha: "3625cfd8b947ea8348e1b5103e09549f33f032f1"
     spec:
       containers:
       - name: md
