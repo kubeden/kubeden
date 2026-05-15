@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: md-previews
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: https://github.com/kubeden/kubeden.git
+        revision: txtwrite-previews
+        directories:
+          - path: k8s-cluster-configuration/applications/md/previews/*
+  template:
+    metadata:
+      name: '{{path.basename}}'
+      namespace: argocd
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+      labels:
+        app.kubernetes.io/name: md
+        app.kubernetes.io/part-of: md-previews
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/kubeden/kubeden.git
+        targetRevision: txtwrite-previews
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{path.basename}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
