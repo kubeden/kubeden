@@ -30,8 +30,18 @@ spec:
         namespace: '{{path.basename}}'
       syncPolicy:
         automated:
+          enabled: true
           prune: true
           selfHeal: true
+          allowEmpty: true
         syncOptions:
           - CreateNamespace=true
           - ServerSideApply=true
+          - PrunePropagationPolicy=foreground
+          - PruneLast=true
+        retry:
+          limit: 3
+          backoff:
+            duration: 10s
+            factor: 2
+            maxDuration: 2m
