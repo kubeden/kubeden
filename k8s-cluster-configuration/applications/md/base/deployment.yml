@@ -17,5 +17,6 @@ spec:
       containers:
       - name: md
         image: registry.k6nis.dev/txtwrite/neon:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 4173
