@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: md-pr-4-service
+  labels:
+    app: md-pr-4
+    app.kubernetes.io/name: md
+    app.kubernetes.io/instance: md-pr-4
+spec:
+  selector:
+    app: md-pr-4
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 4173

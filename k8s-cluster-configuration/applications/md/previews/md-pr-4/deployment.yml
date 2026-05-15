@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: md-pr-4
+  labels:
+    app: md-pr-4
+    app.kubernetes.io/name: md
+    app.kubernetes.io/instance: md-pr-4
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: md-pr-4
+  template:
+    metadata:
+      labels:
+        app: md-pr-4
+        app.kubernetes.io/name: md
+        app.kubernetes.io/instance: md-pr-4
+    spec:
+      containers:
+        - name: md
+          image: registry.k6nis.dev/txtwrite/neon:pr-4-6463b67
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 4173
