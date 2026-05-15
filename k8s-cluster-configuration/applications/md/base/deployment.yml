@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: md
+  labels:
+    app: md
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: md
+  template:
+    metadata:
+      labels:
+        app: md
+    spec:
+      containers:
+      - name: md
+        image: registry.k6nis.dev/txtwrite/neon:latest
+        ports:
+        - containerPort: 4173

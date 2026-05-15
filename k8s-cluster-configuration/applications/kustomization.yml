@@ -8,6 +8,7 @@ resources:
   # - a2w/application.yml
   - excalidraw/application.yml
   - notate/application.yml
+  - md/application.yml
   - txtwrite/application.yml
   - justcodexit/application.yml
   - baldcheck/application.yml
