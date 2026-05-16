@@ -4,6 +4,9 @@ configs:
     kustomize.buildOptions: "--enable-helm"
   params:
     server.insecure: true
+  secret:
+    annotations:
+      sealedsecrets.bitnami.com/patch: "true"
 
 applicationSet:
   enabled: true
