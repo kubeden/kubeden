@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: md-pr-6
+  labels:
+    app: md-pr-6
+    app.kubernetes.io/name: md
+    app.kubernetes.io/instance: md-pr-6
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: md-pr-6
+  template:
+    metadata:
+      labels:
+        app: md-pr-6
+        app.kubernetes.io/name: md
+        app.kubernetes.io/instance: md-pr-6
+    spec:
+      containers:
+        - name: md
+          image: registry.k6nis.dev/txtwrite/neon:pr-6-d0339b1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 4173
