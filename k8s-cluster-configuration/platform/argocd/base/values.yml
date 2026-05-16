@@ -1,9 +1,16 @@
 configs:
   cm:
+    accounts.github-actions: apiKey
+    accounts.github-actions.enabled: "true"
     exec.enabled: true
     kustomize.buildOptions: "--enable-helm"
   params:
     server.insecure: true
+  rbac:
+    policy.csv: |
+      p, github-actions, applications, get, default/md-pr-*, allow
+      p, github-actions, applications, get, default/argocd/md-pr-*, allow
+      p, github-actions, projects, get, default, allow
   secret:
     annotations:
       sealedsecrets.bitnami.com/patch: "true"
