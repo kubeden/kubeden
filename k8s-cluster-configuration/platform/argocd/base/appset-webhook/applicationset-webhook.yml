@@ -1,0 +1,63 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: argocd-applicationset-webhook-tls
+  namespace: argocd
+spec:
+  secretName: argocd-applicationset-webhook-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - argocd-applicationset.k6nis.dev
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: argocd-applicationset-webhook-gateway
+  namespace: argocd
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "argocd-applicationset.k6nis.dev"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 8443
+      hostname: argocd-applicationset.k6nis.dev
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - group: ''
+            kind: Secret
+            name: argocd-applicationset-webhook-tls
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: argocd-applicationset-webhook
+  namespace: argocd
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: argocd-applicationset-webhook-gateway
+      namespace: argocd
+  hostnames:
+    - argocd-applicationset.k6nis.dev
+  rules:
+    - backendRefs:
+        - group: ''
+          kind: Service
+          name: argocd-applicationset-controller
+          port: 7000
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /api/webhook

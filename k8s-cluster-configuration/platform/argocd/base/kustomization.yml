@@ -4,6 +4,8 @@ kind: Kustomization
 namespace: argocd
 
 resources:
+  - appset-webhook/applicationset-webhook.yml
+  - appset-webhook/applicationset-webhook-secret-sealed.yml
   - gateway.yml
 
 helmCharts:
