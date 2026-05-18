@@ -1,0 +1,23 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: argocd-applicationset-webhook
+  namespace: argocd
+spec:
+  hostnames:
+    - "__ARGOCD_APPLICATIONSET_WEBHOOK_HOST__"
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: __GATEWAY_NAME__
+      namespace: __GATEWAY_NAMESPACE__
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: argocd-applicationset-controller
+          port: 7000
+      matches:
+        - path:
+            type: PathPrefix
+            value: /api/webhook

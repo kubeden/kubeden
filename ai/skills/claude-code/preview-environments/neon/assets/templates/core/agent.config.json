@@ -1,0 +1,101 @@
+{
+  "baseBranch": "development",
+  "allowedActors": ["__GITHUB_USERNAME__"],
+  "allowedAuthorAssociations": ["OWNER", "MEMBER", "COLLABORATOR"],
+  "labels": {
+    "agentPr": "agent",
+    "preview": "preview"
+  },
+  "commands": {
+    "install": "__INSTALL_COMMAND__",
+    "migrate": "__MIGRATE_COMMAND__",
+    "lint": "__LINT_COMMAND__",
+    "test": "__TEST_COMMAND__",
+    "build": "__BUILD_COMMAND__"
+  },
+  "preview": {
+    "enabled": true,
+    "adapter": "__PREVIEW_ADAPTER__",
+    "workflowFile": "preview-neon.yml",
+    "urlFile": ".agent/runtime/preview-url.txt",
+    "metadataFile": ".agent/runtime/preview.json",
+    "commands": {
+      "deploy": "node scripts/deploy-preview.mjs",
+      "wait": "node scripts/wait-preview.mjs",
+      "cleanup": "node scripts/cleanup-preview.mjs"
+    }
+  },
+  "production": {
+    "enabled": false,
+    "migrateCommand": "__PRODUCTION_MIGRATE_COMMAND__",
+    "deployCommand": "__PRODUCTION_DEPLOY_COMMAND__",
+    "url": "__PRODUCTION_URL__"
+  },
+  "neon": {
+    "databaseName": "__NEON_DATABASE_NAME__",
+    "roleName": "__NEON_ROLE_NAME__",
+    "pooled": true,
+    "ttlHours": 48,
+    "deleteOnPrClose": true,
+    "publicUrls": {
+      "auth": false,
+      "dataApi": false,
+      "required": false,
+      "provisionAuth": false,
+      "provisionDataApi": false,
+      "authProvider": "",
+      "dataApiAuthProvider": "neon_auth"
+    }
+  },
+  "adapters": {
+    "argocdGitops": {
+      "repository": "__GITOPS_REPOSITORY__",
+      "checkoutPath": ".agent/runtime/gitops",
+      "previewBranch": "__GITOPS_PREVIEW_BRANCH__",
+      "baseBranch": "development",
+      "previewRoot": "__GITOPS_PREVIEW_ROOT__",
+      "imageRepository": "__IMAGE_REPOSITORY__",
+      "imagePlatform": "linux/amd64",
+      "appPrefix": "__APP_NAME__-pr",
+      "hostSuffix": "__PREVIEW_DOMAIN_SUFFIX__",
+      "gatewayClassName": "__GATEWAY_CLASS_NAME__",
+      "clusterIssuer": "__CLUSTER_ISSUER__",
+      "containerPort": 3000,
+      "servicePort": 80,
+      "argocdServer": "__ARGOCD_SERVER__",
+      "applicationNamespace": "argocd"
+    },
+    "vercel": {
+      "projectName": "__VERCEL_PROJECT_NAME__",
+      "projectId": "__VERCEL_PROJECT_ID__",
+      "orgId": "",
+      "team": "",
+      "aliasDomainSuffix": "",
+      "cleanup": "none"
+    },
+    "cloudflare": {
+      "accountId": "__CLOUDFLARE_ACCOUNT_ID__",
+      "projectName": "__CLOUDFLARE_PAGES_PROJECT__",
+      "outputDir": "__BUILD_OUTPUT_DIR__",
+      "branchPrefix": "pr"
+    },
+    "railway": {
+      "projectId": "__RAILWAY_PROJECT_ID__",
+      "service": "__RAILWAY_SERVICE__",
+      "baseEnvironment": "production",
+      "ensureEnvironment": true,
+      "environmentPrefix": "pr",
+      "domainSuffix": ""
+    },
+    "fly": {
+      "org": "__FLY_ORG__",
+      "appPrefix": "__APP_NAME__-pr",
+      "region": "__FLY_REGION__"
+    },
+    "render": {
+      "serviceId": "__RENDER_SERVICE_ID__",
+      "deployHookUrl": "",
+      "previewUrl": ""
+    }
+  }
+}

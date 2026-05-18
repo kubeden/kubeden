@@ -1,0 +1,121 @@
+name: "Preview: Neon Branch And Deploy"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [development]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number to preview
+        required: true
+      head_branch:
+        description: Pull request head branch
+        required: true
+      head_sha:
+        description: Optional pull request head commit SHA
+        required: false
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number || inputs.pr_number }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout pull request
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || inputs.head_sha || inputs.head_branch }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Create Neon preview branch
+        id: neon
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
+          NEON_PARENT_BRANCH_ID: ${{ vars.NEON_PARENT_BRANCH_ID }}
+          NEON_DATABASE_NAME: ${{ vars.NEON_DATABASE_NAME }}
+          NEON_ROLE_NAME: ${{ vars.NEON_ROLE_NAME }}
+          NEON_POOLED: ${{ vars.NEON_POOLED }}
+          NEON_DEFAULT_TTL_HOURS: ${{ vars.NEON_DEFAULT_TTL_HOURS }}
+          NEON_GET_AUTH_URL: ${{ vars.NEON_GET_AUTH_URL }}
+          NEON_GET_DATA_API_URL: ${{ vars.NEON_GET_DATA_API_URL }}
+          NEON_REQUIRE_PUBLIC_URLS: ${{ vars.NEON_REQUIRE_PUBLIC_URLS }}
+          NEON_PROVISION_AUTH: ${{ vars.NEON_PROVISION_AUTH }}
+          NEON_PROVISION_DATA_API: ${{ vars.NEON_PROVISION_DATA_API }}
+          NEON_AUTH_PROVIDER: ${{ vars.NEON_AUTH_PROVIDER }}
+          NEON_DATA_API_AUTH_PROVIDER: ${{ vars.NEON_DATA_API_AUTH_PROVIDER }}
+          NEON_AUTH_TRUSTED_DOMAINS: ${{ vars.NEON_AUTH_TRUSTED_DOMAINS }}
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref || inputs.head_branch }}
+        run: node scripts/neon-preview.mjs create
+
+      - name: Say preview is starting
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+        run: node scripts/agent-status.mjs --stage previewStarted
+
+      - name: Run migrations and checks
+        env:
+          DATABASE_URL: ${{ steps.neon.outputs.database_url }}
+          VITE_NEON_AUTH_URL: ${{ steps.neon.outputs.auth_url }}
+          VITE_NEON_DATA_API_URL: ${{ steps.neon.outputs.data_api_url }}
+        run: |
+          node scripts/run-configured-command.mjs install
+          node scripts/run-configured-command.mjs migrate
+          node scripts/run-configured-command.mjs lint
+          node scripts/run-configured-command.mjs test
+          node scripts/run-configured-command.mjs build
+
+      - name: Deploy preview
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          DATABASE_URL: ${{ steps.neon.outputs.database_url }}
+          VITE_NEON_AUTH_URL: ${{ steps.neon.outputs.auth_url }}
+          VITE_NEON_DATA_API_URL: ${{ steps.neon.outputs.data_api_url }}
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref || inputs.head_branch }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || inputs.head_sha }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          GITOPS_TOKEN: ${{ secrets.GITOPS_TOKEN }}
+          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+        run: node scripts/run-configured-command.mjs previewDeploy
+
+      - name: Wait for preview environment
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+          ARGOCD_SERVER: ${{ vars.ARGOCD_SERVER }}
+          ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
+          PREVIEW_WAIT_TIMEOUT_SECONDS: "600"
+          PREVIEW_WAIT_INTERVAL_SECONDS: "5"
+          PREVIEW_URL_WAIT_TIMEOUT_SECONDS: "300"
+          PREVIEW_URL_WAIT_INTERVAL_SECONDS: "5"
+        run: node scripts/run-configured-command.mjs previewWait
+
+      - name: Comment preview details
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+        run: node scripts/comment-preview.mjs
