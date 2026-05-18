@@ -1,0 +1,199 @@
+name: "Agent: Codex Issue To PR"
+
+on:
+  issues:
+    types: [opened, edited]
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: GitHub issue number to implement
+        required: true
+      prompt:
+        description: Optional extra instruction
+        required: false
+
+permissions:
+  actions: write
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: agent-codex-${{ github.event.issue.number || inputs.issue_number }}
+  cancel-in-progress: false
+
+jobs:
+  implement:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'issues' ||
+      github.event_name == 'issue_comment'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout base branch
+        uses: actions/checkout@v6
+        with:
+          ref: development
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: Prepare agent run
+        id: prepare
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/prepare-agent-run.mjs --provider codex
+
+      - name: Stop when not triggered
+        if: steps.prepare.outputs.should_run != 'true'
+        run: echo "${{ steps.prepare.outputs.skip_reason }}"
+
+      - name: Create work branch
+        if: steps.prepare.outputs.should_run == 'true' && steps.prepare.outputs.target_kind != 'pull_request'
+        run: git switch -c "${{ steps.prepare.outputs.head_branch }}"
+
+      - name: Checkout pull request branch
+        if: steps.prepare.outputs.should_run == 'true' && steps.prepare.outputs.target_kind == 'pull_request'
+        run: |
+          git fetch origin "${{ steps.prepare.outputs.head_branch }}"
+          git switch -C "${{ steps.prepare.outputs.head_branch }}" "origin/${{ steps.prepare.outputs.head_branch }}"
+
+      - name: Say I picked it up
+        if: steps.prepare.outputs.should_run == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/agent-status.mjs --stage pickedUp
+
+      - name: Create Neon branch
+        if: steps.prepare.outputs.should_run == 'true'
+        id: neon
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
+          NEON_PARENT_BRANCH_ID: ${{ vars.NEON_PARENT_BRANCH_ID }}
+          NEON_DATABASE_NAME: ${{ vars.NEON_DATABASE_NAME }}
+          NEON_ROLE_NAME: ${{ vars.NEON_ROLE_NAME }}
+          NEON_POOLED: ${{ vars.NEON_POOLED }}
+          NEON_DEFAULT_TTL_HOURS: ${{ vars.NEON_DEFAULT_TTL_HOURS }}
+          NEON_GET_AUTH_URL: ${{ vars.NEON_GET_AUTH_URL }}
+          NEON_GET_DATA_API_URL: ${{ vars.NEON_GET_DATA_API_URL }}
+          NEON_REQUIRE_PUBLIC_URLS: ${{ vars.NEON_REQUIRE_PUBLIC_URLS }}
+          NEON_PROVISION_AUTH: ${{ vars.NEON_PROVISION_AUTH }}
+          NEON_PROVISION_DATA_API: ${{ vars.NEON_PROVISION_DATA_API }}
+          NEON_AUTH_PROVIDER: ${{ vars.NEON_AUTH_PROVIDER }}
+          NEON_DATA_API_AUTH_PROVIDER: ${{ vars.NEON_DATA_API_AUTH_PROVIDER }}
+          ISSUE_NUMBER: ${{ steps.prepare.outputs.issue_number }}
+          HEAD_BRANCH: ${{ steps.prepare.outputs.head_branch }}
+        run: node scripts/neon-preview.mjs create
+
+      - name: Report database setup
+        if: steps.prepare.outputs.should_run == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/agent-status.mjs --stage neonReady
+
+      - name: Install dependencies
+        if: steps.prepare.outputs.should_run == 'true'
+        run: node scripts/run-configured-command.mjs install
+
+      - name: Render prompt
+        if: steps.prepare.outputs.should_run == 'true'
+        id: prompt
+        run: node scripts/render-prompt.mjs --provider codex
+
+      - name: Say Codex is starting
+        if: steps.prepare.outputs.should_run == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/agent-status.mjs --stage runningAgent
+
+      - name: Install Codex CLI
+        if: steps.prepare.outputs.should_run == 'true'
+        run: npm install -g @openai/codex
+
+      - name: Restore Codex auth
+        if: steps.prepare.outputs.should_run == 'true'
+        env:
+          CODEX_AUTH_JSON: ${{ secrets.CODEX_AUTH_JSON }}
+        run: |
+          if [ -z "$CODEX_AUTH_JSON" ]; then
+            echo "CODEX_AUTH_JSON secret is required."
+            exit 1
+          fi
+          mkdir -p "$RUNNER_TEMP/codex-home"
+          umask 077
+          printf '%s' "$CODEX_AUTH_JSON" > "$RUNNER_TEMP/codex-home/auth.json"
+
+      - name: Run Codex
+        if: steps.prepare.outputs.should_run == 'true'
+        id: codex
+        env:
+          CODEX_HOME: ${{ runner.temp }}/codex-home
+          DATABASE_URL: ${{ steps.neon.outputs.database_url }}
+          NEON_BRANCH_ID: ${{ steps.neon.outputs.branch_id }}
+          NEON_BRANCH_NAME: ${{ steps.neon.outputs.branch_name }}
+          VITE_NEON_AUTH_URL: ${{ steps.neon.outputs.auth_url }}
+          VITE_NEON_DATA_API_URL: ${{ steps.neon.outputs.data_api_url }}
+        run: |
+          codex exec \
+            --cd "$GITHUB_WORKSPACE" \
+            --dangerously-bypass-approvals-and-sandbox \
+            --json \
+            --output-last-message .agent/runtime/codex-final.md \
+            - < "${{ steps.prompt.outputs.prompt_file }}"
+
+      - name: Run configured checks
+        if: steps.prepare.outputs.should_run == 'true'
+        env:
+          DATABASE_URL: ${{ steps.neon.outputs.database_url }}
+          VITE_NEON_AUTH_URL: ${{ steps.neon.outputs.auth_url }}
+          VITE_NEON_DATA_API_URL: ${{ steps.neon.outputs.data_api_url }}
+        run: |
+          node scripts/run-configured-command.mjs migrate
+          node scripts/run-configured-command.mjs lint
+          node scripts/run-configured-command.mjs test
+          node scripts/run-configured-command.mjs build
+
+      - name: Report checks passed
+        if: steps.prepare.outputs.should_run == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/agent-status.mjs --stage checksPassed
+
+      - name: Commit agent changes
+        if: steps.prepare.outputs.should_run == 'true'
+        id: commit
+        run: node scripts/commit-agent-changes.mjs
+
+      - name: Push branch
+        if: steps.prepare.outputs.should_run == 'true' && steps.commit.outputs.changed == 'true'
+        run: git push --set-upstream origin "${{ steps.prepare.outputs.head_branch }}"
+
+      - name: Open pull request
+        if: steps.prepare.outputs.should_run == 'true' && steps.commit.outputs.changed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/open-pull-request.mjs
+
+      - name: Report no changes
+        if: steps.prepare.outputs.should_run == 'true' && steps.commit.outputs.changed != 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ steps.prepare.outputs.issue_number }}
+        run: node scripts/agent-status.mjs --stage noChanges
+
+      - name: Report failure
+        if: failure() && steps.prepare.outputs.should_run == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ steps.prepare.outputs.issue_number }}
+        run: node scripts/agent-status.mjs --stage failed
+
+      - name: Remove Codex auth
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/codex-home"

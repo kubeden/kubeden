@@ -1,0 +1,114 @@
+name: "Release: Deploy And Cleanup"
+
+on:
+  pull_request_target:
+    types: [closed]
+    branches: [development]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number to release or clean up
+        required: true
+      merged:
+        description: Run the production deploy path before cleanup
+        required: true
+        default: "true"
+      merge_sha:
+        description: Optional merge commit SHA to record
+        required: false
+      head_branch:
+        description: Optional PR head branch for manual Neon cleanup
+        required: false
+
+permissions:
+  contents: read
+  pull-requests: read
+  issues: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: close-${{ github.event.pull_request.number || inputs.pr_number }}
+      cancel-in-progress: false
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@v6
+        with:
+          ref: development
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: Setup Docker Buildx
+        if: github.event.pull_request.merged == true || inputs.merged == 'true'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Say production deploy is starting
+        if: github.event.pull_request.merged == true || inputs.merged == 'true'
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITOPS_TOKEN || github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+        run: node scripts/agent-status.mjs --stage productionStarted
+
+      - name: Run production migration
+        if: github.event.pull_request.merged == true || inputs.merged == 'true'
+        env:
+          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+        run: node scripts/run-configured-command.mjs productionMigrate
+
+      - name: Deploy production
+        id: production
+        if: github.event.pull_request.merged == true || inputs.merged == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITOPS_TOKEN || github.token }}
+          PR_MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha || inputs.merge_sha }}
+          PROD_DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+        run: node scripts/run-configured-command.mjs productionDeploy
+
+      - name: Say cleanup is starting
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITOPS_TOKEN || github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+        run: node scripts/agent-status.mjs --stage previewCleanup
+
+      - name: Delete Neon preview branch
+        id: neon
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref || inputs.head_branch }}
+        run: node scripts/neon-preview.mjs delete
+
+      - name: Cleanup preview provider
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITOPS_TOKEN || github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref || inputs.head_branch }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          GITOPS_TOKEN: ${{ secrets.GITOPS_TOKEN }}
+        run: node scripts/run-configured-command.mjs previewCleanup
+
+      - name: Comment release result
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITOPS_TOKEN || github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+          MERGED: ${{ github.event.pull_request.merged == true || inputs.merged == 'true' }}
+          PRODUCTION_URL: ${{ steps.production.outputs.production_url }}
+          IMAGE: ${{ steps.production.outputs.image }}
+          TRACE_IMAGE: ${{ steps.production.outputs.trace_image }}
+          DEPLOYMENT_ID: ${{ steps.production.outputs.deployment_id }}
+          NEON_DELETED: ${{ steps.neon.outputs.deleted }}
+          NEON_BRANCH_NAME: ${{ steps.neon.outputs.branch_name }}
+          NEON_DELETE_REASON: ${{ steps.neon.outputs.reason }}
+        run: node scripts/comment-release-result.mjs

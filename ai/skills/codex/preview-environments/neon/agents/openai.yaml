@@ -1,0 +1,7 @@
+interface:
+  display_name: "Neon Preview Environments"
+  short_description: "Install Neon-backed preview CI/CD"
+  default_prompt: "Use $neon-preview-environments to add a GitHub issue-to-PR Codex workflow with Neon preview environments."
+
+policy:
+  allow_implicit_invocation: true
