@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: md
-          image: registry.k6nis.dev/txtwrite/neon:pr-9-58b31a3
+          image: registry.k6nis.dev/txtwrite/neon:pr-9-0216126
           imagePullPolicy: Always
           ports:
             - containerPort: 4173
