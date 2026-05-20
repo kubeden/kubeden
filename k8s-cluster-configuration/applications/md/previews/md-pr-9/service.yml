@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: md-pr-9-service
+  labels:
+    app: md-pr-9
+    app.kubernetes.io/name: md
+    app.kubernetes.io/instance: md-pr-9
+spec:
+  selector:
+    app: md-pr-9
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 4173
