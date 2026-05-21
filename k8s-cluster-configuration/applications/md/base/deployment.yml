@@ -14,7 +14,7 @@ spec:
       labels:
         app: md
       annotations:
-        txtwrite.k6nis.dev/image-sha: "4f2f0bded06d7e08e9ed205c43ea17ff00393a36"
+        txtwrite.k6nis.dev/image-sha: "757b685c357bb83a20bb657c104982c037ca6ad7"
     spec:
       containers:
       - name: md
