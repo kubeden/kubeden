@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: docs
-          image: registry.k6nis.dev/a2w/lucas-docs:v1
+          image: registry.k6nis.dev/a2w/lucas-docs:v0.1
           imagePullPolicy: Always
           ports:
             - containerPort: 80
