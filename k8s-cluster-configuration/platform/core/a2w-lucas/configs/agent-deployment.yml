@@ -17,7 +17,7 @@ spec:
     spec:
       serviceAccountName: a2w-lucas
       nodeSelector:
-        kubernetes.io/hostname: kubeden-5h18f
+        kubernetes.io/hostname: kubeden-weu-prd-k3s-system
       imagePullSecrets:
         - name: kubeden
       initContainers:

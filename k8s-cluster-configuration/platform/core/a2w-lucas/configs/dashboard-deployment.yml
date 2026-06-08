@@ -14,7 +14,7 @@ spec:
         app: dashboard
     spec:
       nodeSelector:
-        kubernetes.io/hostname: kubeden-5h18f
+        kubernetes.io/hostname: kubeden-weu-prd-k3s-system
       containers:
         - name: dashboard
           image: registry.k6nis.dev/a2w/lucas-dashboard:v0.1
