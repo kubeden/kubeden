@@ -24,6 +24,7 @@ domainFilters:
   - justcodexit.com
   - baldcheck.com
   - globchess.com
+  - a2w.io
 
 rbac:
   create: true
