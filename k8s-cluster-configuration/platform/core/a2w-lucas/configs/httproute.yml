@@ -46,10 +46,4 @@ spec:
       matches:
         - path:
             type: PathPrefix
-            value: /lucas
-      filters:
-        - type: URLRewrite
-          urlRewrite:
-            path:
-              type: ReplacePrefixMatch
-              replacePrefixMatch: /
+            value: /
