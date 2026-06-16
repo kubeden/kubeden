@@ -1,0 +1,2 @@
+# Sourced for all zsh invocations. Loads the Rust toolchain env if present.
+[[ -f "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"
