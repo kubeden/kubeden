@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: denislavgavrilov-config
+  namespace: denislavgavrilov
+data:
+  # Public origin — used for canonical URLs, sitemap, OG image and JSON-LD.
+  SITE_URL: "https://denislavgavrilov.com"

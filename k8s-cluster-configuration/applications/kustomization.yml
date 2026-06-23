@@ -14,3 +14,4 @@ resources:
   - justcodexit/application.yml
   - baldcheck/application.yml
   - globchess/application.yml
+  - denislavgavrilov/application.yml

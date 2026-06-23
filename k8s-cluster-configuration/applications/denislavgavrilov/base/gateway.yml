@@ -1,0 +1,101 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: denislavgavrilov-tls
+  namespace: denislavgavrilov
+spec:
+  secretName: denislavgavrilov-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - denislavgavrilov.com
+    - www.denislavgavrilov.com
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: denislavgavrilov-gateway
+  namespace: denislavgavrilov
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "denislavgavrilov.com,www.denislavgavrilov.com"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 8443
+      hostname: denislavgavrilov.com
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - group: ''
+            kind: Secret
+            name: denislavgavrilov-tls
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: https-www
+      protocol: HTTPS
+      port: 8443
+      hostname: www.denislavgavrilov.com
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - group: ''
+            kind: Secret
+            name: denislavgavrilov-tls
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: denislavgavrilov
+  namespace: denislavgavrilov
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: denislavgavrilov-gateway
+      namespace: denislavgavrilov
+  hostnames:
+    - denislavgavrilov.com
+  rules:
+    - backendRefs:
+        - group: ''
+          kind: Service
+          name: denislavgavrilov-service
+          port: 80
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: denislavgavrilov-www-redirect
+  namespace: denislavgavrilov
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: denislavgavrilov-gateway
+      namespace: denislavgavrilov
+  hostnames:
+    - www.denislavgavrilov.com
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            hostname: denislavgavrilov.com
+            statusCode: 301
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
