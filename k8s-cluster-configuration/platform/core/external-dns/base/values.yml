@@ -25,6 +25,7 @@ domainFilters:
   - baldcheck.com
   - globchess.com
   - a2w.io
+  - denislavgavrilov.com
 
 rbac:
   create: true
