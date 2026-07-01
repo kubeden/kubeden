@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pastmonday-config
+  namespace: pastmonday
+data:
+  # Only truly-public, constant values live here (this repo may be public).
+  # Everything with any sensitivity — including the Neon/S3 endpoint hostnames —
+  # is in the sealed secret (pastmonday-secrets), also loaded via envFrom.
+  #
+  # NEXT_PUBLIC_APP_URL is ALSO baked into the client bundle at build time (CI
+  # build-arg); this runtime copy keeps server-side reads consistent.
+  NEXT_PUBLIC_APP_URL: "https://pastmonday.com"
+  NEON_AI_GATEWAY_MODEL: "claude-haiku-4-5"

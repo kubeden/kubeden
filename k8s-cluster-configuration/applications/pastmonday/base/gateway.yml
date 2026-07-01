@@ -1,0 +1,101 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: pastmonday-tls
+  namespace: pastmonday
+spec:
+  secretName: pastmonday-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - pastmonday.com
+    - www.pastmonday.com
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: pastmonday-gateway
+  namespace: pastmonday
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "pastmonday.com,www.pastmonday.com"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 8443
+      hostname: pastmonday.com
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - group: ''
+            kind: Secret
+            name: pastmonday-tls
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: https-www
+      protocol: HTTPS
+      port: 8443
+      hostname: www.pastmonday.com
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - group: ''
+            kind: Secret
+            name: pastmonday-tls
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: pastmonday
+  namespace: pastmonday
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: pastmonday-gateway
+      namespace: pastmonday
+  hostnames:
+    - pastmonday.com
+  rules:
+    - backendRefs:
+        - group: ''
+          kind: Service
+          name: pastmonday-service
+          port: 80
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: pastmonday-www-redirect
+  namespace: pastmonday
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: pastmonday-gateway
+      namespace: pastmonday
+  hostnames:
+    - www.pastmonday.com
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            hostname: pastmonday.com
+            statusCode: 301
+      matches:
+        - path:
+            type: PathPrefix
+            value: /

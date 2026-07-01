@@ -26,6 +26,7 @@ domainFilters:
   - globchess.com
   - a2w.io
   - denislavgavrilov.com
+  - pastmonday.com
 
 rbac:
   create: true

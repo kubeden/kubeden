@@ -1,0 +1,58 @@
+# Stripe CLI webhook forwarder (TEST MODE ONLY).
+#
+# In a deployed environment there's no laptop running `stripe listen`, so this
+# pod runs it instead: it opens Stripe's event stream (authenticated with the
+# TEST secret key) and forwards each event to the app's internal webhook URL.
+#
+# The signing secret the CLI uses is stable per Stripe account — obtain it with
+#   stripe listen --print-secret --api-key sk_test_...
+# and seal THAT value as STRIPE_WEBHOOK_SECRET in pastmonday-secrets so the app
+# verifies these forwarded events. This pod itself needs only the API key.
+#
+# Test mode by construction: it authenticates with sk_test_..., so no real money
+# ever moves. To go live you'd instead register a real Stripe webhook endpoint
+# pointing at the public URL and drop this pod.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pastmonday-stripe-webhook
+  namespace: pastmonday
+  labels:
+    app: pastmonday-stripe-webhook
+spec:
+  # Exactly one replica — each additional listener would deliver every event
+  # again, so the app would process duplicates (idempotency helps, but don't).
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: pastmonday-stripe-webhook
+  template:
+    metadata:
+      labels:
+        app: pastmonday-stripe-webhook
+    spec:
+      containers:
+        - name: stripe-cli
+          image: stripe/stripe-cli:latest
+          imagePullPolicy: IfNotPresent
+          # The CLI reads STRIPE_API_KEY from the env, so `listen` runs headless
+          # (no interactive `stripe login`).
+          env:
+            - name: STRIPE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: pastmonday-secrets
+                  key: STRIPE_SECRET_KEY
+          args:
+            - listen
+            - --forward-to
+            - http://pastmonday-service.pastmonday.svc.cluster.local/api/stripe/webhook
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
