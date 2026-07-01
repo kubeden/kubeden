@@ -89,11 +89,10 @@ resources:
 # Zot opens :5000 only AFTER parsing all storage from S3 into its metadb. On a
 # cold start (fresh ephemeral /tmp/zot) that scan of the whole bucket takes
 # minutes, and until it finishes /startupz refuses connections. The chart's
-# default startup probe (~30s) kills the pod mid-parse -> CrashLoopBackOff.
-# Give it up to ~20 min so the metadb parse can complete before liveness engages.
+# default startup probe (failureThreshold 3 x periodSeconds 10 = ~30s) kills the
+# pod mid-parse -> CrashLoopBackOff. Only the timing fields are consumed here
+# (the chart injects the /startupz httpGet). ~20 min budget for the parse.
 startupProbe:
-  httpGet:
-    path: /startupz
-    port: 5000
+  initialDelaySeconds: 5
   periodSeconds: 10
   failureThreshold: 120
