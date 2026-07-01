@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: pastmonday
-          image: registry.k6nis.dev/pastmonday:latest
+          image: ghcr.io/kubeden/pastmonday:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
