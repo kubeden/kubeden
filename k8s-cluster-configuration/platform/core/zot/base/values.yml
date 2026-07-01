@@ -80,5 +80,8 @@ configFiles:
 
 resources:
   requests:
-    cpu: 10m
-    memory: 64Mi
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: "2"
+    memory: 2Gi
