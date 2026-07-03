@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: trials-service
+  namespace: trials
+spec:
+  selector:
+    app: trials
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000

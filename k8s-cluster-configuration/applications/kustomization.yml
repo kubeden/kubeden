@@ -16,3 +16,4 @@ resources:
   - globchess/application.yml
   - denislavgavrilov/application.yml
   - pastmonday/application.yml
+  - trials/application.yml
