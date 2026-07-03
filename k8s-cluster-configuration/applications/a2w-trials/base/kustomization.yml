@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - deployment-web.yml
+  - deployment-api.yml
+  - service-web.yml
+  - service-api.yml
+  - pvc.yml
+  - a2w-trials-secrets.yaml
+  - gateway.yml

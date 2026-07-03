@@ -2,10 +2,10 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: trials-tls
-  namespace: trials
+  name: a2w-trials-tls
+  namespace: a2w-trials
 spec:
-  secretName: trials-tls
+  secretName: a2w-trials-tls
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer
@@ -15,8 +15,8 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: trials-gateway
-  namespace: trials
+  name: a2w-trials-gateway
+  namespace: a2w-trials
   annotations:
     external-dns.alpha.kubernetes.io/hostname: "trials.a2w.io"
     external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
@@ -32,32 +32,54 @@ spec:
         certificateRefs:
           - group: ''
             kind: Secret
-            name: trials-tls
+            name: a2w-trials-tls
       allowedRoutes:
         namespaces:
           from: Same
 ---
+# Path split: /api and /internal go to the Platform API, the rest to the web
+# app. Gateway API gives longer prefixes precedence, so order is not load-bearing.
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: trials
-  namespace: trials
+  name: a2w-trials
+  namespace: a2w-trials
 spec:
   parentRefs:
     - group: gateway.networking.k8s.io
       kind: Gateway
-      name: trials-gateway
-      namespace: trials
+      name: a2w-trials-gateway
+      namespace: a2w-trials
   hostnames:
     - trials.a2w.io
   rules:
-    - backendRefs:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api
+      backendRefs:
         - group: ''
           kind: Service
-          name: trials-service
+          name: a2w-trials-api-service
           port: 80
           weight: 1
-      matches:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /internal
+      backendRefs:
+        - group: ''
+          kind: Service
+          name: a2w-trials-api-service
+          port: 80
+          weight: 1
+    - matches:
         - path:
             type: PathPrefix
             value: /
+      backendRefs:
+        - group: ''
+          kind: Service
+          name: a2w-trials-web-service
+          port: 80
+          weight: 1

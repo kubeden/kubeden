@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: a2w-trials-web
+  namespace: a2w-trials
+  labels:
+    app: a2w-trials-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: a2w-trials-web
+  template:
+    metadata:
+      labels:
+        app: a2w-trials-web
+    spec:
+      containers:
+      - name: web
+        # CI (a2wio/trials repo) pushes :latest and :sha-<commit> on every
+        # push to main touching web/. Pin a sha tag and bump it to roll out.
+        image: registry.k6nis.dev/a2w/trials-web:latest
+        ports:
+        - containerPort: 3000

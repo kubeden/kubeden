@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: a2w-trials-api
+  namespace: a2w-trials
+  labels:
+    app: a2w-trials-api
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate # single replica on a RWO volume
+  selector:
+    matchLabels:
+      app: a2w-trials-api
+  template:
+    metadata:
+      labels:
+        app: a2w-trials-api
+    spec:
+      securityContext:
+        fsGroup: 1000 # node user in the image; makes the PVC writable
+      containers:
+      - name: api
+        image: registry.k6nis.dev/a2w/trials-api:latest
+        ports:
+        - containerPort: 8420
+        env:
+        - name: PORT
+          value: "8420"
+        - name: DB_PATH
+          value: /data/trials.sqlite
+        - name: PUBLIC_BASE
+          value: https://trials.a2w.io
+        - name: TRUST_PROXY # behind Cloudflare + Traefik: real IP from CF-Connecting-IP
+          value: "1"
+        # game server VPS — update when it exists
+        - name: GAME_HOST
+          value: not-yet-open.a2w.io
+        - name: GAME_PORT
+          value: "25565"
+        - name: ARBITER_KEY
+          valueFrom:
+            secretKeyRef:
+              name: a2w-trials-secrets
+              key: arbiter-key
+        readinessProbe:
+          httpGet:
+            path: /api/season-1
+            port: 8420
+          initialDelaySeconds: 3
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: a2w-trials-api-data
