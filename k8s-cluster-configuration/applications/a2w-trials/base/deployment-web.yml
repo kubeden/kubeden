@@ -22,3 +22,7 @@ spec:
         image: registry.k6nis.dev/a2w/trials-web:latest
         ports:
         - containerPort: 3000
+        env:
+        # live-map origin proxied at /season-1/watch (kept out of the public repo)
+        - name: MAP_ORIGIN
+          value: http://crane-yarrow-62.a2w.io:8100
