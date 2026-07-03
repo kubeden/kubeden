@@ -35,7 +35,7 @@ spec:
           value: "1"
         # game server VPS — update when it exists
         - name: GAME_HOST
-          value: not-yet-open.a2w.io
+          value: crane-yarrow-62.a2w.io
         - name: GAME_PORT
           value: "25565"
         - name: ARBITER_KEY
