@@ -6,3 +6,6 @@ metadata:
 data:
   # OAuth redirects and any absolute URLs the app mints
   APP_URL: "https://generalized.dev"
+  # GitHub App (repo imports) — the private key lives in the sealed secret
+  GITHUB_APP_ID: "4228106"
+  GITHUB_APP_SLUG: "generalized-dev"
