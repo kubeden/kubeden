@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: generalized-db
+  namespace: generalized
+  labels:
+    app: generalized-db
+spec:
+  serviceName: generalized-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: generalized-db
+  template:
+    metadata:
+      labels:
+        app: generalized-db
+    spec:
+      containers:
+      - name: postgres
+        # matches local dev (compose.yaml); the PG18 image keeps its data
+        # under /var/lib/postgresql — mount the volume there, no PGDATA
+        image: postgres:18-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: generalized
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: generalized-secrets
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: generalized-secrets
+              key: POSTGRES_PASSWORD
+        volumeMounts:
+        - name: db-storage
+          mountPath: /var/lib/postgresql
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        readinessProbe:
+          exec:
+            command: ["pg_isready", "-U", "generalized", "-d", "generalized"]
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          exec:
+            command: ["pg_isready", "-U", "generalized", "-d", "generalized"]
+          initialDelaySeconds: 15
+          periodSeconds: 30
+      volumes:
+      - name: db-storage
+        persistentVolumeClaim:
+          claimName: generalized-db-pvc

@@ -1,0 +1,50 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: generalized-gateway
+  namespace: generalized
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "generalized.dev,www.generalized.dev,api.generalized.dev"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 8443
+      hostname: generalized.dev
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - group: ''
+            kind: Secret
+            name: generalized-tls
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: https-www
+      protocol: HTTPS
+      port: 8443
+      hostname: www.generalized.dev
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - group: ''
+            kind: Secret
+            name: generalized-tls
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: https-api
+      protocol: HTTPS
+      port: 8443
+      hostname: api.generalized.dev
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - group: ''
+            kind: Secret
+            name: generalized-tls
+      allowedRoutes:
+        namespaces:
+          from: Same

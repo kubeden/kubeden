@@ -27,6 +27,7 @@ domainFilters:
   - a2w.io
   - denislavgavrilov.com
   - pastmonday.com
+  - generalized.dev
 
 rbac:
   create: true

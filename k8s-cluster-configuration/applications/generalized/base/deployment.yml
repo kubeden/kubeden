@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: generalized
+  namespace: generalized
+  labels:
+    app: generalized
+spec:
+  # single replica: one-node cluster, and it keeps drizzle migrations
+  # (initContainer) from racing themselves on rollout
+  replicas: 1
+  selector:
+    matchLabels:
+      app: generalized
+  template:
+    metadata:
+      labels:
+        app: generalized
+    spec:
+      initContainers:
+      - name: migrate
+        image: registry.k6nis.dev/generalized/webapp:latest
+        imagePullPolicy: Always
+        command: ["node", "db/migrate.mjs"]
+        envFrom:
+        - secretRef:
+            name: generalized-secrets
+      containers:
+      - name: generalized
+        image: registry.k6nis.dev/generalized/webapp:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        envFrom:
+        - configMapRef:
+            name: generalized-config
+        - secretRef:
+            name: generalized-secrets
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 30

@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: generalized-tls
+  namespace: generalized
+spec:
+  secretName: generalized-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - generalized.dev
+    - www.generalized.dev
+    - api.generalized.dev
