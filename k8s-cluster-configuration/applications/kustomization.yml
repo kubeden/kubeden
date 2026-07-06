@@ -1,4 +1,4 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
+apiVersioa: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 commonLabels:
@@ -17,4 +17,4 @@ resources:
   - denislavgavrilov/application.yml
   - pastmonday/application.yml
   - a2w-trials/application.yml
-  - generalize/application.yml
+  - generalized/application.yml
