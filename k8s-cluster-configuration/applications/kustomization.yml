@@ -17,3 +17,4 @@ resources:
   - denislavgavrilov/application.yml
   - pastmonday/application.yml
   - a2w-trials/application.yml
+  - generalize/application.yml
