@@ -9,3 +9,5 @@ data:
   # GitHub App (repo imports) — the private key lives in the sealed secret
   GITHUB_APP_ID: "4228106"
   GITHUB_APP_SLUG: "generalized-dev"
+  # transactional mail (sign-in codes + verification) — key in the sealed secret
+  MAIL_FROM: "Generalized <no-reply@generalized.dev>"
