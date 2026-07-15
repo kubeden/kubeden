@@ -43,15 +43,23 @@ spec:
           limits:
             cpu: 500m
             memory: 512Mi
+        # readiness proves real serving (/ hits the DB); liveness only
+        # proves the process is up (/api/health, no DB) so a slow query
+        # or CPU-throttled render can't get a healthy pod killed. The
+        # default 1s timeout caused the 2:14 deploy blip — a cold start
+        # missed it and liveness shot the pod.
         readinessProbe:
           httpGet:
             path: /
             port: 3000
           initialDelaySeconds: 5
           periodSeconds: 10
+          timeoutSeconds: 3
         livenessProbe:
           httpGet:
-            path: /
+            path: /api/health
             port: 3000
           initialDelaySeconds: 15
           periodSeconds: 30
+          timeoutSeconds: 3
+          failureThreshold: 3
