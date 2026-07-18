@@ -3,7 +3,9 @@ kind: Kustomization
 
 helmCharts:
   - name: sealed-secrets
-    repo: https://bitnami-labs.github.io/sealed-secrets
+    # Project moved from the bitnami-labs org to bitnami on 2026-06-15; the old
+    # GitHub Pages chart URL 404s (git redirects, Pages does not).
+    repo: https://bitnami.github.io/sealed-secrets
     version: 2.17.1
     releaseName: sealed-secrets
     namespace: sealed-secrets

@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ghostwrite
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/kubeden/kubeden.git
+    targetRevision: main
+    path: k8s-cluster-configuration/applications/ghostwrite/base
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ghostwrite
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

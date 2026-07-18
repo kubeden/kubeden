@@ -28,6 +28,7 @@ domainFilters:
   - denislavgavrilov.com
   - pastmonday.com
   - generalized.dev
+  - bettercalldenis.com
 
 rbac:
   create: true
