@@ -18,3 +18,4 @@ resources:
   - pastmonday/application.yml
   - a2w-trials/application.yml
   - generalized/application.yml
+  - ghostwrite/application.yml
