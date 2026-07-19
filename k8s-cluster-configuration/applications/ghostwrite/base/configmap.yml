@@ -11,5 +11,4 @@ data:
   # NEXT_PUBLIC_APP_URL is ALSO baked into the client bundle at build time (CI
   # build-arg); this runtime copy keeps server-side reads consistent.
   NEXT_PUBLIC_APP_URL: "https://bettercalldenis.com"
-  NEON_AI_GATEWAY_MODEL: "claude-haiku-4-5"
   EMAIL_FROM: "Ghostwriter <hello@bettercalldenis.com>"

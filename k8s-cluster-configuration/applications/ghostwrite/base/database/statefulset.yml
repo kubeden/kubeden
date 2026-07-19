@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ghostwrite-db
+  namespace: ghostwrite
+  labels:
+    app: ghostwrite-db
+spec:
+  serviceName: ghostwrite-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ghostwrite-db
+  template:
+    metadata:
+      labels:
+        app: ghostwrite-db
+    spec:
+      containers:
+      - name: postgres
+        # matches local dev (podman run postgres:18-alpine); the PG18 image
+        # keeps its data under /var/lib/postgresql — mount there, no PGDATA
+        image: postgres:18-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: ghostwrite
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: ghostwrite-secrets
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ghostwrite-secrets
+              key: POSTGRES_PASSWORD
+        volumeMounts:
+        - name: db-storage
+          mountPath: /var/lib/postgresql
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        readinessProbe:
+          exec:
+            command: ["pg_isready", "-U", "ghostwrite", "-d", "ghostwrite"]
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          exec:
+            command: ["pg_isready", "-U", "ghostwrite", "-d", "ghostwrite"]
+          initialDelaySeconds: 15
+          periodSeconds: 30
+      volumes:
+      - name: db-storage
+        persistentVolumeClaim:
+          claimName: ghostwrite-db-pvc
