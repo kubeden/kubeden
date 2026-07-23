@@ -5,4 +5,3 @@ resources:
   - deployment.yml
   - service.yml
   - gateway.yml
-  - a2w-secrets.yaml
