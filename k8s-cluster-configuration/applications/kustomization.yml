@@ -5,7 +5,7 @@ commonLabels:
   argocd.argoproj.io/instance: kubeden-apps
 
 resources:
-  # - a2w/application.yml
+  - a2w/application.yml
   - excalidraw/application.yml
   - notate/application.yml
   - md/application.yml
