@@ -19,3 +19,4 @@ resources:
   - a2w-trials/application.yml
   - generalized/application.yml
   - ghostwrite/application.yml
+  - darling-internals/application.yml

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: darling-internals
+  namespace: darling-internals
+  labels:
+    app: darling-internals
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: darling-internals
+  template:
+    metadata:
+      labels:
+        app: darling-internals
+    spec:
+      containers:
+      - name: darling-internals
+        image: registry.k6nis.dev/a2w/darling-internals:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: darling-internals-secrets
+              key: DATABASE_URL
+        - name: DARLING_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: darling-internals-secrets
+              key: DARLING_PASSWORD
+        - name: INGEST_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: darling-internals-secrets
+              key: INGEST_TOKEN
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
