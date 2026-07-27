@@ -4,7 +4,7 @@ darling's emotion graph at [darling.a2w.io](https://darling.a2w.io).
 App code: [a2wio/darling-internals](https://github.com/a2wio/darling-internals).
 Next app + its own postgres (statefulset + pvc, app-only networkpolicy).
 Data arrives outbound-only from the box darling runs on, via
-`POST /api/ingest`; everything else needs the password.
+`POST /api/ingest`; everything else needs the username and password.
 
 ## the secret (create once, never commit)
 
@@ -14,6 +14,7 @@ kubectl -n darling-internals create secret generic darling-internals-secrets \
   --from-literal=POSTGRES_USER=darling \
   --from-literal=POSTGRES_PASSWORD='<db password>' \
   --from-literal=DATABASE_URL='postgres://darling:<db password>@darling-internals-db:5432/darling_internals' \
+  --from-literal=DARLING_USERNAME='<login username>' \
   --from-literal=DARLING_PASSWORD='<login password>' \
   --from-literal=INGEST_TOKEN='<long random token>'
 ```

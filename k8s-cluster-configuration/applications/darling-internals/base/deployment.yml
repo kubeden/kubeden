@@ -26,6 +26,11 @@ spec:
             secretKeyRef:
               name: darling-internals-secrets
               key: DATABASE_URL
+        - name: DARLING_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: darling-internals-secrets
+              key: DARLING_USERNAME
         - name: DARLING_PASSWORD
           valueFrom:
             secretKeyRef:
