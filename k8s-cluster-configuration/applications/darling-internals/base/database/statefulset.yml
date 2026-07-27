@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: darling-internals-db
+  namespace: darling-internals
+  labels:
+    app: darling-internals-db
+spec:
+  serviceName: darling-internals-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: darling-internals-db
+  template:
+    metadata:
+      labels:
+        app: darling-internals-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:17-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: darling_internals
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: darling-internals-secrets
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: darling-internals-secrets
+              key: POSTGRES_PASSWORD
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        volumeMounts:
+        - name: db-storage
+          mountPath: /var/lib/postgresql/data
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        readinessProbe:
+          exec:
+            command: ["pg_isready", "-U", "darling"]
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          exec:
+            command: ["pg_isready", "-U", "darling"]
+          initialDelaySeconds: 15
+          periodSeconds: 30
+      volumes:
+      - name: db-storage
+        persistentVolumeClaim:
+          claimName: darling-internals-db-pvc
