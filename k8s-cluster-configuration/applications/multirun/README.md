@@ -4,10 +4,10 @@ Fan out N isolated agent runs on the cluster — worktree + neon branch
 per run, results in a database, nothing shared. Code and chart:
 [a2wio/multirun](https://github.com/a2wio/multirun).
 
-ArgoCD can't read that repo (private; the a2wio org has deploy keys
-disabled), so `base/` holds the rendered manifests — same objects as
-`infrastructure/chart` there, pinned image tags. Change the chart,
-re-render, commit here; the cluster listens to this copy only.
+ArgoCD reads the chart straight from that repo (`infrastructure/chart`,
+read-only deploy key; the repo credential is a SealedSecret in
+`platform/argocd`). `base/` here holds only what must be sealed against
+this cluster.
 
 ## secrets
 
@@ -21,5 +21,5 @@ re-render, commit here; the cluster listens to this copy only.
 
 ## shipping a new image
 
-Pin the new sha in the chart's `values.yaml`, re-render, update the two
-tags in `base/deployment.yml`, sync. No `:latest`, no rollout restarts.
+Pin the new sha in the chart's `values.yaml` on main, sync. No
+`:latest`, no rollout restarts, nothing to re-render here.
