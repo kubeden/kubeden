@@ -20,3 +20,4 @@ resources:
   - generalized/application.yml
   - ghostwrite/application.yml
   - darling-internals/application.yml
+  - multirun/application.yml
