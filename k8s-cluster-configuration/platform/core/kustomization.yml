@@ -12,6 +12,6 @@ resources:
   - hcloud-ccm/application.yml
   - zot/application.yml
   - kyverno/application.yml
-  - velero/application.yml
+  # - velero/application.yml
   - a2w-lucas/application.yml
-  - a2w-code/application.yml
+  # - a2w-code/application.yml
