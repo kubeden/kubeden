@@ -38,6 +38,9 @@ spec:
             - registry.k6nis.dev/multirun-runner:7775c1c
             - --namespace
             - multirun
+          env:
+            - name: PYTHONUNBUFFERED   # logs are the interface; no buffering
+              value: "1"
           envFrom:
             - secretRef:
                 name: multirun-secrets
