@@ -29,13 +29,13 @@ spec:
         - name: registry-credentials
       containers:
         - name: core
-          image: registry.k6nis.dev/multirun-core:a63102b
+          image: registry.k6nis.dev/multirun-core:7775c1c
           command:
             - multirun
             - watch
             - /etc/multirun
             - --runner-image
-            - registry.k6nis.dev/multirun-runner:a63102b
+            - registry.k6nis.dev/multirun-runner:7775c1c
             - --namespace
             - multirun
           envFrom:
