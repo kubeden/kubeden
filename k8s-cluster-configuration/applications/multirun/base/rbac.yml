@@ -7,7 +7,7 @@ metadata:
   namespace: multirun
 rules:
   - apiGroups: ["batch"]
-    resources: ["jobs"]
+    resources: ["jobs", "jobs/status"]
     verbs: ["create", "get", "list", "watch", "delete"]
   - apiGroups: [""]
     resources: ["configmaps", "secrets"]
