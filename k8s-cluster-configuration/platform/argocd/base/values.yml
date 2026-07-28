@@ -8,8 +8,6 @@ configs:
     server.insecure: true
   rbac:
     policy.csv: |
-      p, github-actions, applications, get, default/md-pr-*, allow
-      p, github-actions, applications, get, default/argocd/md-pr-*, allow
       p, github-actions, projects, get, default, allow
   secret:
     annotations:
