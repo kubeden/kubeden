@@ -5,10 +5,17 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: https://github.com/kubeden/kubeden.git
-    targetRevision: main
-    path: k8s-cluster-configuration/applications/multirun/base
+  sources:
+    # the chart itself, straight from the source repo (read-only deploy
+    # key; the repo credential is a SealedSecret in platform/argocd)
+    - repoURL: git@github.com:a2wio/multirun.git
+      targetRevision: main
+      path: infrastructure/chart
+    # cluster-side statics that don't belong in the chart repo:
+    # SealedSecrets are sealed against THIS cluster, so they stay here
+    - repoURL: https://github.com/kubeden/kubeden.git
+      targetRevision: main
+      path: k8s-cluster-configuration/applications/multirun/base
   destination:
     server: https://kubernetes.default.svc
     namespace: multirun
