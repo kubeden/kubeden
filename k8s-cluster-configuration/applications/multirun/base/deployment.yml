@@ -1,0 +1,70 @@
+# the multirun controller: plain Deployment, no CRD. Run state lives in
+# the results database, not in etcd. Source + chart: a2wio/multirun.
+#
+# Secrets it expects but this repo never carries (created by hand in the
+# namespace): multirun-secrets (NEON_API_KEY, RESULTS_DATABASE_URL),
+# claude-creds (rotates; `multirun creds push` seeds it, the controller
+# keeps it fresh), source-deploy-key, registry-credentials.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: multirun-core
+  namespace: multirun
+  labels:
+    app: multirun-core
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate            # one controller; two would double-spawn
+  selector:
+    matchLabels:
+      app: multirun-core
+  template:
+    metadata:
+      labels:
+        app: multirun-core
+    spec:
+      serviceAccountName: multirun-core
+      imagePullSecrets:
+        - name: registry-credentials
+      containers:
+        - name: core
+          image: registry.k6nis.dev/multirun-core:a63102b
+          command:
+            - multirun
+            - watch
+            - /etc/multirun
+            - --runner-image
+            - registry.k6nis.dev/multirun-runner:a63102b
+            - --namespace
+            - multirun
+          envFrom:
+            - secretRef:
+                name: multirun-secrets
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+          volumeMounts:
+            - name: claude-creds
+              mountPath: /creds/claude
+              readOnly: true
+            - name: fanout-config
+              mountPath: /etc/multirun
+              readOnly: true
+            - name: artifacts
+              mountPath: /artifacts
+      volumes:
+        - name: claude-creds
+          secret:
+            secretName: claude-creds
+            optional: true    # the pod must come up to LOG that creds are missing
+        - name: fanout-config
+          configMap:
+            name: multirun-config
+            optional: true    # `multirun publish` creates and fills it
+        - name: artifacts
+          persistentVolumeClaim:
+            claimName: multirun-artifacts

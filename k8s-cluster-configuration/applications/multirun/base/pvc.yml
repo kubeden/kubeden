@@ -1,0 +1,14 @@
+# artifacts outlive the pods that wrote them: run pods write here, the
+# controller reads meta + writes db diffs here at harvest. RWO is fine —
+# one node, and the diffs' real home is the results db.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: multirun-artifacts
+  namespace: multirun
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
