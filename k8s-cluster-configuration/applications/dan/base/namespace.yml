@@ -1,0 +1,9 @@
+# The namespace is a git object, not a side effect of CreateNamespace=true.
+# A sync triggered by patching the Application (which is how syncs happen
+# here — no logged-in argocd CLI) carries no syncOptions, so CreateNamespace
+# is silently dropped and every object fails with "namespaces not found".
+# In git it is also argocd-tracked, so a future prune takes it with the app.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dan
