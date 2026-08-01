@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: darling-page
+  namespace: darling-page
+  labels:
+    app: darling-page
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: darling-page
+  template:
+    metadata:
+      labels:
+        app: darling-page
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d
+            - name: site
+              mountPath: /usr/share/nginx/html
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 2
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+      # Every ConfigMap below is generated and applied from the PRIVATE repo
+      # a2wio/darling-page (`kubectl apply -k . --server-side`) — this repo
+      # is public and the page is unlisted. See the README beside this file.
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: darling-page-nginx
+            items:
+              - key: nginx.conf
+                path: darling.conf
+        # one tree out of three ConfigMaps: the html changes every edit, the
+        # two asset maps almost never. keys can't hold a slash, so the
+        # directory layout is carried by the item paths.
+        - name: site
+          projected:
+            sources:
+              - configMap:
+                  name: darling-page-html
+                  items:
+                    - key: index.html
+                      path: index.html
+                    - key: robots.txt
+                      path: robots.txt
+              - configMap:
+                  name: darling-page-assets
+                  items:
+                    - key: darling-800.webp
+                      path: assets/darling-800.webp
+                    - key: darling-180.png
+                      path: assets/darling-180.png
+              - configMap:
+                  name: darling-page-dash
+                  items:
+                    - key: overview.webp
+                      path: assets/dash/overview.webp
+                    - key: feelings.webp
+                      path: assets/dash/feelings.webp
+                    - key: ladder.webp
+                      path: assets/dash/ladder.webp
+                    - key: canvas.webp
+                      path: assets/dash/canvas.webp
+                    - key: memory.webp
+                      path: assets/dash/memory.webp
+                    - key: usage.webp
+                      path: assets/dash/usage.webp
