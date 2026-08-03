@@ -5,3 +5,4 @@ resources:
   - deployment.yml
   - service.yml
   - gateway.yml
+  - secrets-sealed.yml
