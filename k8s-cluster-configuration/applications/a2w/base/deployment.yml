@@ -20,3 +20,11 @@ spec:
         image: registry.k6nis.dev/a2w/website:latest
         ports:
         - containerPort: 3000
+        # /api/book reads SMTPFAST_API_KEY, BOOKING_FROM_EMAIL,
+        # BOOKING_NOTIFY_EMAIL and the GOOGLE_* pair for the calendar half.
+        # Optional so the site keeps serving before the secret lands — the
+        # route answers "Booking service not configured" until it does.
+        envFrom:
+        - secretRef:
+            name: a2w-secrets
+            optional: true
