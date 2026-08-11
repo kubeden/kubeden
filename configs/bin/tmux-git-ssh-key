@@ -1,0 +1,94 @@
+#!/bin/sh
+
+expand_home() {
+  case "$1" in
+    "~/"*) printf '%s/%s\n' "$HOME" "$(printf '%s' "$1" | sed 's#^~/##')" ;;
+    *) printf '%s\n' "$1" ;;
+  esac
+}
+
+path=${1:-$PWD}
+
+if ! git -C "$path" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  printf '%s\n' '-'
+  exit 0
+fi
+
+url=$(git -C "$path" remote get-url origin 2>/dev/null || true)
+host=
+
+case "$url" in
+  *@*:*)
+    host=${url#*@}
+    host=${host%%[:/]*}
+    ;;
+  ssh://*)
+    rest=${url#ssh://}
+    case "$rest" in
+      *@*) rest=${rest#*@} ;;
+    esac
+    host=${rest%%/*}
+    host=${host%%:*}
+    ;;
+esac
+
+if [ -z "$host" ]; then
+  printf '%s\n' '-'
+  exit 0
+fi
+
+config="$HOME/.ssh/config"
+key=
+
+if [ -r "$config" ]; then
+  key=$(awk -v host="$host" '
+    function glob_to_re(pattern, s) {
+      s = pattern
+      gsub(/[][(){}.^$+?|\\]/, "\\\\&", s)
+      gsub(/\*/, ".*", s)
+      gsub(/\?/, ".", s)
+      return "^" s "$"
+    }
+    /^[[:space:]]*#/ || /^[[:space:]]*$/ { next }
+    tolower($1) == "host" {
+      active = 0
+      for (i = 2; i <= NF; i++) {
+        pat = $i
+        neg = 0
+        if (substr(pat, 1, 1) == "!") {
+          neg = 1
+          pat = substr(pat, 2)
+        }
+        if (host ~ glob_to_re(pat)) {
+          if (neg) {
+            active = 0
+            next
+          }
+          active = 1
+        }
+      }
+      next
+    }
+    active && tolower($1) == "identityfile" { print $2; exit }
+  ' "$config")
+fi
+
+if [ -n "$key" ]; then
+  key=$(expand_home "$key")
+  basename "$key"
+  exit 0
+fi
+
+key=$(ssh -G "$host" 2>/dev/null | awk 'tolower($1) == "identityfile" { print $2 }' | while IFS= read -r file; do
+  file=$(expand_home "$file")
+  if [ -f "$file" ]; then
+    basename "$file"
+    exit 0
+  fi
+done)
+
+if [ -n "$key" ]; then
+  printf '%s\n' "$key"
+else
+  printf '%s\n' "$host"
+fi
