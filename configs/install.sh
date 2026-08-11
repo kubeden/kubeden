@@ -51,6 +51,7 @@ say "linking from $CONFIGS"
 link zsh/zshrc              .zshrc
 link zsh/zprofile           .zprofile
 link zsh/zshenv             .zshenv
+link zsh/p10k.zsh           .p10k.zsh
 link tmux/tmux.conf         .tmux.conf
 link git/gitconfig          .gitconfig
 link kitty                  .config/kitty
@@ -65,12 +66,17 @@ On a brand new machine, these come first — the oh-my-zsh installer writes its
 own ~/.zshrc, so do them and then re-run this script:
 
   brew install tmux neovim fzf zoxide direnv git-lfs
-  brew install --cask kitty git-credential-manager
+  brew install --cask kitty git-credential-manager font-monaspice-nerd-font
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
   git clone --depth=1 https://github.com/romkatv/powerlevel10k \
       "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
   git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
-Then: p10k configure, tmux + prefix-I for plugins, nvim once to let lazy sync.
+The powerlevel10k clone is not optional — oh-my-zsh doesn't ship the theme, and
+zshrc asks for it by name. The prompt itself is zsh/p10k.zsh in this repo, so
+there's no need to run `p10k configure`; it would delete the symlink this
+script just made and write a fresh config over it.
+
+Then: tmux + prefix-I for plugins, nvim once to let lazy sync.
 Secrets and per-machine env go in ~/.config/secret_env (not in this repo).
 EOF
