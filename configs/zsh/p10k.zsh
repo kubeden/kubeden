@@ -1596,66 +1596,6 @@
   }
 
 
-  function prompt_git_auth() {
-    emulate -L zsh
-    local url host auth_label id_label name email profiles_file text gh_user
-
-    command git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return
-
-    url=$(command git remote get-url origin 2>/dev/null || true)
-    if [[ $url == git@*:* ]]; then
-      host=${url#git@}
-      host=${host%%:*}
-    elif [[ $url == ssh://* ]]; then
-      host=${url#ssh://}
-      host=${host%%/*}
-    elif [[ $url == https://* || $url == http://* ]]; then
-      host=${url#*://}
-      host=${host%%/*}
-    else
-      host=''
-    fi
-
-    case $host in
-      github-consensus) auth_label='consensus' ;;
-      github-kubeden) auth_label='kubeden' ;;
-      github.com)
-        if command -v gh >/dev/null 2>&1; then
-          gh_user=$(GH_NO_UPDATE_NOTIFIER=1 gh auth status -t 2>/dev/null | sed -n 's/.*Logged in to github.com as \\([^ ]*\\).*/\\1/p' | head -n1)
-        fi
-        auth_label=${gh_user:+gh:$gh_user}
-        [[ -z "$auth_label" ]] && auth_label='github.com'
-        ;;
-      '') auth_label='' ;;
-      *) auth_label="$host" ;;
-    esac
-
-    name=$(command git config --local --get user.name 2>/dev/null || true)
-    email=$(command git config --local --get user.email 2>/dev/null || true)
-    if [[ -z "$name$email" ]]; then
-      name=$(command git config --global --get user.name 2>/dev/null || true)
-      email=$(command git config --global --get user.email 2>/dev/null || true)
-    fi
-
-    if [[ -n "$name$email" ]]; then
-      profiles_file="${XDG_CONFIG_HOME:-$HOME/.config}/gctx/profiles"
-      if [[ -f "$profiles_file" ]]; then
-        id_label=$(awk -F'|' -v n="$name" -v e="$email" 'NF>=3 && $1 !~ /^#/ {if ($2==n && $3==e) {print $1; exit}}' "$profiles_file")
-      fi
-      [[ -z "$id_label" ]] && id_label="custom"
-    fi
-
-    text=""
-    [[ -n "$auth_label" ]] && text+="auth:$auth_label"
-    if [[ -n "$id_label" ]]; then
-      [[ -n "$text" ]] && text+=" "
-      text+="id:$id_label"
-    fi
-
-    [[ -n "$text" ]] || return
-    p10k segment -f 110 -t "$text"
-  }
-
   function prompt_example() {
     p10k segment -f 208 -i '⭐' -t 'hello, %n'
   }

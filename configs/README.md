@@ -96,8 +96,9 @@ Anything personal lives outside the repo:
   `~/.config/secret_env`, which `zshrc` sources at the end if present. Keep
   that file out of version control.
 - `~/.ssh/`, keys and tokens are never in here.
-- `zsh/p10k.zsh` carries one custom segment, `prompt_git_auth`, which reads the
-  ssh host alias of the current repo's remote (`github-kubeden` and friends,
-  defined in `~/.ssh/config`) and the matching identity from
-  `~/.config/gctx/profiles`. Both of those live outside this repo. The segment
-  is defined but not enabled — it's in neither prompt-elements list.
+- `zsh/p10k.zsh` is the live prompt config minus one thing: a `prompt_git_auth`
+  segment that mapped per-account ssh host aliases to identity labels. It was
+  dead code — in neither prompt-elements list, so it never rendered — and it
+  named hosts and an identity file that belong outside a public repo. Dropped
+  here rather than committed. Nothing else in the file was changed, and the
+  prompt you get from it is the prompt on this machine.
