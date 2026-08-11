@@ -150,18 +150,9 @@ path=(
 export CPPFLAGS="-I/opt/homebrew/opt/openjdk@19/include"
 
 # --- lazy loaders ---
+# nvm lazy-load removed: wrappers were exported to subshells without the
+# _nvm_lazy_load helper, causing infinite recursion. node/npm come from Homebrew.
 export NVM_DIR="$HOME/.nvm"
-if [[ -s "$NVM_DIR/nvm.sh" ]]; then
-  _nvm_lazy_load() {
-    unset -f nvm node npm npx
-    . "$NVM_DIR/nvm.sh"
-    [[ -s "$NVM_DIR/bash_completion" ]] && . "$NVM_DIR/bash_completion"
-  }
-  nvm() { _nvm_lazy_load; nvm "$@"; }
-  node() { _nvm_lazy_load; node "$@"; }
-  npm() { _nvm_lazy_load; npm "$@"; }
-  npx() { _nvm_lazy_load; npx "$@"; }
-fi
 
 if [[ -f "/opt/anaconda3/etc/profile.d/conda.sh" || -x "/opt/anaconda3/bin/conda" ]]; then
   _conda_lazy_load() {
@@ -222,8 +213,14 @@ alias kg="kubectl get"
 alias kctx="kubectx"
 alias kns="kubens"
 
+# Host shortcuts (ssh aliases) live in ~/.config/secret_env, not here.
+
 alias cr="cargo run"
 alias cb="cargo build"
+
+# GitHub defaults (non-secret)
+export GITHUB_OWNER="kubeden"
+export GITHUB_REPO="kubeden"
 
 # Load private env last if present (keep machine-specific vars/secrets out of version control)
 [[ -f "$HOME/.config/secret_env" ]] && source "$HOME/.config/secret_env"

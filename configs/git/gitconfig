@@ -1,0 +1,16 @@
+[user]
+	name = kubeden
+	email = dennis@kubeden.io
+	signingkey = dennis@kubeden.io
+[credential]
+	helper =
+	# Resolved from PATH so this works on both /usr/local and /opt/homebrew.
+	# Needs: brew install --cask git-credential-manager
+	helper = manager
+[credential "https://dev.azure.com"]
+	useHttpPath = true
+[filter "lfs"]
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
