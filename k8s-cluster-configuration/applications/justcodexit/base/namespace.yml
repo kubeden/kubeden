@@ -1,0 +1,7 @@
+# The namespace is a git object, not a side effect of CreateNamespace=true.
+# A patched sync carries no syncOptions, so CreateNamespace is dropped; in
+# git the namespace is also argocd-tracked, which CreateNamespace never does.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: justcodexit
