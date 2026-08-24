@@ -20,4 +20,4 @@ resources:
   - darling-internals/application.yml
   - darling-page/application.yml
   - multirun/application.yml
-  - agentgrant-relay/application.yml
+  - innkeeper-relay/application.yml

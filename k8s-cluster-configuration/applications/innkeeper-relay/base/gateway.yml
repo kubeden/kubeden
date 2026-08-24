@@ -2,10 +2,10 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: agentgrant-relay-tls
-  namespace: agentgrant-relay
+  name: innkeeper-relay-tls
+  namespace: innkeeper-relay
 spec:
-  secretName: agentgrant-relay-tls
+  secretName: innkeeper-relay-tls
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer
@@ -15,8 +15,8 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: agentgrant-relay-gateway
-  namespace: agentgrant-relay
+  name: innkeeper-relay-gateway
+  namespace: innkeeper-relay
   annotations:
     external-dns.alpha.kubernetes.io/hostname: "relay.a2w.io"
     # Proxied is fine for a websocket that pings every 60s, and the
@@ -36,7 +36,7 @@ spec:
         certificateRefs:
           - group: ''
             kind: Secret
-            name: agentgrant-relay-tls
+            name: innkeeper-relay-tls
       allowedRoutes:
         namespaces:
           from: Same
@@ -44,21 +44,21 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: agentgrant-relay
-  namespace: agentgrant-relay
+  name: innkeeper-relay
+  namespace: innkeeper-relay
 spec:
   parentRefs:
     - group: gateway.networking.k8s.io
       kind: Gateway
-      name: agentgrant-relay-gateway
-      namespace: agentgrant-relay
+      name: innkeeper-relay-gateway
+      namespace: innkeeper-relay
   hostnames:
     - relay.a2w.io
   rules:
     - backendRefs:
         - group: ''
           kind: Service
-          name: agentgrant-relay-service
+          name: innkeeper-relay-service
           port: 80
           weight: 1
       matches:

@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: agentgrant-relay
+  name: innkeeper-relay
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/kubeden/kubeden.git
     targetRevision: main
-    path: k8s-cluster-configuration/applications/agentgrant-relay/base
+    path: k8s-cluster-configuration/applications/innkeeper-relay/base
   destination:
     server: https://kubernetes.default.svc
-    namespace: agentgrant-relay
+    namespace: innkeeper-relay
   syncPolicy:
     syncOptions:
       - CreateNamespace=true

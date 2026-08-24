@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: agentgrant-relay
-  namespace: agentgrant-relay
+  name: innkeeper-relay
+  namespace: innkeeper-relay
   labels:
-    app: agentgrant-relay
+    app: innkeeper-relay
 spec:
   # Exactly one, and that is a constraint rather than thrift: the relay
   # holds its mailboxes in memory, so a second replica would be a second
@@ -16,18 +16,18 @@ spec:
     type: Recreate
   selector:
     matchLabels:
-      app: agentgrant-relay
+      app: innkeeper-relay
   template:
     metadata:
       labels:
-        app: agentgrant-relay
+        app: innkeeper-relay
     spec:
       containers:
-        - name: agentgrant-relay
+        - name: innkeeper-relay
           # Built by the Dockerfile at the root of a2wio/agentgrant
           # (private repo, so no registry has it yet — build and push
           # before the first sync).
-          image: registry.k6nis.dev/agentgrant-relay:latest
+          image: registry.k6nis.dev/innkeeper-relay:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8646
