@@ -6,14 +6,20 @@ metadata:
   labels:
     app: innkeeper-relay
 spec:
-  # Exactly one, and that is a constraint rather than thrift: the relay
-  # holds its mailboxes in memory, so a second replica would be a second
-  # relay — the daemon's websocket on one, the phone's poll on the other,
-  # and nothing moving between them. Scaling this out means giving it
-  # shared state first (a2wio/agentgrant, docs/protocol.md "The relay").
+  # One is now a choice rather than a constraint. The mailboxes moved
+  # off the heap and into a rented redis (a2wio/innkeeper,
+  # innkeeper/relaystore.py), so a second replica would share them —
+  # but a phone posting to one pod cannot wake a daemon's websocket
+  # parked on another any faster than that reader's backoff, which
+  # walks out to 30s. Until there is cross-pod wakeup, more replicas
+  # buy availability and cost latency on the one thing that has to
+  # feel instant.
   replicas: 1
   strategy:
-    type: Recreate
+    # Safe now that the queues outlive the pod: the new one reads the
+    # same shelf the old one was reading, so an overlap is two doors
+    # into one room rather than two rooms.
+    type: RollingUpdate
   selector:
     matchLabels:
       app: innkeeper-relay
@@ -24,14 +30,24 @@ spec:
     spec:
       containers:
         - name: innkeeper-relay
-          # Built by the Dockerfile at the root of a2wio/agentgrant
-          # (private repo, so no registry has it yet — build and push
-          # before the first sync).
+          # Built from the Dockerfile at the root of a2wio/innkeeper
+          # (private repo) by that repo's own build-push workflow, on
+          # every push to main that touches the daemon.
           image: registry.k6nis.dev/innkeeper-relay:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8646
               name: http
+          # The Upstash database the mailboxes live in. Optional so the
+          # relay still comes up without it — it falls back to the heap
+          # and says so at /v1/health, which is the honest failure and
+          # not a silent one. Nothing here can read what it stores:
+          # envelopes are sealed end to end, and a mailbox is named
+          # after a hash of a public key.
+          envFrom:
+            - secretRef:
+                name: innkeeper-relay-secrets
+                optional: true
           readinessProbe:
             httpGet:
               path: /v1/health
@@ -49,6 +65,7 @@ spec:
               cpu: 50m
               memory: 64Mi
             limits:
-              # The queues cap themselves at 32MiB a side per daemon;
-              # this bounds the blast radius if that arithmetic is wrong.
+              # With the queues on the shelf the pod holds almost
+              # nothing; this bounds the blast radius if that turns out
+              # to be wrong.
               memory: 256Mi

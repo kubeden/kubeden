@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - namespace.yml
+  - secrets-sealed.yml
   - deployment.yml
   - service.yml
   - gateway.yml
