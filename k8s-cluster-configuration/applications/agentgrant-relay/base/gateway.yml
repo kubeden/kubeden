@@ -1,0 +1,67 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: agentgrant-relay-tls
+  namespace: agentgrant-relay
+spec:
+  secretName: agentgrant-relay-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - relay.a2w.io
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: agentgrant-relay-gateway
+  namespace: agentgrant-relay
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "relay.a2w.io"
+    # Proxied is fine for a websocket that pings every 60s, and the
+    # payloads are sealed end to end before they ever reach here —
+    # cloudflare reading this traffic learns what the relay itself
+    # learns, which is envelope sizes and timing.
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 8443
+      hostname: relay.a2w.io
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - group: ''
+            kind: Secret
+            name: agentgrant-relay-tls
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: agentgrant-relay
+  namespace: agentgrant-relay
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: agentgrant-relay-gateway
+      namespace: agentgrant-relay
+  hostnames:
+    - relay.a2w.io
+  rules:
+    - backendRefs:
+        - group: ''
+          kind: Service
+          name: agentgrant-relay-service
+          port: 80
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /

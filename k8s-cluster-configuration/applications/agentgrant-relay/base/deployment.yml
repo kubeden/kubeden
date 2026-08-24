@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agentgrant-relay
+  namespace: agentgrant-relay
+  labels:
+    app: agentgrant-relay
+spec:
+  # Exactly one, and that is a constraint rather than thrift: the relay
+  # holds its mailboxes in memory, so a second replica would be a second
+  # relay — the daemon's websocket on one, the phone's poll on the other,
+  # and nothing moving between them. Scaling this out means giving it
+  # shared state first (a2wio/agentgrant, docs/protocol.md "The relay").
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: agentgrant-relay
+  template:
+    metadata:
+      labels:
+        app: agentgrant-relay
+    spec:
+      containers:
+        - name: agentgrant-relay
+          # Built by the Dockerfile at the root of a2wio/agentgrant
+          # (private repo, so no registry has it yet — build and push
+          # before the first sync).
+          image: registry.k6nis.dev/agentgrant-relay:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8646
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /v1/health
+              port: 8646
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /v1/health
+              port: 8646
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              # The queues cap themselves at 32MiB a side per daemon;
+              # this bounds the blast radius if that arithmetic is wrong.
+              memory: 256Mi
