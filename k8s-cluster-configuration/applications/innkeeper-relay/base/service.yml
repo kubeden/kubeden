@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: innkeeper-relay-service
+  namespace: innkeeper-relay
+spec:
+  selector:
+    app: innkeeper-relay
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8646
