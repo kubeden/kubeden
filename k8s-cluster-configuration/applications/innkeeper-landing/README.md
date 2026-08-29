@@ -17,6 +17,17 @@ Editing the page is a commit there and one `kubectl apply -k`. Kubelet syncs
 a mounted ConfigMap in place, so the pod never restarts; allow ~60s for the
 mount to catch up.
 
+## Adding a page, which is not the same thing
+
+The `site` volume is a projection with an explicit `items` list, so a new key
+in the ConfigMap is not mounted until it is named here as well. `/docs` was a
+404 for exactly that reason. Two extra steps, in this order:
+
+1. add the key to `deployment.yml` and sync this app;
+2. if `nginx.conf` changed too — a new `location` block for the path —
+   restart the Deployment. nginx reads its config once, at start, so a
+   mounted config that changed underneath it is a config it is not serving.
+
 ## What this app does not own
 
 The `innkeeper` namespace and the HTTPRoute for `innkeeper.a2w.io` belong to

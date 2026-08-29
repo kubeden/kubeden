@@ -64,6 +64,8 @@ spec:
                   items:
                     - key: index.html
                       path: index.html
+                    - key: docs.html
+                      path: docs.html
                     - key: robots.txt
                       path: robots.txt
                     - key: sitemap.xml
