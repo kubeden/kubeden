@@ -1,0 +1,16 @@
+# Every tenant lives in here: one directory per slug, laid out exactly
+# like a self-hosted Innkeeper's home on somebody's Mac, plus the sqlite
+# file beside them. Losing this volume is losing every pairing — there
+# is no second copy anywhere, by design, because a second copy of a
+# pairing is a second thing that can approve.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: innkeeper-data
+  namespace: innkeeper
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
