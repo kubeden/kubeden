@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: innkeeper-app
+  namespace: innkeeper
+spec:
+  selector:
+    app: innkeeper-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
