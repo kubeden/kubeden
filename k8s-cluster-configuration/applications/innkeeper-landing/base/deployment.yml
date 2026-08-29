@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: innkeeper-landing
+  namespace: innkeeper
+  labels:
+    app: innkeeper-landing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: innkeeper-landing
+  template:
+    metadata:
+      labels:
+        app: innkeeper-landing
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d
+            - name: site
+              mountPath: /usr/share/nginx/html
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 2
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+      # Every ConfigMap below is generated and applied from a2wio/innkeeper-landing
+      # (`kubectl apply -k . --server-side`). The page is not in this repo — see
+      # the README beside this file.
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: innkeeper-landing-nginx
+            items:
+              - key: nginx.conf
+                path: innkeeper-landing.conf
+        # One tree out of two content ConfigMaps. Keys cannot hold a slash, so
+        # the directory layout is carried by the item paths.
+        - name: site
+          projected:
+            sources:
+              - configMap:
+                  name: innkeeper-landing-html
+                  items:
+                    - key: index.html
+                      path: index.html
+                    - key: robots.txt
+                      path: robots.txt
+                    - key: sitemap.xml
+                      path: sitemap.xml
+              - configMap:
+                  name: innkeeper-landing-assets
+                  items:
+                    - key: og.png
+                      path: assets/og.png
+                    - key: mark-180.png
+                      path: assets/mark-180.png
+                    - key: approve-light.webp
+                      path: assets/approve-light.webp
+                    - key: approve-dark.webp
+                      path: assets/approve-dark.webp
