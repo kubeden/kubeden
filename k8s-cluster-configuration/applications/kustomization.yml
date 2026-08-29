@@ -21,3 +21,4 @@ resources:
   - darling-page/application.yml
   - multirun/application.yml
   - innkeeper-relay/application.yml
+  - innkeeper/application.yml

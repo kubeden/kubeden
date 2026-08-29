@@ -1,0 +1,115 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: innkeeper-tls
+  namespace: innkeeper
+spec:
+  secretName: innkeeper-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - innkeeper.a2w.io
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: innkeeper-gateway
+  namespace: innkeeper
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "innkeeper.a2w.io"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 8443
+      hostname: innkeeper.a2w.io
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - group: ''
+            kind: Secret
+            name: innkeeper-tls
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+# One hostname, three services, and the split is by path because that
+# is what the product's urls already are: the landing page is what a
+# person types, /app is the dashboard, and everything else is protocol.
+#
+# All three backends are wired now. `innkeeper-landing` and
+# `innkeeper-app` are built in their own repos and their Services do
+# not exist yet — until they do, those two paths answer 503, which is
+# the honest thing for a page that has not shipped and does not touch
+# the gateway's own routes.
+#
+# Traefik matches the longest prefix first, so the order below is for
+# reading, not for precedence.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: innkeeper
+  namespace: innkeeper
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: innkeeper-gateway
+      namespace: innkeeper
+  hostnames:
+    - innkeeper.a2w.io
+  rules:
+    # The MCP endpoint clients paste into Claude, the OAuth server, the
+    # discovery documents, the pairing page, the dashboard's API — and
+    # /t/, which is the one nobody would guess: it is where the iPhone
+    # app reaches a tenant, because the app builds its base url from the
+    # pairing QR and needs a per-tenant path to build it from.
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /s/
+        - path:
+            type: PathPrefix
+            value: /t/
+        - path:
+            type: PathPrefix
+            value: /v1
+        - path:
+            type: PathPrefix
+            value: /oauth
+        - path:
+            type: PathPrefix
+            value: /.well-known
+        - path:
+            type: PathPrefix
+            value: /pair
+      backendRefs:
+        - group: ''
+          kind: Service
+          name: innkeeper-gateway
+          port: 8080
+          weight: 1
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /app
+      backendRefs:
+        - group: ''
+          kind: Service
+          name: innkeeper-app
+          port: 80
+          weight: 1
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - group: ''
+          kind: Service
+          name: innkeeper-landing
+          port: 80
+          weight: 1
