@@ -23,3 +23,4 @@ resources:
   - innkeeper-relay/application.yml
   - innkeeper-gateway/application.yml
   - innkeeper-landing/application.yml
+  - innkeeper-app/application.yml

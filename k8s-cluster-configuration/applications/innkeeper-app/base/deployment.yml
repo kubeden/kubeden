@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: innkeeper-app
+  namespace: innkeeper
+  labels:
+    app: innkeeper-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: innkeeper-app
+  template:
+    metadata:
+      labels:
+        app: innkeeper-app
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d
+            - name: site
+              mountPath: /usr/share/nginx/html
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 2
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+      # Every ConfigMap below is generated and applied from a2wio/innkeeper-app
+      # (`kubectl apply -k . --server-side`). The dashboard is not in this repo —
+      # see the README beside this file.
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: innkeeper-app-nginx
+            items:
+              - key: nginx.conf
+                path: innkeeper-app.conf
+        # One tree out of two content ConfigMaps. Keys cannot hold a slash, so
+        # the directory layout is carried by the item paths.
+        - name: site
+          projected:
+            sources:
+              - configMap:
+                  name: innkeeper-app-html
+                  items:
+                    - key: index.html
+                      path: index.html
+                    - key: app.css
+                      path: app.css
+                    - key: app.js
+                      path: app.js
+                    - key: api.js
+                      path: api.js
+              - configMap:
+                  name: innkeeper-app-assets
+                  items:
+                    - key: mark-180.png
+                      path: assets/mark-180.png
