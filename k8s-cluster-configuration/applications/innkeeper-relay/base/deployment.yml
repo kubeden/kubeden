@@ -37,12 +37,11 @@ spec:
           # (private repo) by that repo's own build-push workflow, on
           # every push to main that touches the daemon.
           #
-          # Pinned to a commit rather than :latest for as long as
-          # a2wio/innkeeper#41 is open: the cross-pod wakeup above is on
-          # that branch, and :latest is whatever main last built. Back
-          # to :latest when it merges.
-          image: registry.k6nis.dev/innkeeper-relay:1738741
-          imagePullPolicy: IfNotPresent
+          # Back on :latest now that a2wio/innkeeper#41 is main (3bbfae6):
+          # the pin was only ever for the days the cross-pod wakeup above
+          # lived on a branch and :latest was the build before it.
+          image: registry.k6nis.dev/innkeeper-relay:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8646
               name: http
