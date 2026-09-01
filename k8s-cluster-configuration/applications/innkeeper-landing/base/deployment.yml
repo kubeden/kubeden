@@ -77,6 +77,8 @@ spec:
                       path: assets/og.png
                     - key: mark-180.png
                       path: assets/mark-180.png
+                    - key: mark-white.png
+                      path: assets/mark-white.png
                     - key: approve-light.webp
                       path: assets/approve-light.webp
                     - key: approve-dark.webp
