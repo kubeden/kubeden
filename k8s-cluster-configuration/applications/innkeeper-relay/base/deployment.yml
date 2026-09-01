@@ -6,15 +6,18 @@ metadata:
   labels:
     app: innkeeper-relay
 spec:
-  # One is now a choice rather than a constraint. The mailboxes moved
-  # off the heap and into a rented redis (a2wio/innkeeper,
-  # innkeeper/relaystore.py), so a second replica would share them —
-  # but a phone posting to one pod cannot wake a daemon's websocket
-  # parked on another any faster than that reader's backoff, which
-  # walks out to 30s. Until there is cross-pod wakeup, more replicas
-  # buy availability and cost latency on the one thing that has to
-  # feel instant.
-  replicas: 1
+  # Two, now that a pod can wake another pod's readers. The mailboxes
+  # have been on a rented redis since the store landed (a2wio/innkeeper,
+  # innkeeper/relaystore.py) but a phone posting to one pod could not
+  # wake a daemon's websocket parked on another any faster than that
+  # reader's backoff — so a second replica bought availability and cost
+  # latency on the one thing that has to feel instant. Every write now
+  # publishes a wake on the same round trip that stores the envelope,
+  # and every pod holds one subscription to it. A pod that cannot hear
+  # the others says so at /v1/health and shortens its own ceiling to
+  # two seconds while it cannot, so the worst case is bounded either
+  # way.
+  replicas: 2
   strategy:
     # Safe now that the queues outlive the pod: the new one reads the
     # same shelf the old one was reading, so an overlap is two doors
@@ -33,8 +36,13 @@ spec:
           # Built from the Dockerfile at the root of a2wio/innkeeper
           # (private repo) by that repo's own build-push workflow, on
           # every push to main that touches the daemon.
-          image: registry.k6nis.dev/innkeeper-relay:latest
-          imagePullPolicy: Always
+          #
+          # Pinned to a commit rather than :latest for as long as
+          # a2wio/innkeeper#41 is open: the cross-pod wakeup above is on
+          # that branch, and :latest is whatever main last built. Back
+          # to :latest when it merges.
+          image: registry.k6nis.dev/innkeeper-relay:1738741
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8646
               name: http
@@ -62,9 +70,18 @@ spec:
             periodSeconds: 30
           resources:
             requests:
-              cpu: 50m
+              # Sized off the load pass: 500 daemons and 2000 approvals
+              # through one pod. Almost all of that CPU used to be
+              # openssl — one subprocess per hello, which is what burst
+              # to ~2.9 cores on this node — and hello signatures are
+              # verified in-process now, so the request is what a pod
+              # actually needs to keep two thousand parked sockets and
+              # the limit is headroom for a burst rather than a fence
+              # around a fork bomb.
+              cpu: 100m
               memory: 64Mi
             limits:
+              cpu: 800m
               # With the queues on the shelf the pod holds almost
               # nothing; this bounds the blast radius if that turns out
               # to be wrong.
