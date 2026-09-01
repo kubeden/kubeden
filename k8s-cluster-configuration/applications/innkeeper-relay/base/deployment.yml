@@ -70,18 +70,23 @@ spec:
             periodSeconds: 30
           resources:
             requests:
-              # Sized off the load pass: 500 daemons and 2000 approvals
-              # through one pod. Almost all of that CPU used to be
-              # openssl — one subprocess per hello, which is what burst
-              # to ~2.9 cores on this node — and hello signatures are
-              # verified in-process now, so the request is what a pod
-              # actually needs to keep two thousand parked sockets and
-              # the limit is headroom for a burst rather than a fence
-              # around a fork bomb.
+              # Sized off the load pass: 500 daemons and 2000 approvals,
+              # run against these two pods on 2026-09-01. Idle is
+              # single-digit millicores; the request is what a pod needs
+              # to hold its parked sockets, and the limit is headroom
+              # for the burst when five hundred daemons say hello at
+              # once.
               cpu: 100m
               memory: 64Mi
             limits:
-              cpu: 800m
+              # 800m was tried first and was the wrong number: the pods
+              # took 433 and 204 throttled periods out of ~900, and the
+              # load pass came back p50 604ms with a p95 of 5.9s — a
+              # perfectly healthy median with a tail made entirely of
+              # cgroup throttling. This is still less than the ~2.9
+              # cores the single uncapped pod used to take on its own,
+              # and now it is bounded.
+              cpu: 1500m
               # With the queues on the shelf the pod holds almost
               # nothing; this bounds the blast radius if that turns out
               # to be wrong.
