@@ -66,6 +66,8 @@ spec:
                       path: index.html
                     - key: docs.html
                       path: docs.html
+                    - key: download.html
+                      path: download.html
                     - key: robots.txt
                       path: robots.txt
                     - key: sitemap.xml
@@ -77,7 +79,21 @@ spec:
                       path: assets/og.png
                     - key: mark-180.png
                       path: assets/mark-180.png
-                    - key: approve-light.webp
-                      path: assets/approve-light.webp
-                    - key: approve-dark.webp
-                      path: assets/approve-dark.webp
+                    - key: mark-white.png
+                      path: assets/mark-white.png
+                    - key: mac-waiting-light.webp
+                      path: assets/mac-waiting-light.webp
+                    - key: mac-waiting-dark.webp
+                      path: assets/mac-waiting-dark.webp
+                    - key: mac-mcp-light.webp
+                      path: assets/mac-mcp-light.webp
+                    - key: mac-mcp-dark.webp
+                      path: assets/mac-mcp-dark.webp
+                    - key: mac-menubar-light.webp
+                      path: assets/mac-menubar-light.webp
+                    - key: mac-menubar-dark.webp
+                      path: assets/mac-menubar-dark.webp
+                    - key: site.js
+                      path: assets/site.js
+                    - key: tailwind.config.js
+                      path: assets/tailwind.config.js

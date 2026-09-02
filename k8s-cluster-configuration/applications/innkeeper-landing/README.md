@@ -10,7 +10,7 @@ and the three ConfigMaps the Deployment mounts are applied from there:
     git clone git@github.com:a2wio/innkeeper-landing.git && cd innkeeper-landing
     kubectl apply -k . --server-side
 
-`--server-side` is required: the assets ConfigMap is ~280 KB and a
+`--server-side` is required: the assets ConfigMap is ~450 KB and a
 client-side apply would write all of it into a 262,144-byte annotation.
 
 Editing the page is a commit there and one `kubectl apply -k`. Kubelet syncs
@@ -42,7 +42,8 @@ the gateway is the one that should keep it.
 
 ## If it ever earns an image
 
-`a2wio/innkeeper-landing` is a single HTML file, so it probably will not. If
+`a2wio/innkeeper-landing` is three HTML files, one script and a handful of
+images, all small enough for ConfigMaps, so it probably will not. If
 it does, that repo needs `ZOT_ADMIN` and `ZOT_PASSWORD` as Actions secrets
 (the same pair `a2wio/agentgrant` uses for the relay image), and this
 Deployment should pin a short-sha tag rather than `:latest` — see
