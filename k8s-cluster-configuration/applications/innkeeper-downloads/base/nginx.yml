@@ -23,7 +23,10 @@ data:
         }
 
         location /download/ {
-            types { application/x-apple-diskimage dmg; }
+            types {
+                application/x-apple-diskimage dmg;
+                application/octet-stream pkg;
+            }
             default_type application/octet-stream;
             add_header Cache-Control "no-cache" always;
             add_header X-Content-Type-Options "nosniff" always;
