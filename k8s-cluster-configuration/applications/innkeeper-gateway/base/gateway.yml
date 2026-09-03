@@ -111,6 +111,9 @@ spec:
     - matches:
         - path:
             type: Exact
+            value: /download/Innkeeper.pkg
+        - path:
+            type: Exact
             value: /download/Innkeeper.dmg
       backendRefs:
         - group: ''
