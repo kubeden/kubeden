@@ -104,12 +104,14 @@ spec:
           port: 80
           weight: 1
     # The Mac app's disk image, off a volume (applications/innkeeper-
-    # downloads). With the slash: /download is the landing's page about
-    # the download, /download/Innkeeper.dmg is the download.
+    # downloads). Exact, and only the one file: a PathPrefix of
+    # /download/ also matched /download, because the Gateway API ignores
+    # the trailing slash and matches by path element, and that took the
+    # landing's page about the download with it.
     - matches:
         - path:
-            type: PathPrefix
-            value: /download/
+            type: Exact
+            value: /download/Innkeeper.dmg
       backendRefs:
         - group: ''
           kind: Service

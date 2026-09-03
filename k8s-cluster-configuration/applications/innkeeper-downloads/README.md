@@ -14,13 +14,16 @@ then notarytool and stapler), and copied into the volume by hand:
 
 The volume is a `local-path` claim, so it lives on the node the pod
 runs on and survives a restart; a new build is the same copy again.
-`Cache-Control: no-cache` on the file, so a new build is what the next
-download gets — Cloudflare sits in front of the host and would
-otherwise keep the old one.
+nginx says `Cache-Control: no-cache` on the file, and Cloudflare, which
+sits in front of the host, replaces that with its own four-hour browser
+TTL and keeps a copy at the edge. So after copying a new build in, purge
+`https://innkeeper.a2w.io/download/Innkeeper.dmg` in the Cloudflare
+dashboard (Caching, Purge by URL), or the old build is what the next
+download gets for a few hours.
 
 ## What this app does not own
 
 The namespace and the HTTPRoute belong to `applications/innkeeper-gateway`;
-that route sends `/download/` here and `/download` (the page) to the
-landing. This app contributes one Service, `innkeeper-downloads` on port
+that route sends exactly `/download/Innkeeper.dmg` here and everything
+else, `/download` the page included, to the landing. This app contributes one Service, `innkeeper-downloads` on port
 80, a claim, and a ConfigMap with the nginx server block.
