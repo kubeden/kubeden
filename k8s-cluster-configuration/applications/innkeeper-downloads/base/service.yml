@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: innkeeper-downloads
+  namespace: innkeeper
+spec:
+  selector:
+    app: innkeeper-downloads
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080

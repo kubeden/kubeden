@@ -68,6 +68,8 @@ spec:
                       path: docs.html
                     - key: download.html
                       path: download.html
+                    - key: privacy.html
+                      path: privacy.html
                     - key: robots.txt
                       path: robots.txt
                     - key: sitemap.xml

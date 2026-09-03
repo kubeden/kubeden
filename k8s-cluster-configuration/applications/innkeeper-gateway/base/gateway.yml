@@ -37,7 +37,7 @@ spec:
         namespaces:
           from: Same
 ---
-# One hostname, three services, and the split is by path because that
+# One hostname, four services, and the split is by path because that
 # is what the product's urls already are: the landing page is what a
 # person types, /app is the dashboard, and everything else is protocol.
 #
@@ -101,6 +101,19 @@ spec:
         - group: ''
           kind: Service
           name: innkeeper-app
+          port: 80
+          weight: 1
+    # The Mac app's disk image, off a volume (applications/innkeeper-
+    # downloads). With the slash: /download is the landing's page about
+    # the download, /download/Innkeeper.dmg is the download.
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /download/
+      backendRefs:
+        - group: ''
+          kind: Service
+          name: innkeeper-downloads
           port: 80
           weight: 1
     - matches:

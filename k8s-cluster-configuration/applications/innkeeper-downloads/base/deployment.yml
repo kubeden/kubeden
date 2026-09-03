@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: innkeeper-downloads
+  namespace: innkeeper
+  labels:
+    app: innkeeper-downloads
+spec:
+  replicas: 1
+  # The claim is ReadWriteOnce on a local-path volume, so there is one
+  # pod and a new one waits for the old one to let go.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: innkeeper-downloads
+  template:
+    metadata:
+      labels:
+        app: innkeeper-downloads
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d
+            - name: files
+              mountPath: /usr/share/nginx/html/download
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 2
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: innkeeper-downloads-nginx
+        - name: files
+          persistentVolumeClaim:
+            claimName: innkeeper-downloads

@@ -1,0 +1,9 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# No namespace.yml and no route here: innkeeper-gateway owns both.
+resources:
+  - pvc.yml
+  - nginx.yml
+  - deployment.yml
+  - service.yml
