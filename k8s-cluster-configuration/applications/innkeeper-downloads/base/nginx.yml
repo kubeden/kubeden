@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: innkeeper-downloads-nginx
+  namespace: innkeeper
+data:
+  # One directory, one kind of file. Anything outside /download/ is a
+  # 404 rather than nginx's welcome page, and the file is never cached
+  # by anyone in front of this host, so a new build is what the next
+  # download gets.
+  downloads.conf: |
+    server {
+        listen       8080;
+        server_name  _;
+        root         /usr/share/nginx/html;
+
+        add_header X-Content-Type-Options "nosniff" always;
+
+        location = /healthz {
+            access_log off;
+            default_type text/plain;
+            return 200 "ok\n";
+        }
+
+        location /download/ {
+            types { application/x-apple-diskimage dmg; }
+            default_type application/octet-stream;
+            add_header Cache-Control "no-cache" always;
+            add_header X-Content-Type-Options "nosniff" always;
+            autoindex off;
+            try_files $uri =404;
+        }
+
+        location / {
+            return 404;
+        }
+    }
