@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# The Mac app's installer and disk image at `/download/…`, off a volume.
+# The route that sends exactly those two files here is ../host.yml.
+resources:
+  - pvc.yml
+  - nginx.yml
+  - deployment.yml
+  - service.yml

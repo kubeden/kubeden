@@ -41,11 +41,9 @@ spec:
 # is what the product's urls already are: the landing page is what a
 # person types, /app is the dashboard, and everything else is protocol.
 #
-# All three backends are wired now. `innkeeper-landing` and
-# `innkeeper-app` are built in their own repos and their Services do
-# not exist yet — until they do, those two paths answer 503, which is
-# the honest thing for a page that has not shipped and does not touch
-# the gateway's own routes.
+# Every backend is a directory beside this file — gateway/, app/,
+# downloads/, landing/ — and one whose Service is missing answers 503
+# on its own paths without touching the others.
 #
 # Traefik matches the longest prefix first, so the order below is for
 # reading, not for precedence.
@@ -103,8 +101,8 @@ spec:
           name: innkeeper-app
           port: 80
           weight: 1
-    # The Mac app's disk image, off a volume (applications/innkeeper-
-    # downloads). Exact, and only the one file: a PathPrefix of
+    # The Mac app's installer and disk image, off a volume (downloads/).
+    # Exact, and only those files: a PathPrefix of
     # /download/ also matched /download, because the Gateway API ignores
     # the trailing slash and matches by path element, and that took the
     # landing's page about the download with it.
