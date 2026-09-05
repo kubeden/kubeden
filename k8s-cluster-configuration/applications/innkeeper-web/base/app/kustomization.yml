@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# The dashboard at `/app`. Content is ConfigMaps applied from
+# a2wio/innkeeper-app; the route that sends `/app` here is ../host.yml.
+resources:
+  - deployment.yml
+  - service.yml

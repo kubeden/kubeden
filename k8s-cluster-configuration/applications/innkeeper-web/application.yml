@@ -1,20 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: innkeeper-downloads
+  name: innkeeper-web
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/kubeden/kubeden.git
     targetRevision: main
-    path: k8s-cluster-configuration/applications/innkeeper-downloads/base
+    path: k8s-cluster-configuration/applications/innkeeper-web/base
   destination:
     server: https://kubernetes.default.svc
     namespace: innkeeper
   syncPolicy:
     syncOptions:
-      # The namespace is innkeeper-gateway's; this only makes a sync in
-      # the wrong order survive.
+      # The namespace is in git (base/namespace.yml); this only lets a
+      # patched sync, which carries no syncOptions, still land somewhere.
       - CreateNamespace=true
       - ServerSideApply=true

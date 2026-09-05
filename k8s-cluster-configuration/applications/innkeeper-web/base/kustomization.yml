@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# innkeeper.a2w.io, whole. The namespace and the host — its certificate,
+# its listener, and the one HTTPRoute that splits the paths — sit here at
+# the top. Each directory is one pod the route lands on: its Deployment,
+# its Service, and whatever only it needs (a claim, a secret, an nginx
+# server block). Names are unchanged from when these were four apps.
+resources:
+  - namespace.yml
+  - host.yml
+  - gateway
+  - landing
+  - app
+  - downloads

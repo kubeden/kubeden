@@ -1,10 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
+# The hosted MCP gateway, which is also the OAuth server. The namespace
+# and the host's route are one level up (../namespace.yml, ../host.yml).
 resources:
-  - namespace.yml
   - secrets-sealed.yml
   - pvc.yml
   - deployment.yml
   - service.yml
-  - gateway.yml

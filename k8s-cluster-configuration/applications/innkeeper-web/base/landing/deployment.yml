@@ -46,7 +46,7 @@ spec:
               memory: 128Mi
       # Every ConfigMap below is generated and applied from a2wio/innkeeper-landing
       # (`kubectl apply -k . --server-side`). The page is not in this repo — see
-      # the README beside this file.
+      # ../../README.md.
       volumes:
         - name: nginx-conf
           configMap:
