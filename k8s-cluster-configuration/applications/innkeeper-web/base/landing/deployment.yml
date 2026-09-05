@@ -83,6 +83,14 @@ spec:
                       path: assets/mark-180.png
                     - key: mark-white.png
                       path: assets/mark-white.png
+                    - key: approve-light.webp
+                      path: assets/approve-light.webp
+                    - key: approve-dark.webp
+                      path: assets/approve-dark.webp
+                    - key: mac-home-light.webp
+                      path: assets/mac-home-light.webp
+                    - key: mac-home-dark.webp
+                      path: assets/mac-home-dark.webp
                     - key: mac-waiting-light.webp
                       path: assets/mac-waiting-light.webp
                     - key: mac-waiting-dark.webp
