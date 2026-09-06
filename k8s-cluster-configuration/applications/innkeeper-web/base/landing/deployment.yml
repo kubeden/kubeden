@@ -23,7 +23,7 @@ spec:
           # push to main, tagged with the short sha. Pinned, not :latest, so
           # what runs is a commit somebody can name; a deploy is a new tag
           # here and a sync.
-          image: registry.k6nis.dev/a2w/innkeeper-landing:0ed337e
+          image: registry.k6nis.dev/a2w/innkeeper-landing:dde0383
           ports:
             - containerPort: 8080
           readinessProbe:
