@@ -1,8 +1,8 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-# The page at `/`. Content is ConfigMaps applied from a2wio/innkeeper-landing;
-# the route that sends `/` here is ../host.yml.
+# The page at `/`: one image built from a2wio/innkeeper-landing, pinned by
+# tag in deployment.yml; the route that sends `/` here is ../host.yml.
 resources:
   - deployment.yml
   - service.yml

@@ -78,41 +78,22 @@ are.
 
 ## landing/ — the page at `/`
 
-The marketing page. Stock `nginx:1.27-alpine` serving three mounted
-ConfigMaps. No image, no registry, no build.
+The marketing site: a Next.js static export served by nginx from one image,
+`registry.k6nis.dev/a2w/innkeeper-landing`, built and pushed by
+`a2wio/innkeeper-landing`'s workflow on every push to its `main` and tagged
+with the short sha. The Deployment pins that tag, so a deploy is:
 
-**The page content is not in this repo.** It lives in `a2wio/innkeeper-landing`,
-and the three ConfigMaps the Deployment mounts are applied from there:
+1. set `image:` in `landing/deployment.yml` to the new tag;
+2. merge, and sync `innkeeper-web` (or `kubectl apply -f` the file).
 
-    git clone git@github.com:a2wio/innkeeper-landing.git && cd innkeeper-landing
-    kubectl apply -k . --server-side
+Pinned rather than `:latest` for the reason `applications/a2w` gives: what
+runs is a commit somebody can name. The pull secret is the namespace's
+`registry-credentials`, the same one the other pods use.
 
-`--server-side` is required: the assets ConfigMap is ~450 KB and a
-client-side apply would write all of it into a 262,144-byte annotation.
-
-Editing the page is a commit there and one `kubectl apply -k`. Kubelet syncs
-a mounted ConfigMap in place, so the pod never restarts; allow ~60s for the
-mount to catch up.
-
-### Adding a page or an asset, which is not the same thing
-
-The `site` volume is a projection with an explicit `items` list, so a new key
-in the ConfigMap is not mounted until it is named here as well. `/docs` was a
-404 for exactly that reason. Apply the ConfigMaps first — a listed key the
-ConfigMap does not have keeps the pod from starting — then, in this order:
-
-1. add the key to `landing/deployment.yml` and sync `innkeeper-web`;
-2. if `nginx.conf` changed too — a new `location` block for the path —
-   restart the Deployment. nginx reads its config once, at start, so a
-   mounted config that changed underneath it is a config it is not serving.
-
-### If it ever earns an image
-
-`a2wio/innkeeper-landing` is a few HTML files, one script and a handful of
-images, all small enough for ConfigMaps, so it probably will not. If it does,
-that repo needs `ZOT_ADMIN` and `ZOT_PASSWORD` as Actions secrets (the same
-pair `a2wio/agentgrant` uses for the relay image), and the Deployment should
-pin a short-sha tag rather than `:latest` — see `applications/a2w` for why.
+Until 2026-09-06 this was stock nginx serving three ConfigMaps applied from
+the page's repo with `kubectl apply -k`, with every file named in a projected
+volume here. Those ConfigMaps (`innkeeper-landing-html`, `-assets`, `-nginx`)
+are no longer mounted and can be deleted.
 
 ## app/ — the dashboard at `/app`
 
