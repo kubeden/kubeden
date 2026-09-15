@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: registry.k6nis.dev/a2w/innkeeper-landing:aa6b932
+          image: registry.k6nis.dev/a2w/innkeeper-landing:70114fb
           ports:
             - containerPort: 8080
           readinessProbe:
@@ -41,3 +41,4 @@ spec:
               memory: 128Mi
       imagePullSecrets:
         - name: registry-credentials
+
