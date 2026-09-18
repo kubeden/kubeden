@@ -6,6 +6,7 @@ commonLabels:
 
 resources:
   - a2w/application.yml
+  - a2w-preview/application.yml
   - excalidraw/application.yml
   - notate/application.yml
   - txtwrite/application.yml

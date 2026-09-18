@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: a2w-preview
+  namespace: a2w-preview
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: a2w-preview
+  template:
+    metadata:
+      labels:
+        app: a2w-preview
+    spec:
+      imagePullSecrets:
+        - name: registry-credentials
+      containers:
+        - name: website
+          image: registry.k6nis.dev/a2w/landing-preview:fc7ce213c54b84ef987503d3efde30add29cca25
+          ports:
+            - name: http
+              containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
