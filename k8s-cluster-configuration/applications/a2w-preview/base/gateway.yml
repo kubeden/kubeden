@@ -43,7 +43,10 @@ metadata:
   namespace: a2w-preview
 spec:
   parentRefs:
-    - name: a2w-preview
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: a2w-preview
+      namespace: a2w-preview
   hostnames:
     - 3b715c17-d498-491b-9a1a-98aa04e45cb6.a2w.io
   rules:
@@ -58,5 +61,8 @@ spec:
               - name: X-Robots-Tag
                 value: "noindex, nofollow"
       backendRefs:
-        - name: a2w-preview
+        - group: ''
+          kind: Service
+          name: a2w-preview
           port: 80
+          weight: 1
