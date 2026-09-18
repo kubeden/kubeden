@@ -18,7 +18,7 @@ spec:
         - name: registry-credentials
       containers:
         - name: website
-          image: registry.k6nis.dev/a2w/landing-preview:1f597d73da0b133a57c83f0327f68feb681fec5c
+          image: registry.k6nis.dev/a2w/landing-preview:8c8cbe7250a8856754fe68d2d828fcb52e4d6270
           ports:
             - name: http
               containerPort: 3000
