@@ -24,7 +24,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: replay
-          image: registry.k6nis.dev/a2w/war-bench:a034f4e807dc1cd088bece4bf7e7db4adc879bed
+          image: registry.k6nis.dev/a2w/war-bench:f1b2d58bad9cc06f9e522f4722eb124c8e2128d1
           ports:
             - name: http
               containerPort: 8787
