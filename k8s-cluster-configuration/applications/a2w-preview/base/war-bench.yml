@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: war-bench
+  namespace: a2w-preview
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: war-bench
+  template:
+    metadata:
+      labels:
+        app: war-bench
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets:
+        - name: registry-credentials
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: replay
+          image: registry.k6nis.dev/a2w/war-bench:bbf101a88e7949f6e04d86b9b6603045dacfeb7d
+          ports:
+            - name: http
+              containerPort: 8787
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          readinessProbe:
+            httpGet:
+              path: /war-bench/api/health
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /war-bench/api/health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: war-bench
+  namespace: a2w-preview
+spec:
+  selector:
+    app: war-bench
+  ports:
+    - port: 80
+      targetPort: http
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: war-bench
+  namespace: a2w-preview
+spec:
+  parentRefs:
+    - name: a2w-preview
+  hostnames:
+    - 3b715c17-d498-491b-9a1a-98aa04e45cb6.a2w.io
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /war-bench
+      filters:
+        - type: ResponseHeaderModifier
+          responseHeaderModifier:
+            set:
+              - name: X-Robots-Tag
+                value: "noindex, nofollow"
+      backendRefs:
+        - name: war-bench
+          port: 80
