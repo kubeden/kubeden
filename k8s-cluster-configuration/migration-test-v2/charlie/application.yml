@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: migration-test-charlie
+  namespace: argocd
+  labels:
+    kubeden.io/experiment: argo-migration
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/kubeden/kubeden.git
+    targetRevision: main
+    path: k8s-cluster-configuration/migration-test-v2/charlie/base
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: migration-test-charlie
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: charlie-config
+  namespace: migration-test-charlie
+  labels:
+    kubeden.io/experiment: argo-migration
+data:
+  app: charlie
+  rendered-by: kustomize
