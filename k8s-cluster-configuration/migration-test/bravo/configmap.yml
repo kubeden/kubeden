@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bravo-config
+  namespace: migration-test-bravo
+  labels:
+    kubeden.io/experiment: argo-migration
+data:
+  app: bravo
+  # Flip to "kustomize" in phase 2. The new value showing up while the UID
+  # stays the same proves the object was updated in place, not recreated.
+  rendered-by: plain-directory
