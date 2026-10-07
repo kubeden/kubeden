@@ -23,7 +23,7 @@ spec:
       containers:
         - name: nginx
           # The short sha the site repo's build-push workflow pushed.
-          image: registry.k6nis.dev/atow/website:715b731
+          image: registry.k6nis.dev/atow/website:2ab4d2f
           ports:
             - containerPort: 8080
               name: http
