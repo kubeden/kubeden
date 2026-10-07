@@ -29,6 +29,7 @@ domainFilters:
   - pastmonday.com
   - generalized.dev
   - bettercalldenis.com
+  - atow.org
 
 rbac:
   create: true

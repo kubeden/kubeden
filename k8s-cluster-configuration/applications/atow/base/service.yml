@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: atow-website-service
+  namespace: atow
+spec:
+  selector:
+    app: atow-website
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080

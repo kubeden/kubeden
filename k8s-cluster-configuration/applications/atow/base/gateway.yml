@@ -1,0 +1,101 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: atow-tls
+  namespace: atow
+spec:
+  secretName: atow-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - atow.org
+    - www.atow.org
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: atow-gateway
+  namespace: atow
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "atow.org,www.atow.org"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 8443
+      hostname: atow.org
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - group: ''
+            kind: Secret
+            name: atow-tls
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: https-www
+      protocol: HTTPS
+      port: 8443
+      hostname: www.atow.org
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - group: ''
+            kind: Secret
+            name: atow-tls
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: atow-website
+  namespace: atow
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: atow-gateway
+      namespace: atow
+  hostnames:
+    - atow.org
+  rules:
+    - backendRefs:
+        - group: ''
+          kind: Service
+          name: atow-website-service
+          port: 80
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: atow-www-redirect
+  namespace: atow
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: atow-gateway
+      namespace: atow
+  hostnames:
+    - www.atow.org
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            hostname: atow.org
+            statusCode: 301
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
