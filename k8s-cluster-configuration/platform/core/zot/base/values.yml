@@ -21,6 +21,12 @@ secretFiles:
   htpasswd: |-
     admin:$2y$05$cZoisS5MLIkYpLHp5cpRtesFgMEF6oohITGd1Fs9dYNu5BVdZwHve
 
+# GC runs once a day (gcInterval), not zot's default hourly. A pass walks
+# every repo over S3, which takes 20+ minutes here, and it holds the image
+# store's lock while it does: every push and pull waits behind it. Hourly,
+# CI pushes kept stalling for minutes at a time (a2w/website, with ~84
+# tags, is the slowest stop). Changing this restarts zot, which then
+# re-reads the whole bucket before serving (see the startupProbe below).
 configFiles:
   config.json: |-
     {
@@ -28,6 +34,9 @@ configFiles:
       "storage": {
         "rootDirectory": "/tmp/zot",
         "dedupe": false,
+        "gc": true,
+        "gcDelay": "1h",
+        "gcInterval": "24h",
         "storageDriver": {
           "name": "s3",
           "region": "fsn1",
