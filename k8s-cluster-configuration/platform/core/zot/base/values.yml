@@ -21,13 +21,16 @@ secretFiles:
   htpasswd: |-
     admin:$2y$05$cZoisS5MLIkYpLHp5cpRtesFgMEF6oohITGd1Fs9dYNu5BVdZwHve
 
-# GC is off for now. A pass stats every blob over S3 (~3,300 blobs, 18-50
-# minutes here) while holding the image store's single store-wide lock
-# (zot v2.1.x has no per-repo locks), so every push and pull waits behind
-# it. At zot's default hourly interval the registry was blocked most of
-# every hour and CI pushes stalled for many minutes. Plan: prune old tags
-# once, then turn GC back on daily ("gc": true, "gcInterval": "24h"); GC
-# runs a pass as soon as zot starts, so turn it on when a pass can run.
+# GC runs once a day, not zot's default hourly. A pass stats every blob
+# over S3 while holding the image store's single store-wide lock (zot
+# v2.1.x has no per-repo locks), so every push and pull waits behind it;
+# hourly, the registry was blocked most of every hour. GC runs a pass as
+# soon as zot starts, then every gcInterval, so the daily pass lands near
+# the time zot last restarted: restart it in the evening.
+# No "retention" block, on purpose: without one zot keeps every tag and
+# removes only untagged manifests, which is how it ran for months. A
+# retention policy with no keepTags rules may remove every tag.
+# Old commit-sha tags were pruned by hand on 2026-10-08 (210 of 429).
 # Changing this restarts zot, which then re-reads the whole bucket before
 # serving (see the startupProbe below).
 configFiles:
@@ -37,7 +40,9 @@ configFiles:
       "storage": {
         "rootDirectory": "/tmp/zot",
         "dedupe": false,
-        "gc": false,
+        "gc": true,
+        "gcDelay": "1h",
+        "gcInterval": "24h",
         "storageDriver": {
           "name": "s3",
           "region": "fsn1",
