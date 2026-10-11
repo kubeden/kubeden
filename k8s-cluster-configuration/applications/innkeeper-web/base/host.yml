@@ -101,11 +101,13 @@ spec:
           name: innkeeper-app
           port: 80
           weight: 1
-    # The Mac app's installer and disk image, off a volume (downloads/).
-    # Exact, and only those files: a PathPrefix of
-    # /download/ also matched /download, because the Gateway API ignores
-    # the trailing slash and matches by path element, and that took the
-    # landing's page about the download with it.
+    # The Mac app's installer and disk image, off a volume (downloads/):
+    # the newest build at two exact paths, and every build, the newest
+    # included, under /download/mac/<version>/. Not a PathPrefix of
+    # /download/: that also matched /download, because the Gateway API
+    # ignores the trailing slash and matches by path element, and that
+    # took the landing's page about the download with it. /download/mac
+    # is an element of its own, and the landing has no page there.
     - matches:
         - path:
             type: Exact
@@ -113,6 +115,9 @@ spec:
         - path:
             type: Exact
             value: /download/Innkeeper.dmg
+        - path:
+            type: PathPrefix
+            value: /download/mac
       backendRefs:
         - group: ''
           kind: Service

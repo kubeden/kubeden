@@ -7,6 +7,7 @@ HTTPRoute that splits it by path), and the four pods the paths land on.
     /                                       -> landing/    innkeeper-landing:80
     /app                                    -> app/        innkeeper-app:80
     /download/Innkeeper.pkg   .../Innkeeper.dmg -> downloads/  innkeeper-downloads:80
+    /download/mac/<version>/Innkeeper.{pkg,dmg} -> downloads/  innkeeper-downloads:80
     /s/ /t/ /v1 /oauth /.well-known /pair   -> gateway/    innkeeper-gateway:8080
 
 `base/` is `namespace.yml`, `host.yml`, and one directory per pod with its
@@ -144,16 +145,29 @@ Install, and it is in /Applications and open) and `/download/Innkeeper.dmg`
 (the disk image, for anyone who would rather drag). Stock `nginx:1.27-alpine`
 serving one directory off a volume, and only that directory: `/download/` is
 the whole of what it answers, the rest is a 404, and `/healthz` is for the
-probes. The route sends exactly those two paths here; `/download` the page
-goes to the landing like everything else.
+probes. The route sends those two paths here, and everything under
+`/download/mac/`, where each build stays at `/download/mac/<version>/` once
+the next one replaces the two above; `/download` the page goes to the
+landing like everything else, and lists every release with links to those.
 
-The file is not in git. It is signed with a Developer ID, notarized and
+The files are not in git. They are signed with a Developer ID, notarized and
 stapled on a Mac in `a2wio/innkeeper` (`apps/macos/Tools/make-pkg.sh` and
-`make-dmg.sh`, then `notarize.sh`), and copied into the volume by hand:
+`make-dmg.sh`, then `notarize.sh`), and copied into the volume by hand, under
+a dot name first and renamed, so nobody downloads half a file:
 
+    version=1.1.1
     pod=$(kubectl -n innkeeper get pod -l app=innkeeper-downloads -o jsonpath='{.items[0].metadata.name}')
-    kubectl -n innkeeper cp Innkeeper.pkg "$pod":/usr/share/nginx/html/download/Innkeeper.pkg
-    kubectl -n innkeeper cp Innkeeper.dmg "$pod":/usr/share/nginx/html/download/Innkeeper.dmg
+    d=/usr/share/nginx/html/download
+    for f in Innkeeper.pkg Innkeeper.dmg; do
+        kubectl -n innkeeper cp "$f" "$pod:$d/.$f.new"
+        kubectl -n innkeeper exec "$pod" -- mv "$d/.$f.new" "$d/$f"
+    done
+    kubectl -n innkeeper exec "$pod" -- mkdir -p "$d/mac/$version"
+    kubectl -n innkeeper exec "$pod" -- cp -p "$d/Innkeeper.pkg" "$d/Innkeeper.dmg" "$d/mac/$version/"
+
+Then the release goes at the top of `lib/releases.ts` in
+`a2wio/innkeeper-landing`, with each file's size and SHA-256, and the landing
+is deployed. A versioned file never changes, so it needs no purge.
 
 The volume is a `local-path` claim, so it lives on the node the pod runs on
 and survives a restart; a new build is the same copy again. nginx says
