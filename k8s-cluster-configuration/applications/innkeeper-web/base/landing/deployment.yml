@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: registry.k6nis.dev/a2w/innkeeper-landing:6b3b3f8
+          image: registry.k6nis.dev/a2w/innkeeper-landing:7f07fb5
           ports:
             - containerPort: 8080
           readinessProbe:
